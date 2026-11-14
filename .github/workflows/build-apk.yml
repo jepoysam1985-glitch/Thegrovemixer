@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -69,3 +72,10 @@ jobs:
         with:
           name: THE-GROOVE-MIXER-apk
           path: THE-GROOVE-MIXER.apk
+
+      - name: Publish APK to Releases (direct .apk download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: The Groove Mixer APK #${{ github.run_number }}
+          files: THE-GROOVE-MIXER.apk
