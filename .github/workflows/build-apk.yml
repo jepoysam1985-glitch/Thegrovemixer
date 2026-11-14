@@ -49,11 +49,23 @@ jobs:
           fi
           ls -la www
 
+      - name: Patch index.html para sa Capacitor plugins (TcpSocket, ForegroundService)
+        run: python3 scripts/patch_web.py
+
       - name: Create Android project
         run: npx cap add android
 
       - name: Patch Android (manifest, plugins, icon)
         run: python3 scripts/patch_android.py
+
+      - name: Install app icon (logo)
+        run: |
+          for d in android/app/src/main/res/mipmap-*dpi; do
+            cp ic_launcher.png "$d/ic_launcher.png"
+            cp ic_launcher_round.png "$d/ic_launcher_round.png"
+            cp ic_launcher_foreground.png "$d/ic_launcher_foreground.png"
+          done
+          cp ic_launcher_background.xml android/app/src/main/res/values/ic_launcher_background.xml
 
       - name: Sync web files
         run: npx cap sync android
@@ -77,5 +89,5 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           tag_name: apk-${{ github.run_number }}
-          name: The Groove Mixer APK #${{ github.run_number }}
+          name: "The Groove Mixer APK #${{ github.run_number }}"
           files: THE-GROOVE-MIXER.apk
