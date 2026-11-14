@@ -1,0 +1,7 @@
+{
+  "appId": "com.groovemixer.app",
+  "appName": "THE GROOVE MIXER",
+  "webDir": "www",
+  "server": { "androidScheme": "https", "cleartext": true },
+  "android": { "allowMixedContent": true }
+}
