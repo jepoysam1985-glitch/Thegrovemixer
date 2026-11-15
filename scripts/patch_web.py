@@ -30,11 +30,6 @@ pairs = [
      "Done</button>\n  <div style=\"text-align:center;margin-top:16px;font-size:12px;line-height:1.6;opacity:.85\">@The Groove Mixer<br>Created by DJBERMAS</div>\n</div>\n</div>\n\n<div class=\"modal\" id=\"eqModal\" hidden>"),
     ("Done</button>\n</div>\n</div>\n\n<div class=\"decks\">",
      "Done</button>\n  <div style=\"text-align:center;margin-top:16px;font-size:12px;line-height:1.6;opacity:.85\">@The Groove Mixer<br>Created by DJBERMAS</div>\n</div>\n</div>\n\n<div class=\"decks\">"),
-    # --- Audio engine selector (Settings): para masubukan kung aling setup ang hindi pumuputol kapag ON ang mic ---
-    ("const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100, latencyHint: 'balanced' });",
-     "const __ae = (() => { try { return localStorage.getItem('jfm_ae') || 'a'; } catch (e) { return 'a'; } })();\nconst ctx = new (window.AudioContext || window.webkitAudioContext)(__ae === 'b' ? { latencyHint: 'balanced' } : __ae === 'd' ? { sampleRate: 44100, latencyHint: 'playback' } : { sampleRate: 44100, latencyHint: 'balanced' });"),
-    ("  <button id=\"closeSettings2\" style=\"width:100%;height:50px;margin-top:14px;",
-     "  <label for=\"aeSel\">Audio engine (close and reopen the app after changing)</label>\n  <select id=\"aeSel\" onchange=\"try{localStorage.setItem('jfm_ae',this.value)}catch(e){}try{toast('Saved. Close and reopen the app to apply.')}catch(e){}\">\n    <option value=\"a\">Default (44.1 kHz)</option>\n    <option value=\"b\">Phone native rate (try if music chops with mic)</option>\n    <option value=\"d\">Bigger buffer (more stable, slight delay)</option>\n  </select>\n  <script>try{document.getElementById('aeSel').value=localStorage.getItem('jfm_ae')||'a'}catch(e){}</script>\n  <button id=\"closeSettings2\" style=\"width:100%;height:50px;margin-top:14px;"),
 ]
 for old, new in pairs:
     if s.count(old) != 1:
@@ -47,7 +42,7 @@ import base64
 logo_b64 = base64.b64encode(open('logo_src.png', 'rb').read()).decode()
 
 THEME = """
-:root{--bg:#02030a;--panel:#0a0c18;--panel2:#12152c;--line:#1b2150;--txt:#eef4ff;--dim:#9db4e0;--c1:#00c6fe;--c2:#f604f5;--acc:#8314fc;--ok:#19e6a0;--live:#f604f5;--edge:#02030a}
+:root{--bg:#02030a;--panel:#0a0c18;--panel2:#12152c;--line:#1b2150;--txt:#eef4ff;--dim:#9db4e0;--c1:#00c6fe;--c2:#f4f8ff;--acc:#8314fc;--ok:#19e6a0;--live:#ff3b3b;--edge:#02030a}
 html{background:#02030a}
 body{background:radial-gradient(120% 38% at 50% -5%,#10205a 0,transparent 70%),radial-gradient(90% 30% at 100% 100%,#3a0a5e66 0,transparent 70%),linear-gradient(180deg,#050714,#02030a)}
 h1{background:linear-gradient(90deg,#00c6fe,#055bfc 45%,#8314fc 72%,#f604f5);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none;filter:drop-shadow(0 0 8px #055bfc88)}
@@ -59,11 +54,8 @@ button:not(.pad):active{background:linear-gradient(180deg,#0d1130,#1b2350)}
 button.on:not(.pad){background:linear-gradient(180deg,#5be0ff,#00c6fe 40%,#055bfc);color:#02101e;text-shadow:none;border-color:#02245e;box-shadow:inset 0 1px 0 #ffffff77,0 0 14px #00c6fe99}
 .deck button.on:not(.pad){background:linear-gradient(180deg,#ffffff55,#ffffff00 55%),var(--c);color:#04101c;box-shadow:inset 0 1px 0 #fff8,0 0 12px var(--c)}
 #gearBtn,#mixBtn,#closeSettings,#closeMix,#closeEq,#fsBtn{background:radial-gradient(circle at 35% 28%,#2a3a8a,#141b48 60%,#070a1f);color:#bfe6ff;border:2px solid #02030a;box-shadow:inset 0 1px 0 #7fb0ff44,0 0 0 1px #00c6fe88,0 0 10px #055bfc66,0 3px 6px #000a}
-#liveBtn{background:linear-gradient(180deg,#ff7bf9,#f604f5 50%,#8314fc);border:2px solid #2a0a4a;border-bottom-width:4px;color:#fff;text-shadow:0 -1px 0 #0006;box-shadow:inset 0 1px 0 #ffffff77,0 0 16px #f604f5aa,0 4px 8px #000a}
-#liveBtn.live{background:linear-gradient(180deg,#ffa6fb,#ff2bf0 50%,#a01cff)}
-button.big.live{background:linear-gradient(135deg,#3a0a6a,#f604f5)}
 #status{color:#7fd8ff}
-#status.live{color:#ff8bfb;text-shadow:0 0 8px #f604f5}
+#liveBtn:not(.live){filter:brightness(.85)}
 .now,#status{background:linear-gradient(180deg,#03040c,#080b1e)}
 input[type=range]{background:linear-gradient(90deg,var(--cc) var(--v),#03040c var(--v))}
 input[type=text],input[type=password],input[type=number],select{background:linear-gradient(180deg,#03040c,#0a0e24);color:#eef4ff}
@@ -91,8 +83,19 @@ s = s.replace(OLD_CRED, NEW_CRED)
 
 # footer sa dulo ng page: bilog na logo + credit
 FOOTER = '<div id="gmFooter"><div class="gmLogo"></div><div>@The Groove Mixer<br>Created by DJBERMAS</div></div>\n\n'
-i = s.index('<script>', s.index('<body>'))
+i = s.index('\n<script>\n', s.index('<body>')) + 1
 s = s[:i] + FOOTER + s[i:]
+
+# ===== GO LIVE -> OFF AIR / ON AIR (pula) =====
+RED = '\U0001F534'
+for old, new, n in [
+    (RED + '\nGO LIVE</button>', RED + '\nOFF AIR</button>', 1),
+    ("'" + RED + "\\nGO LIVE'", "'" + RED + "\\nOFF AIR'", 2),
+    ("'\u25A0\\nCANCEL'", "'" + RED + "\\nON AIR'", 1),
+]:
+    if s.count(old) != n:
+        raise SystemExit('::error::Label ' + repr(old) + ' inaasahang ' + str(n) + ', nakita ' + str(s.count(old)))
+    s = s.replace(old, new)
 
 open(p, 'w', encoding='utf-8').write(s)
 print('index.html patched OK')
