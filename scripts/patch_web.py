@@ -30,6 +30,11 @@ pairs = [
      "Done</button>\n  <div style=\"text-align:center;margin-top:16px;font-size:12px;line-height:1.6;opacity:.85\">@The Groove Mixer<br>Created by DJBERMAS</div>\n</div>\n</div>\n\n<div class=\"modal\" id=\"eqModal\" hidden>"),
     ("Done</button>\n</div>\n</div>\n\n<div class=\"decks\">",
      "Done</button>\n  <div style=\"text-align:center;margin-top:16px;font-size:12px;line-height:1.6;opacity:.85\">@The Groove Mixer<br>Created by DJBERMAS</div>\n</div>\n</div>\n\n<div class=\"decks\">"),
+    # --- Audio engine selector (Settings): para masubukan kung aling setup ang hindi pumuputol kapag ON ang mic ---
+    ("const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100, latencyHint: 'balanced' });",
+     "const __ae = (() => { try { return localStorage.getItem('jfm_ae') || 'a'; } catch (e) { return 'a'; } })();\nconst ctx = new (window.AudioContext || window.webkitAudioContext)(__ae === 'b' ? { latencyHint: 'balanced' } : __ae === 'd' ? { sampleRate: 44100, latencyHint: 'playback' } : { sampleRate: 44100, latencyHint: 'balanced' });"),
+    ("  <button id=\"closeSettings2\" style=\"width:100%;height:50px;margin-top:14px;",
+     "  <label for=\"aeSel\">Audio engine (close and reopen the app after changing)</label>\n  <select id=\"aeSel\" onchange=\"try{localStorage.setItem('jfm_ae',this.value)}catch(e){}try{toast('Saved. Close and reopen the app to apply.')}catch(e){}\">\n    <option value=\"a\">Default (44.1 kHz)</option>\n    <option value=\"b\">Phone native rate (try if music chops with mic)</option>\n    <option value=\"d\">Bigger buffer (more stable, slight delay)</option>\n  </select>\n  <script>try{document.getElementById('aeSel').value=localStorage.getItem('jfm_ae')||'a'}catch(e){}</script>\n  <button id=\"closeSettings2\" style=\"width:100%;height:50px;margin-top:14px;"),
 ]
 for old, new in pairs:
     if s.count(old) != 1:
