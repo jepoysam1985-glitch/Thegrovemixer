@@ -58,6 +58,12 @@ jobs:
       - name: Patch Android (manifest, plugins, icon)
         run: python3 scripts/patch_android.py
 
+      - name: Lock landscape (sensorLandscape)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q screenOrientation "$M" || sed -i '0,/<activity/s//<activity android:screenOrientation="sensorLandscape"/' "$M"
+          grep -n "screenOrientation" "$M"
+
       - name: Install app icon (logo)
         run: |
           pip install pillow

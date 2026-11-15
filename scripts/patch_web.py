@@ -81,11 +81,6 @@ if s.count(OLD_CRED) != 2:
     raise SystemExit('::error::Credit block: inaasahang 2, nakita ' + str(s.count(OLD_CRED)))
 s = s.replace(OLD_CRED, NEW_CRED)
 
-# footer sa dulo ng page: bilog na logo + credit
-FOOTER = '<div id="gmFooter"><div class="gmLogo"></div><div>@The Groove Mixer<br>Created by DJBERMAS</div></div>\n\n'
-i = s.index('\n<script>\n', s.index('<body>')) + 1
-s = s[:i] + FOOTER + s[i:]
-
 # ===== GO LIVE -> OFF AIR / ON AIR (pula) =====
 RED = '\U0001F534'
 for old, new, n in [
@@ -96,6 +91,17 @@ for old, new, n in [
     if s.count(old) != n:
         raise SystemExit('::error::Label ' + repr(old) + ' inaasahang ' + str(n) + ', nakita ' + str(s.count(old)))
     s = s.replace(old, new)
+
+# ===== Logo sa platter (umiikot kasama ng disc), kapareho ng landscape version mo =====
+platter_b64 = base64.b64encode(open('platter_logo.png', 'rb').read()).decode()
+PLATTER = ('<style>\n.jogdisc .jlogo{width:84%!important}\n'
+           '.jlogo img{display:block;width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);opacity:.45}\n</style>\n'
+           '<script>\n/* Logo ng The Groove Mixer sa platter (umiikot kasama ng disc) */\n'
+           '(function(){const src="data:image/png;base64,' + platter_b64 + '";\n'
+           "document.querySelectorAll('.jlogo').forEach((l)=>{l.innerHTML='';const im=new Image();im.src=src;im.alt='THE GROOVE MIXER';im.draggable=false;l.appendChild(im)})})();\n"
+           '</script>\n')
+j = s.rindex('</body>')
+s = s[:j] + PLATTER + s[j:]
 
 open(p, 'w', encoding='utf-8').write(s)
 print('index.html patched OK')
