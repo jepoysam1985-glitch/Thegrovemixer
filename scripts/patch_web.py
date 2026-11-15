@@ -10,9 +10,6 @@ pairs = [
     ("const b64 = (u) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };",
      "const b64 = (u) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, new Uint8Array(u.buffer, u.byteOffset + i, Math.min(0x8000, u.length - i))); return btoa(s); };"),
 
-    # --- Performance: mas malaking audio buffer (hindi pumuputol ang music) at hayaan ang device sample rate ---
-    ("{ sampleRate: 44100, latencyHint: 'balanced' }",
-     "{ latencyHint: 'playback' }"),
     # --- Voice FX: pitch/ring branch ay naka-connect lang kapag ginagamit (bawas CPU kapag OFF) ---
     ("micGain.connect(dA);micGain.connect(dB);",
      "const pIn=G(1);pIn.connect(dA);pIn.connect(dB);"),
@@ -25,6 +22,14 @@ pairs = [
     # --- Voice FX: ang monitor (phone speaker/headphone), echo at reverb ay galing na sa boses na may FX ---
     ("vOut.connect(vRevS);vRevS.connect(vRev);vRev.connect(vRevO);vRevO.connect(master);",
      "vOut.connect(vRevS);vRevS.connect(vRev);vRev.connect(vRevO);vRevO.connect(master);\n  try{micGain.disconnect(echoDelay)}catch{}try{micGain.disconnect(mmHP)}catch{}try{micGain.disconnect(revSend)}catch{}\n  vOut.connect(echoDelay);vOut.connect(mmHP);vOut.connect(revSend);"),
+    # --- Music: kapag binuksan ang mic, siguraduhing tuloy ang AudioContext at ang mga deck na tumutugtog ---
+    ("  micSrc.connect(micIn);\n  btn.textContent = ",
+     "  micSrc.connect(micIn);\n  try{const was=decks.map((d)=>!d.audio.paused);const kick=()=>{ctx.resume().catch(()=>{});decks.forEach((d,i)=>{if(was[i]&&d.audio.paused)d.audio.play().catch(()=>{})})};[250,800].forEach((t)=>setTimeout(kick,t))}catch{}\n  btn.textContent = "),
+    # --- Credit sa ilalim ng Settings (Output Settings at Audio Settings) ---
+    ("Done</button>\n</div>\n</div>\n\n<div class=\"modal\" id=\"eqModal\" hidden>",
+     "Done</button>\n  <div style=\"text-align:center;margin-top:16px;font-size:12px;line-height:1.6;opacity:.85\">@The Groove Mixer<br>Created by DJBERMAS</div>\n</div>\n</div>\n\n<div class=\"modal\" id=\"eqModal\" hidden>"),
+    ("Done</button>\n</div>\n</div>\n\n<div class=\"decks\">",
+     "Done</button>\n  <div style=\"text-align:center;margin-top:16px;font-size:12px;line-height:1.6;opacity:.85\">@The Groove Mixer<br>Created by DJBERMAS</div>\n</div>\n</div>\n\n<div class=\"decks\">"),
 ]
 for old, new in pairs:
     if s.count(old) != 1:
