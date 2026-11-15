@@ -55,7 +55,7 @@ button.on:not(.pad){background:linear-gradient(180deg,#5be0ff,#00c6fe 40%,#055bf
 .deck button.on:not(.pad){background:linear-gradient(180deg,#ffffff55,#ffffff00 55%),var(--c);color:#04101c;box-shadow:inset 0 1px 0 #fff8,0 0 12px var(--c)}
 #gearBtn,#mixBtn,#closeSettings,#closeMix,#closeEq,#fsBtn{background:radial-gradient(circle at 35% 28%,#2a3a8a,#141b48 60%,#070a1f);color:#bfe6ff;border:2px solid #02030a;box-shadow:inset 0 1px 0 #7fb0ff44,0 0 0 1px #00c6fe88,0 0 10px #055bfc66,0 3px 6px #000a}
 #status{color:#7fd8ff}
-#liveBtn:not(.live){filter:brightness(.85)}
+#liveBtn:not(.live){background:linear-gradient(180deg,#232b5c,#11163a);border:1px solid #0a0f2a;border-bottom-width:4px;color:#dbe8ff;text-shadow:none;box-shadow:inset 0 1px 0 #7fb0ff26,0 1px 2px #000b;filter:none}
 .now,#status{background:linear-gradient(180deg,#03040c,#080b1e)}
 input[type=range]{background:linear-gradient(90deg,var(--cc) var(--v),#03040c var(--v))}
 input[type=text],input[type=password],input[type=number],select{background:linear-gradient(180deg,#03040c,#0a0e24);color:#eef4ff}
@@ -89,8 +89,8 @@ s = s[:i] + FOOTER + s[i:]
 # ===== GO LIVE -> OFF AIR / ON AIR (pula) =====
 RED = '\U0001F534'
 for old, new, n in [
-    (RED + '\nGO LIVE</button>', RED + '\nOFF AIR</button>', 1),
-    ("'" + RED + "\\nGO LIVE'", "'" + RED + "\\nOFF AIR'", 2),
+    (RED + '\nGO LIVE</button>', '\u25CB\nOFF AIR</button>', 1),
+    ("'" + RED + "\\nGO LIVE'", "'\u25CB\\nOFF AIR'", 2),
     ("'\u25A0\\nCANCEL'", "'" + RED + "\\nON AIR'", 1),
 ]:
     if s.count(old) != n:
