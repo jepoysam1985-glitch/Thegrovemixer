@@ -9,11 +9,27 @@ pairs = [
      "window.Capacitor?(Capacitor.registerPlugin?Capacitor.registerPlugin('ForegroundService'):((Capacitor.Plugins&&Capacitor.Plugins.ForegroundService)||null)):null"),
     ("const b64 = (u) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };",
      "const b64 = (u) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, new Uint8Array(u.buffer, u.byteOffset + i, Math.min(0x8000, u.length - i))); return btoa(s); };"),
+
+    # --- Performance: mas malaking audio buffer (hindi pumuputol ang music) at hayaan ang device sample rate ---
+    ("{ sampleRate: 44100, latencyHint: 'balanced' }",
+     "{ latencyHint: 'playback' }"),
+    # --- Voice FX: pitch/ring branch ay naka-connect lang kapag ginagamit (bawas CPU kapag OFF) ---
+    ("micGain.connect(dA);micGain.connect(dB);",
+     "const pIn=G(1);pIn.connect(dA);pIn.connect(dB);"),
+    ("micGain.connect(ringG);ringG.connect(ringOut);",
+     "const rIn=G(1);rIn.connect(ringG);ringG.connect(ringOut);"),
+    ("V.set=(m)=>{V.mode=m;const t=nowT();",
+     "const on={p:0,r:0},want={p:0,r:0};const link=(k,node,w)=>{want[k]=w?1:0;if(w&&!on[k]){micGain.connect(node);on[k]=1}else if(!w&&on[k]){setTimeout(()=>{if(!want[k]&&on[k]){try{micGain.disconnect(node)}catch{}on[k]=0}},250)}};\n  V.set=(m)=>{V.mode=m;const t=nowT();"),
+    ("const c=P[m]||P.off,pit=c.p!=null;",
+     "const c=P[m]||P.off,pit=c.p!=null;link('p',pIn,pit);link('r',rIn,!!c.ring);"),
+    # --- Voice FX: ang monitor (phone speaker/headphone), echo at reverb ay galing na sa boses na may FX ---
+    ("vOut.connect(vRevS);vRevS.connect(vRev);vRev.connect(vRevO);vRevO.connect(master);",
+     "vOut.connect(vRevS);vRevS.connect(vRev);vRev.connect(vRevO);vRevO.connect(master);\n  try{micGain.disconnect(echoDelay)}catch{}try{micGain.disconnect(mmHP)}catch{}try{micGain.disconnect(revSend)}catch{}\n  vOut.connect(echoDelay);vOut.connect(mmHP);vOut.connect(revSend);"),
 ]
 for old, new in pairs:
-    if old not in s:
-        raise SystemExit('::error::Hindi mahanap ang line na papalitan: ' + old[:60])
+    if s.count(old) != 1:
+        raise SystemExit('::error::Hindi mahanap (o higit sa isa) ang line na papalitan: ' + old[:60])
     s = s.replace(old, new)
 
 open(p, 'w', encoding='utf-8').write(s)
-print('index.html patched OK (TcpSocket + ForegroundService + btoa Int8Array fix)')
+print('index.html patched OK')
