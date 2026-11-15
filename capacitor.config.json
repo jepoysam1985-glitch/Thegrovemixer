@@ -1,7 +1,9 @@
 {
-  "appId": "com.groovemixer.app",
+  "appId": "com.groove.mixer",
   "appName": "THE GROOVE MIXER",
   "webDir": "www",
-  "server": { "androidScheme": "https", "cleartext": true },
-  "android": { "allowMixedContent": true }
+  "backgroundColor": "#02030a",
+  "android": {
+    "allowMixedContent": false
+  }
 }

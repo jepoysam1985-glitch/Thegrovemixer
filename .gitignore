@@ -1,2 +1,5 @@
 node_modules/
 android/
+ios/
+www/lame.min.js
+.DS_Store

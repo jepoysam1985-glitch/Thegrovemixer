@@ -1,13 +1,20 @@
 {
-  "name": "the-groove-mixer",
+  "name": "groove-mixer",
   "version": "1.0.0",
   "private": true,
+  "description": "THE GROOVE MIXER - Capacitor Android app",
+  "scripts": {
+    "lame": "node scripts/copy-lame.mjs",
+    "sync": "npm run lame && npx cap sync android",
+    "android:add": "npx cap add android && bash scripts/patch-android.sh",
+    "android:open": "npx cap open android",
+    "apk": "npm run sync && cd android && ./gradlew assembleDebug"
+  },
   "dependencies": {
     "@capacitor/android": "^7.0.0",
     "@capacitor/core": "^7.0.0",
     "@capacitor/filesystem": "^7.0.0",
-    "@capawesome-team/capacitor-android-foreground-service": "^7.0.0",
-    "lamejs": "1.2.1"
+    "lamejs": "^1.2.1"
   },
   "devDependencies": {
     "@capacitor/cli": "^7.0.0"
