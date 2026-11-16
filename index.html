@@ -18,7 +18,7 @@ h1{font-size:15px;letter-spacing:3px;text-align:center;margin:6px 0 14px;font-we
 .topbar{display:flex;align-items:center;gap:8px;margin:2px 0 12px}
 .topbar h1{flex:1;margin:0}
 #gearBtn,#mixBtn{flex:none;width:44px;height:44px;border-radius:50%;font-size:20px;padding:0;line-height:1}
-.modal{position:fixed;inset:0;z-index:100;background:#000c;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
+.modal{position:fixed;top:0;right:0;bottom:0;left:0;z-index:100;background:#000c;display:flex;justify-content:center;align-items:flex-start;overflow:auto;padding:max(12px,env(safe-area-inset-top)) 12px max(12px,env(safe-area-inset-bottom))}
 .modal[hidden]{display:none}
 .sheet{width:100%;max-width:520px;margin:auto 0;box-shadow:0 10px 40px #000}
 .sheethead{display:flex;align-items:center;justify-content:space-between;gap:10px}
@@ -136,7 +136,7 @@ h1{background:linear-gradient(180deg,#f4f5f8,#8a8e99);-webkit-background-clip:te
 .card.deck{border-top:3px solid var(--c)}
 .deck h2{text-shadow:0 0 8px var(--c)}
 .sheet,#xfCard,#fxCard,#mixCtl{position:relative}
-.sheet::before,#micCard::before,#fxCard::before,#mixCtl::before,#xfCard::before{content:"";position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:
+.sheet::before,#micCard::before,#fxCard::before,#mixCtl::before,#xfCard::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;border-radius:inherit;background:
   radial-gradient(circle at 6px 6px,#a0a3ae 0 1.4px,#23252b 2.4px,transparent 3px),
   radial-gradient(circle at calc(100% - 6px) 6px,#a0a3ae 0 1.4px,#23252b 2.4px,transparent 3px),
   radial-gradient(circle at 6px calc(100% - 6px),#a0a3ae 0 1.4px,#23252b 2.4px,transparent 3px),
@@ -185,7 +185,7 @@ li.cur{background:linear-gradient(180deg,#16262b,#0d171a);color:var(--c);text-sh
 /* LED SEGMENT LEVEL METER */
 .vm{width:16px;border:1px solid #000;border-radius:4px;box-shadow:inset 0 0 4px #000a,0 1px 0 #ffffff22}
 .vm i{background:rgba(5,5,8,.82)}
-.vm::after{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 5px,#050508 5px 7px)}
+.vm::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;background:repeating-linear-gradient(0deg,transparent 0 5px,#050508 5px 7px)}
 
 /* EFFECT PADS: bezel sa paligid (bilog pa rin) */
 .pad{box-shadow:inset 0 -6px 9px #0004,inset 0 4px 6px #fff5,0 3px 9px #0009,0 0 0 2px #0b0b0e,0 0 0 3px #43464f}
@@ -279,9 +279,9 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
 .jogbox{--jogs:inherit;display:flex;flex-direction:column;align-items:center;gap:4px;margin:8px auto 6px;width:var(--jogs)}
 .jogring{width:100%;aspect-ratio:1/1;border-radius:50%;padding:5px;background:conic-gradient(var(--c) calc(var(--p,0)*1%),#07080a 0);box-shadow:0 4px 12px #000c,0 0 0 1px #000}
 .jog{position:relative;width:100%;height:100%;border-radius:50%;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;background:repeating-radial-gradient(circle,#2b2e35 0 2px,#1b1d22 2px 4px);border:1px solid #000;box-shadow:inset 0 2px 8px #000,0 0 0 2px #2e3138}
-.jog::before{content:"";position:absolute;inset:0;border-radius:50%;border:calc(var(--jogs)*.1) solid #0000003d;pointer-events:none}
+.jog::before{content:"";position:absolute;top:0;right:0;bottom:0;left:0;border-radius:50%;border:calc(var(--jogs)*.1) solid #0000003d;pointer-events:none}
 .jog.touch{box-shadow:inset 0 2px 8px #000,0 0 0 2px var(--c),0 0 16px var(--c);cursor:grabbing}
-.jogdisc{position:absolute;inset:12%;border-radius:50%;pointer-events:none;background:linear-gradient(135deg,#3b3f48,#1d1f24 60%,#2c2f36);box-shadow:inset 0 0 0 1px #000,0 2px 6px #000a}
+.jogdisc{position:absolute;top:12%;right:12%;bottom:12%;left:12%;border-radius:50%;pointer-events:none;background:linear-gradient(135deg,#3b3f48,#1d1f24 60%,#2c2f36);box-shadow:inset 0 0 0 1px #000,0 2px 6px #000a}
 .jogdisc i{position:absolute;left:50%;top:5%;width:4px;height:18%;margin-left:-2px;border-radius:2px;background:var(--c);box-shadow:0 0 8px var(--c)}
 .jog .jogc{position:absolute;left:50%;top:50%;width:34%;height:34%;transform:translate(-50%,-50%);border-radius:50%;padding:0;font-size:calc(var(--jogs)*.1);line-height:1}
 .jog .jogc:active{transform:translate(-50%,-50%) scale(.94)}
@@ -313,7 +313,7 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
 .dcol{min-width:0}
 @media (orientation:landscape) and (max-height:900px) and (min-width:480px){
   html,body{height:100%}
-  body{max-width:none;height:100dvh;overflow:hidden;display:grid;gap:5px;
+  body{max-width:none;height:100vh;overflow:hidden;display:grid;gap:5px;
     grid-template-columns:minmax(0,1fr) minmax(0,1.1fr) minmax(0,1.2fr) minmax(0,2.3fr);
     grid-template-rows:auto minmax(0,1fr) auto;
     padding:max(4px,env(safe-area-inset-top)) max(8px,env(safe-area-inset-right)) max(4px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left))}
@@ -330,7 +330,7 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
   /* DECK = [kontrol na pwedeng i-scroll] + [jog wheel]; hindi lumalampas sa screen */
   .decks .card.deck{display:flex;flex-direction:row;gap:8px;padding:6px 8px;min-height:0;height:100%;overflow:hidden}
   #deck1{flex-direction:row-reverse}
-  .deck{--jogs:clamp(90px,min(calc(100dvh - 150px),21vw),200px)}
+  .deck{--jogs:clamp(90px,min(calc(100vh - 150px),21vw),200px)}
   .dcol{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
   .dcol>*{flex:none}
   .dcol>.spec{order:9;height:34px;margin:6px 0 0}
@@ -362,7 +362,7 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
   body #status{margin-top:3px!important;padding:2px 4px!important;font-size:9px!important;min-height:0!important}
   body #pttBtn{height:34px!important;margin-top:3px!important}
   /* Effects = lumulutang na panel sa ibabaw ng ilalim na hilera */
-  #fxCard{position:fixed;left:8px;right:8px;bottom:84px;max-height:calc(100dvh - 130px);overflow:auto;z-index:60;margin:0}
+  #fxCard{position:fixed;left:8px;right:8px;bottom:84px;max-height:calc(100vh - 130px);overflow:auto;z-index:60;margin:0}
 }
 </style>
 <style>
@@ -432,7 +432,7 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
 @media (orientation:landscape) and (max-height:900px) and (min-width:480px){
   body{grid-template-columns:minmax(0,1.3fr) minmax(0,1.3fr) minmax(0,1.1fr) minmax(0,1.2fr)}
   body>.decks{grid-template-columns:minmax(0,1fr) 106px minmax(0,1fr)}
-  .deck{--jogs:clamp(90px,min(calc(100dvh - 150px),19vw),190px)}
+  .deck{--jogs:clamp(90px,min(calc(100vh - 150px),19vw),190px)}
   .card.vmeter{flex-direction:row;align-items:stretch;gap:4px;padding:4px}
   .vmpair{flex:none;width:24px;gap:2px}
   .vmcol .vm{width:8px}
@@ -448,7 +448,7 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
   #midBtns{display:none!important}
   body{grid-template-columns:minmax(0,1.05fr) minmax(0,1.1fr) minmax(0,2.5fr) minmax(0,.95fr)}
   body>.decks{grid-template-columns:minmax(0,1fr) 26px minmax(0,1fr)}
-  .deck{--jogs:clamp(90px,min(calc(100dvh - 150px),21vw),200px)}
+  .deck{--jogs:clamp(90px,min(calc(100vh - 150px),21vw),200px)}
   .card.vmeter{flex-direction:column;gap:6px;padding:4px 0}
   .vmpair{flex:1;width:auto;gap:3px}
   body>#mixCtl{grid-column:1;grid-row:3}
@@ -465,8 +465,8 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
 <style>
 /* FULL SCREEN FIT: halos walang sayang na gilid */
 @media (orientation:landscape) and (max-height:900px) and (min-width:480px){
-  html,body{width:100%;min-height:100dvh}
-  body{height:100dvh;padding:max(3px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));gap:4px}
+  html,body{width:100%;min-height:100vh}
+  body{height:100vh;padding:max(3px,env(safe-area-inset-top)) max(4px,env(safe-area-inset-right)) max(3px,env(safe-area-inset-bottom)) max(4px,env(safe-area-inset-left));gap:4px}
 }
 </style>
 <style>
@@ -489,10 +489,10 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
 </style>
 <style>
 /* EFFECTS = POP UP (nasa gitna ng screen, may madilim na background) */
-#fxBack{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.65);display:none}
+#fxBack{position:fixed;top:0;right:0;bottom:0;left:0;z-index:300;background:rgba(0,0,0,.65);display:none}
 #fxBack.show{display:block}
 #fxCard{position:fixed!important;left:50%!important;top:50%!important;right:auto!important;bottom:auto!important;transform:translate(-50%,-50%)!important;
-  width:min(94vw,560px)!important;max-height:86dvh!important;overflow:auto!important;margin:0!important;z-index:310!important;
+  width:min(94vw,560px)!important;max-height:86vh!important;overflow:auto!important;margin:0!important;z-index:310!important;
   padding:12px!important;box-shadow:0 20px 60px #000,0 0 0 1px #2e9bff55!important;animation:fxPop .18s ease-out}
 #fxCard[hidden]{display:none!important}
 @keyframes fxPop{from{opacity:0;transform:translate(-50%,-46%) scale(.94)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
@@ -602,12 +602,20 @@ li.cur{background:#0f2a66;color:#fff}
 <div class="modal" id="eqModal" hidden>
 <div class="card sheet" role="dialog" aria-modal="true" aria-label="EQ Settings">
   <div class="sheethead"><b id="eqTitle">EQ</b><button id="closeEq" aria-label="Close EQ settings">✕</button></div>
-  <label style="margin-top:14px">Low (bass): <b id="eqv0">0.0 dB</b></label>
-  <input type="range" min="-100" max="100" value="0" id="eq0" aria-label="EQ Low">
-  <label>Mid (voice): <b id="eqv1">0.0 dB</b></label>
-  <input type="range" min="-100" max="100" value="0" id="eq1" aria-label="EQ Mid">
-  <label>High (treble): <b id="eqv2">0.0 dB</b></label>
-  <input type="range" min="-100" max="100" value="0" id="eq2" aria-label="EQ High">
+  <label style="margin-top:14px">60 Hz (sub bass): <b id="eqv0">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq0" aria-label="EQ 60 Hz (sub bass)">
+  <label>150 Hz (bass): <b id="eqv1">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq1" aria-label="EQ 150 Hz (bass)">
+  <label>400 Hz (low mid): <b id="eqv2">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq2" aria-label="EQ 400 Hz (low mid)">
+  <label>1 kHz (mid): <b id="eqv3">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq3" aria-label="EQ 1 kHz (mid)">
+  <label>2.5 kHz (presence): <b id="eqv4">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq4" aria-label="EQ 2.5 kHz (presence)">
+  <label>6 kHz (treble): <b id="eqv5">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq5" aria-label="EQ 6 kHz (treble)">
+  <label>12 kHz (air): <b id="eqv6">0.0 dB</b></label>
+  <input type="range" min="-100" max="100" value="0" id="eq6" aria-label="EQ 12 kHz (air)">
   <button id="eqReset" style="width:100%;height:44px;margin-top:14px;font-size:12.5px">Reset EQ</button>
   <button id="closeEq2" style="width:100%;height:50px;margin-top:16px;background:var(--acc);border-color:var(--acc);color:#fff;font-size:13.5px">Done</button>
 </div>
@@ -2086,22 +2094,23 @@ decks.forEach((d) => {
 <script>
 // EQ bawat deck: LOW / MID / HIGH (-40 dB = kill, 0 = flat, +6 dB). Ang "EQ" button sa tabi ng Volume ang nagbubukas ng settings.
 (function () {
-  const BANDS = [['lowshelf', 250], ['peaking', 1000], ['highshelf', 3500]];
+  const BANDS = [['lowshelf', 60], ['peaking', 150], ['peaking', 400], ['peaking', 1000], ['peaking', 2500], ['peaking', 6000], ['highshelf', 12000]];   // 7-band EQ
+  const NB = BANDS.length, IDX = BANDS.map((_, k) => k);
   const eqDb = (v) => (v >= 0 ? v * 0.06 : v * 0.4);
   const eqTxt = (v) => (v <= -98 ? 'KILL' : (v > 0 ? '+' : '') + eqDb(v).toFixed(1) + ' dB');
   let cur = decks[0];
   decks.forEach((d) => {
-    d.eqNodes = BANDS.map(([type, f]) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (type === 'peaking') n.Q.value = 0.8; return n; });
-    d.eqVals = [0, 0, 0];
+    d.eqNodes = BANDS.map(([type, f]) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (type === 'peaking') n.Q.value = 1.0; return n; });
+    d.eqVals = IDX.map(() => 0);
     d.fader.disconnect();
-    d.fader.connect(d.eqNodes[0]); d.eqNodes[0].connect(d.eqNodes[1]); d.eqNodes[1].connect(d.eqNodes[2]); d.eqNodes[2].connect(d.cross);
+    d.fader.connect(d.eqNodes[0]); for (let k = 0; k < NB - 1; k++) d.eqNodes[k].connect(d.eqNodes[k + 1]); d.eqNodes[NB - 1].connect(d.cross);
     const vol = $('#deck' + d.i + ' [data-a=vol]');
     const row = document.createElement('div'); row.className = 'volrow';
     const b = document.createElement('button'); b.className = 'eqbtn'; b.textContent = 'EQ'; b.setAttribute('aria-label', 'Deck ' + (d.i + 1) + ' EQ settings');
     vol.before(row); row.append(vol, b); d.eqBtn = b;
     b.onclick = () => {
       cur = d; $('#eqTitle').textContent = 'EQ · Deck ' + (d.i + 1);
-      [0, 1, 2].forEach((k) => { $('#eq' + k).value = d.eqVals[k]; $('#eqv' + k).textContent = eqTxt(d.eqVals[k]); });
+      IDX.forEach((k) => { $('#eq' + k).value = d.eqVals[k]; $('#eqv' + k).textContent = eqTxt(d.eqVals[k]); });
       showModal('#eqModal', true);
     };
   });
@@ -2109,10 +2118,10 @@ decks.forEach((d) => {
     cur.eqVals[k] = v; cur.eqNodes[k].gain.setTargetAtTime(eqDb(v), ctx.currentTime, 0.02);
     $('#eqv' + k).textContent = eqTxt(v); cur.eqBtn.classList.toggle('on', cur.eqVals.some((x) => x !== 0));
   }
-  [0, 1, 2].forEach((k) => {
+  IDX.forEach((k) => {
     $('#eq' + k).oninput = (e) => { let v = parseFloat(e.target.value); if (Math.abs(v) <= 4) { v = 0; e.target.value = 0; } setBand(k, v); };
   });
-  $('#eqReset').onclick = () => [0, 1, 2].forEach((k) => { $('#eq' + k).value = 0; setBand(k, 0); });
+  $('#eqReset').onclick = () => IDX.forEach((k) => { $('#eq' + k).value = 0; setBand(k, 0); });
   $('#closeEq').onclick = $('#closeEq2').onclick = () => showModal('#eqModal', false);
 })();
 </script>
@@ -2418,11 +2427,19 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
       const y0 = h - OV_H, prog = dur ? Math.min(1, t / dur) : 0;
       g.fillStyle = 'rgba(255,255,255,.07)'; g.fillRect(0, y0, w, OV_H);
       if (wf) {
-        for (let x = 0; x < w; x++) {
-          const v = wf.ov[Math.min(OV - 1, (x / w * OV) | 0)], bh = Math.max(1, v * OV_H);
-          g.fillStyle = x / w <= prog ? sp.color : '#7b7f8b';
-          g.fillRect(x, y0 + (OV_H - bh) / 2, 1, bh);
+        const px = Math.floor(prog * w), okey = w + 'x' + OV_H + '|' + px + '|' + sp.color;
+        if (sp.ovKey !== okey || sp.ovWf !== wf) {
+          if (!sp.ovCv) sp.ovCv = document.createElement('canvas');
+          const oc = sp.ovCv; oc.width = Math.max(1, Math.round(w * dpr)); oc.height = Math.max(1, Math.round(OV_H * dpr));
+          const og = oc.getContext('2d'); og.setTransform(dpr, 0, 0, dpr, 0, 0);
+          for (let x = 0; x < w; x++) {
+            const v = wf.ov[Math.min(OV - 1, (x / w * OV) | 0)], bh = Math.max(1, v * OV_H);
+            og.fillStyle = x / w <= prog ? sp.color : '#7b7f8b';
+            og.fillRect(x, (OV_H - bh) / 2, 1, bh);
+          }
+          sp.ovKey = okey; sp.ovWf = wf;
         }
+        g.drawImage(sp.ovCv, 0, y0, w, OV_H);
       } else if (d.idx >= 0) {
         g.fillStyle = sp.color; g.fillRect(0, y0 + OV_H / 2 - 1, w * prog, 2);
       }
@@ -2714,7 +2731,7 @@ document.addEventListener('keydown',(e)=>{
   if(M[k]){M[k]();e.preventDefault()}
 });
 // ---- MIDI (generic map; palitan ang MAP para sa controller mo) ----
-const MAP={cc:{1:()=>cross,2:()=>decks[0].audio&&q('#deck0 input[data-a=vol]'),3:()=>q('#deck1 input[data-a=vol]'),4:()=>decks[0].tSl,5:()=>decks[1].tSl,6:()=>decks[0].fSl,7:()=>decks[1].fSl},
+const MAP={cc:{1:()=>cross,2:()=>decks[0].audio&&q('input[data-a=vol][data-deck="0"]'),3:()=>q('input[data-a=vol][data-deck="1"]'),4:()=>decks[0].tSl,5:()=>decks[1].tSl,6:()=>decks[0].fSl,7:()=>decks[1].fSl},
   note:{36:()=>cueBtn(0,0),37:()=>cueBtn(0,1),38:()=>cueBtn(0,2),39:()=>cueBtn(0,3),40:()=>cueBtn(1,0),41:()=>cueBtn(1,1),42:()=>cueBtn(1,2),43:()=>cueBtn(1,3),
     44:()=>play(0),45:()=>play(1),46:()=>decks[0].togglePfl(),47:()=>decks[1].togglePfl(),48:()=>q('#deck0 [data-a=sync]').click(),49:()=>q('#deck1 [data-a=sync]').click(),50:()=>decks[0].toggleEcho(),51:()=>decks[1].toggleEcho()}};
 const mb=document.createElement('button');mb.id='midiBtn';mb.textContent='MIDI';mb.setAttribute('aria-label','Connect MIDI controller');
@@ -2833,7 +2850,7 @@ decks.forEach((d)=>{
   let rc=null;const ang=(e)=>{const r=rc||(rc=jog.getBoundingClientRect());return Math.atan2(e.clientY-(r.top+r.height/2),e.clientX-(r.left+r.width/2))};
   const apply=(v)=>{const rev=v<0,r=Math.min(4,Math.abs(v));if(rev!==d.eng.rev){if(r<0.06)eRate(d,0);else eStart(d,ePos(d),rev,r)}else eRate(d,r)};
   const drive=()=>{if(!st||!d.eng.on)return;const err=st.tgt-ePos(d);apply(Math.abs(err)<0.0015?0:Math.max(-4,Math.min(4,err/0.045)))};
-  jb.addEventListener('pointerdown',(e)=>{if(!d.scr||(e.target.closest&&e.target.closest('.jogc')))return;rc=null;e.stopPropagation();e.preventDefault();
+  jb.addEventListener('pointerdown',(e)=>{if(!d.scr||(e.target.closest&&e.target.closest('.jogc,.jbtns')))return;rc=null;e.stopPropagation();e.preventDefault();
     if(!d.buf||d.bufSrc!==d.audio.src){T('Preparing the track…');ensureBuf(d,14e6);return}
     try{jog.setPointerCapture(e.pointerId)}catch{}ctx.resume();eStart(d,d.audio.currentTime,false,0);d.sc=true;{const dc=q('.jogdisc',box);try{const m=new DOMMatrixReadOnly(getComputedStyle(dc).transform);d.xa=Math.atan2(m.b,m.a)*180/Math.PI}catch{d.xa=0}}
     const p0=ePos(d);st={a:ang(e),p0:p0,tot:0,tgt:p0,id:e.pointerId,raf:0};window.__scr=true;const lp=()=>{if(!st)return;drive();st.raf=requestAnimationFrame(lp)};lp();jog.classList.add('touch')},true);
@@ -3136,7 +3153,7 @@ const setR=(el,v)=>{el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}
 function build(d){
   const X=d.fxx={ph:0,cr:0,gt:0,vc:0,rolling:null};
   const fxIn=G(1),s1=G(1),s2=G(1),s3=G(1),s4=G(1),fxOut=G(1);
-  const last=(d.eqNodes&&d.eqNodes[2])||d.fader;
+  const last=(d.eqNodes&&d.eqNodes[d.eqNodes.length-1])||d.fader;
   try{last.disconnect(d.cross)}catch{}
   last.connect(fxIn);
   // karaoke / vocal cut (L-R) + low-pass copy to keep the bass
@@ -3484,10 +3501,10 @@ document.querySelectorAll('.jlogo').forEach((l)=>{l.innerHTML='';const im=new Im
 </script>
 <style>
 /* FULL SCREEN SA KAHIT ANONG PHONE */
-html,body{width:100%;min-height:100vh;min-height:100dvh;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+html,body{width:100%;min-height:100vh;min-height:100vh;overscroll-behavior:none;-webkit-text-size-adjust:100%}
 body{max-width:none!important}
 @media (orientation:landscape) and (max-height:900px) and (min-width:480px){
-  html,body{height:100vh;height:100dvh}
+  html,body{height:100vh;height:100vh}
   body{width:100vw}
 }
 </style>
@@ -3527,10 +3544,14 @@ body{max-width:none!important}
 </script>
 <style>
 /* CUE/LOOP ay nasa loob na ng DJ FX */
+.jog .jogc{display:flex!important;align-items:center;justify-content:center;left:50%;top:50%;bottom:auto;transform:translate(-50%,-50%);width:30%;height:30%;min-width:30px;min-height:30px;z-index:6;border-radius:50%;padding:0;font-size:calc(var(--jogs)*.1);line-height:1;border:2px solid var(--c)!important;box-shadow:0 0 10px var(--c),0 2px 6px #000a!important}
+.jog .jogc:active{transform:translate(-50%,-50%) scale(.92)}
+/* tinago ang PLAY/STOP sa tabi ng MUTE (nasa jog wheel na ang play); gumagana pa rin ang keyboard/MIDI */
+.deck .btns [data-a=play],.deck .btns [data-a=stop]{display:none!important}
 #djfx .clpanel{margin:0}
 #djfx .padsrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:0 0 5px}
 #djfx .padsrow button{height:46px!important;font-size:13px!important}
-.deck .btns [data-a=lock]{grid-column:span 3}
+.deck .btns [data-a=lock]{grid-column:span 2}
 </style>
 <script>
 /* Inilipat ang CUE/LOOP (hot cue A-D at loop 1/2/4/8) mula sa deck papunta sa DJ FX ng bawat deck */
@@ -3545,6 +3566,455 @@ body{max-width:none!important}
     pane.appendChild(h); pane.appendChild(panel);
     if(tg) tg.remove();
   });
+})();
+</script>
+<style>
+/* ADD TRACKS + SYNC + SYNC LOCK sa loob ng box ng jog wheel; crossfader laging nasa gitna */
+.jbtns{display:grid;grid-template-columns:1fr 1fr;gap:4px;width:100%;margin-top:6px}
+.jbtns>.jb{width:auto!important;min-width:0;height:34px!important;margin:0!important;padding:0 2px!important;font-size:10px!important;font-weight:700;letter-spacing:0!important;line-height:1.1;white-space:normal;overflow:hidden}
+.jbtns>.jb[data-y=scr]{grid-column:1/-1}
+.deck.locked .jbtns{opacity:.4;pointer-events:none}
+#mixCtl>label{text-align:center}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  .jogbox{align-self:stretch!important;justify-content:flex-end}
+  .jogbox>.jogring{margin:auto 0}
+  .jogbox>.jbtns{margin-top:0;flex:none}
+}
+.xspacer{flex:none;width:var(--bw,52px);height:1px;visibility:hidden;pointer-events:none}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  .jbtns{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px;margin-top:3px}
+  .jbtns>.jb[data-y=scr]{grid-column:auto}
+  .jbtns>.jb{height:26px!important;font-size:8px!important}
+}
+</style>
+<script>
+(function(){
+  var done=false;
+  function move(){
+    if(done||typeof decks==='undefined')return; done=true;
+    decks.forEach(function(d){
+      var box=document.getElementById('deck'+d.i), jb=box&&box.querySelector('.jogbox'); if(!jb)return;
+      var scr=box.querySelector('[data-y=scr]'), sync=box.querySelector('.syncbtn'), lock=d.lockBtn;
+      var pfl=box.querySelector('[data-x=pfl]'), tap=box.querySelector('[data-x=tap]');
+      var wrap=document.createElement('div'); wrap.className='jbtns';
+      [scr,sync,lock,pfl,tap].forEach(function(b){ if(!b)return; b.classList.add('jb'); wrap.appendChild(b); });
+      if(lock) lock.textContent='SYNC LOCK';
+      if(scr) scr.textContent='SCRATCH';
+      if(pfl) pfl.textContent='\uD83C\uDFA7 CUE';
+      if(tap) tap.textContent='TAP';
+      var ring=jb.querySelector('.jogring'); if(ring) ring.after(wrap); else jb.appendChild(wrap);
+    });
+  }
+  /* crossfader: pantay ang bilang ng button sa kaliwa at kanan para eksaktong nasa gitna */
+  function balance(){
+    var row=document.querySelector('#micCard .row'), xr=row&&row.querySelector('.xrow'); if(!xr)return;
+    row.querySelectorAll('.xspacer').forEach(function(e){e.remove();});
+    if(!document.body.classList.contains('xfmid'))return;
+    var kids=[].slice.call(row.children), i=kids.indexOf(xr);
+    var l=kids.slice(0,i).filter(function(e){return e.tagName==='BUTTON';}).length;
+    var r=kids.slice(i+1).filter(function(e){return e.tagName==='BUTTON';}).length;
+    for(var k=l;k<r;k++){var s=document.createElement('div');s.className='xspacer';row.insertBefore(s,row.firstChild);}
+    for(var k2=r;k2<l;k2++){var s2=document.createElement('div');s2.className='xspacer';row.appendChild(s2);}
+  }
+  move(); balance();
+  var mq=window.matchMedia('(orientation:landscape) and (max-height:900px) and (min-width:480px)');
+  (mq.addEventListener?mq.addEventListener.bind(mq,'change'):mq.addListener.bind(mq))(function(){setTimeout(balance,0);});
+  window.addEventListener('resize',function(){clearTimeout(window.__xb);window.__xb=setTimeout(balance,150);});
+})();
+</script>
+<style>
+/* ADD TRACKS + SHUFFLE/REPEAT + LISTAHAN NG KANTA: nasa baba ng deck */
+.dbot{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0 4px;width:100%}
+.dbot>.addrow{margin:0;min-width:0;flex:1 1 0}
+.dbot>.addrow:nth-child(1){flex:1.1 1 0}
+.dbot>.addrow:nth-child(2){flex:1.6 1 0}
+.dbot>ul{flex:0 0 100%;margin:0}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  .dleft{flex:1;min-width:0;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+  .dleft>.dcol{flex:1 1 0}
+  .dbot{flex:none;margin-top:3px;gap:3px}
+  .dbot>ul{max-height:42px}
+}
+</style>
+<script>
+(function(){
+  var mq=window.matchMedia('(orientation:landscape) and (max-height:900px) and (min-width:480px)');
+  var items=decks.map(function(d){
+    var box=document.getElementById('deck'+d.i), dcol=box.querySelector('.dcol'); if(!dcol)return null;
+    var dleft=document.createElement('div'); dleft.className='dleft'; dcol.before(dleft); dleft.appendChild(dcol);
+    var dbot=document.createElement('div'); dbot.className='dbot';
+    [].slice.call(dcol.querySelectorAll(':scope > .addrow')).forEach(function(r){dbot.appendChild(r);});
+    var ul=dcol.querySelector(':scope > ul'); if(ul) dbot.appendChild(ul);
+    return {box:box,dleft:dleft,dbot:dbot};
+  }).filter(Boolean);
+  function place(){ items.forEach(function(it){ var dcol=it.dleft.querySelector('.dcol'), bpm=dcol&&dcol.querySelector('.bpmrow'); if(bpm&&it.dbot.nextSibling!==bpm) bpm.before(it.dbot); }); }
+  (mq.addEventListener?mq.addEventListener.bind(mq,'change'):mq.addListener.bind(mq))(place);
+  place();
+})();
+</script>
+<style>
+/* BUTTON BOX sa gitna, sa taas ng level meter (landscape): SCRATCH / SYNC / SYNC LOCK ng Deck 1 (kaliwa) at Deck 2 (kanan) */
+.mbox{display:none}
+.jbtns:empty{display:none}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  body>.decks{grid-template-columns:minmax(0,1fr) 62px minmax(0,1fr)}
+  .card.vmeter{align-items:stretch;padding:3px}
+  .vmpair{align-self:center;width:auto}
+  .mbox{display:block;flex:none;width:100%;box-sizing:border-box}
+  .mbox>button{width:100%;min-width:0;height:34px!important;padding:0!important;font-size:7px!important;font-weight:700;letter-spacing:0!important;line-height:1.15;white-space:pre-line;overflow:hidden}
+}
+</style>
+<style>
+.sbox{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sbox>button{width:auto!important;margin:0!important;height:50px;font-size:12px;font-weight:700;min-width:0;padding:0 2px;white-space:normal;line-height:1.15}
+@media (orientation:landscape) and (max-height:520px){#syncModal .sheet{padding:8px 12px}#syncModal label{margin:6px 0 3px}#syncModal .sbox{gap:4px}.sbox>button{height:34px!important;font-size:11px}#syncModal #closeSync{width:34px!important;height:34px!important}#closeSync2{height:38px!important;margin-top:8px!important}}
+</style>
+<script>
+(function(){
+  var mq=window.matchMedia('(orientation:landscape) and (max-height:900px) and (min-width:480px)');
+  var card=document.querySelector('.card.vmeter'); if(!card)return;
+  var mbox=document.createElement('div'); mbox.className='mbox'; card.insertBefore(mbox,card.firstChild);
+  var open=document.createElement('button'); open.type='button'; open.id='syncOpen'; open.textContent='\uD83C\uDF9B\nSCRATCH\nSYNC'; mbox.appendChild(open);
+  var modal=document.createElement('div'); modal.className='modal'; modal.id='syncModal'; modal.hidden=true;
+  modal.innerHTML='<div class="card sheet" role="dialog" aria-modal="true" aria-label="Scratch, Sync, Slip, Grid, Align"><div class="sheethead"><b>SCRATCH \u00b7 SYNC \u00b7 GRID</b><button id="closeSync" type="button" aria-label="Close" style="flex:none;width:42px;height:42px;border-radius:50%;font-size:18px">\u2715</button></div>'+
+    '<label>Deck 1</label><div class="sbox" id="sbox0"></div><label>Deck 2</label><div class="sbox" id="sbox1"></div>'+
+    '<button id="closeSync2" type="button" style="width:100%;height:46px;margin-top:14px;background:var(--acc);border-color:var(--acc);color:#fff;font-size:13px">Done</button></div>';
+  document.body.appendChild(modal);
+  open.onclick=function(){ showModal('#syncModal',true); };
+  document.getElementById('closeSync').onclick=document.getElementById('closeSync2').onclick=function(){ showModal('#syncModal',false); };
+  modal.addEventListener('click',function(e){ if(e.target===modal) showModal('#syncModal',false); });
+  var sets=decks.map(function(d){ return [].slice.call(document.querySelectorAll('#deck'+d.i+' .jbtns > button')); });
+  if(!sets[0].length||!sets[1].length)return;
+  var extra=decks.map(function(d){ return ['slip','grid','align'].map(function(n){ var b=document.querySelector('#deck'+d.i+' [data-y='+n+']'); return b?{b:b,p:b.parentNode,n:b.nextSibling}:null; }).filter(Boolean); });
+  function place(){
+    if(mq.matches){ sets.forEach(function(arr,i){ var w=document.getElementById('sbox'+i); arr.forEach(function(b){ w.appendChild(b); }); extra[i].forEach(function(o){ w.appendChild(o.b); }); }); }
+    else { sets.forEach(function(arr,i){ var w=document.querySelector('#deck'+i+' .jbtns'); if(w) arr.forEach(function(b){ w.appendChild(b); }); extra[i].slice().reverse().forEach(function(o){ o.p.insertBefore(o.b,o.n&&o.n.parentNode===o.p?o.n:null); }); }); showModal('#syncModal',false); }
+    open.style.display=mq.matches?'':'none';
+  }
+  function badge(){ open.classList.toggle('on',sets.some(function(arr){ return arr.some(function(b){ return b.classList.contains('on'); }); })); }
+  var mo=new MutationObserver(badge); sets.forEach(function(arr){ arr.forEach(function(b){ mo.observe(b,{attributes:true,attributeFilter:['class']}); }); });
+  (mq.addEventListener?mq.addEventListener.bind(mq,'change'):mq.addListener.bind(mq))(place);
+  place();
+})();
+</script>
+<script>
+/* inalis: BPM -, BPM +, x2 / /2 */
+(function(){
+  document.querySelectorAll('.deck [data-y=bm], .deck [data-y=bp]').forEach(function(b){ b.remove(); });
+  document.querySelectorAll('.deck .xdj button').forEach(function(b){ if(/^\u00d72\s*\/\s*\u00f72$/.test(b.textContent.trim())) b.remove(); });
+})();
+</script>
+<style>
+/* Volume + EQ + BPM ng bawat deck: nasa Audio Settings na */
+#eqModal{z-index:110}
+#deckAudio .dset{border:1px solid #ffffff22;border-radius:10px;padding:2px 10px 10px;margin-top:12px}
+#deckAudio .dset>b{display:block;margin-top:8px;font-size:12px;letter-spacing:1px}
+#deckAudio .d0{--c:var(--c1)}#deckAudio .d1{--c:var(--c2)}
+#deckAudio .d0>b{color:var(--c1)}#deckAudio .d1>b{color:var(--c2)}
+#deckAudio input[type=range]{--cc:var(--c)}
+</style>
+<script>
+(function(){
+  var sheet=document.querySelector('#mixSettings .sheet'), head=sheet&&sheet.querySelector('.sheethead'); if(!head||typeof decks==='undefined')return;
+  var sec=document.createElement('div'); sec.id='deckAudio';
+  decks.forEach(function(d){
+    var box=document.getElementById('deck'+d.i); if(!box)return;
+    var vr=box.querySelector('.volrow'), bpm=box.querySelector('.bpmrow'); if(!vr||!bpm)return;
+    var g=document.createElement('div'); g.className='dset d'+d.i;
+    var t=document.createElement('b'); t.textContent='DECK '+(d.i+1); g.appendChild(t);
+    var vol=vr.querySelector('input[data-a=vol]'); if(vol)vol.setAttribute('data-deck',d.i);
+    var lb=vr.previousElementSibling; if(lb&&lb.tagName==='LABEL')g.appendChild(lb);
+    g.appendChild(vr);
+    var bl=document.createElement('label'); bl.textContent='Tempo / BPM'; g.appendChild(bl);
+    g.appendChild(bpm); sec.appendChild(g);
+  });
+  head.after(sec);
+  /* EQ modal: lumalabas sa ibabaw ng Audio Settings; pagsara nito, nananatiling bukas ang Audio Settings */
+  var orig=window.showModal;
+  window.showModal=function(id,on){
+    if(id==='#eqModal'&&on){ var m=document.getElementById('mixSettings'); window.__mixBeneath=!!(m&&!m.hidden); }
+    return orig.apply(this,arguments);
+  };
+  window.addEventListener('popstate',function(){
+    if(window.__mixBeneath){ window.__mixBeneath=false; var m=document.getElementById('mixSettings'); if(m){ m.hidden=false; document.body.style.overflow='hidden'; } }
+  });
+})();
+</script>
+<style>
+/* MUTE + LOCK + FADE OUT: nasa ibaba ng jog wheel (laging nakikita, portrait at landscape) */
+.jbtns2{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;width:100%;margin-top:6px}
+.jbtns2>button{width:auto!important;min-width:0;height:34px!important;margin:0!important;padding:0 2px!important;font-size:10px!important;font-weight:700;letter-spacing:0!important;line-height:1.1;white-space:normal;overflow:hidden;grid-column:auto!important}
+.deck.locked .jbtns2>button:not(.lockbtn):not(#fadeBtn):not(.fadeMirror){opacity:.4;pointer-events:none}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  .jogbox>.jbtns2{margin-top:0;flex:none;gap:3px;margin-bottom:3px}
+  .jbtns2>button{height:26px!important;font-size:8px!important}
+}
+</style>
+<script>
+(function(){
+  decks.forEach(function(d){
+    var box=document.getElementById('deck'+d.i), jb=box&&box.querySelector('.jogbox'); if(!jb||box.querySelector('.jbtns2'))return;
+    var btns=box.querySelector('.btns');
+    var mute=box.querySelector('[data-a=mute]'), lock=box.querySelector('[data-a=lock]');
+    var fade=d.i===0?document.getElementById('fadeBtn'):box.querySelector('.fadeMirror');
+    var wrap=document.createElement('div'); wrap.className='jbtns2';
+    [mute,lock,fade].forEach(function(b){ if(b)wrap.appendChild(b); });
+    if(fade)fade.textContent='FADE OUT';
+    var ring=jb.querySelector('.jogring'); if(ring)ring.after(wrap); else jb.prepend(wrap);
+    if(btns)btns.style.display='none';   /* PLAY/STOP ay nakatago na; gumagana pa rin ang keyboard/MIDI */
+  });
+})();
+</script>
+<style>
+/* TRACK LIST: walang taas na limit; lumalabas ang lahat ng kanta (sa landscape, nag-i-scroll ang buong deck panel kapag mahaba) */
+.deck ul,.dbot>ul{max-height:none!important}
+</style>
+<style>
+/* MAS MALAKING JOG WHEEL (ang logo, tuldok at button sa paligid ay sumusunod sa laki) */
+.deck{--jogs:clamp(100px,calc(50vw - 36px),190px)}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  .deck{--jogs:clamp(110px,min(calc(100vh - 165px),28vw),260px)}
+}
+</style>
+<style>
+/* BPM slider: nasa box kasama ng SCRATCH / SYNC / CUE / TAP (sa landscape, sumasama sa SCRATCH · SYNC window) */
+.jbtns>.bpmrow,.sbox>.bpmrow{grid-column:1/-1;width:100%;margin:0 0 2px;min-width:0}
+.jbtns>.bpmrow .bpmtop,.sbox>.bpmrow .bpmtop{margin-top:0;justify-content:center}
+.jbtns>.bpmrow .bpmv,.sbox>.bpmrow .bpmv{text-align:center;font-size:10px}
+.jbtns>.bpmrow input,.sbox>.bpmrow input{margin:0}
+.deck.locked .jbtns>.bpmrow{pointer-events:none}
+</style>
+<script>
+(function(){
+  var mq=window.matchMedia('(orientation:landscape) and (max-height:900px) and (min-width:480px)');
+  var items=decks.map(function(d){
+    var box=document.getElementById('deck'+d.i), jb=box&&box.querySelector('.jbtns');
+    var g=document.querySelector('#deckAudio .dset.d'+d.i), bpm=(g&&g.querySelector('.bpmrow'))||(box&&box.querySelector('.bpmrow'));
+    if(!jb||!bpm)return null;
+    var lb=bpm.previousElementSibling; if(lb&&lb.tagName==='LABEL'&&/BPM/.test(lb.textContent))lb.remove();
+    return {d:d,jb:jb,bpm:bpm};
+  }).filter(Boolean);
+  function place(){
+    items.forEach(function(it){
+      var sb=document.getElementById('sbox'+it.d.i), tgt=(mq.matches&&sb)?sb:it.jb;
+      if(it.bpm.parentNode!==tgt) tgt.prepend(it.bpm);
+    });
+  }
+  (mq.addEventListener?mq.addEventListener.bind(mq,'change'):mq.addListener.bind(mq))(function(){setTimeout(place,0);});
+  window.addEventListener('resize',function(){clearTimeout(window.__bpmP);window.__bpmP=setTimeout(place,200);});
+  place();
+})();
+</script>
+<style>
+/* EFFECTS SLOTS: normal at malinis tingnan (parisukat na may bilog na sulok, malinaw na numero at pangalan) */
+#fxCard .fxgrid{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:12px 8px!important;margin:10px 0 8px!important}
+@media (min-width:640px) and (orientation:landscape){#fxCard .fxgrid{grid-template-columns:repeat(10,minmax(0,1fr))!important;gap:10px 6px!important}}
+#fxCard .fxcell{gap:4px;justify-content:flex-start}
+#fxCard .pad{width:100%!important;max-width:64px!important;border-radius:12px!important;border:0!important;font-size:16px!important;font-weight:700;color:#0b0b14!important;text-shadow:none!important;filter:none!important;
+  background:var(--pc)!important;box-shadow:0 2px 0 rgba(0,0,0,.5)!important;transition:transform .08s}
+#fxCard .pad::before{display:none!important}
+#fxCard .pad:active{transform:scale(.95)!important;box-shadow:none!important}
+#fxCard .pad.on{background:#fff!important;transform:none!important;box-shadow:0 0 0 3px var(--pc),0 0 12px var(--pc)!important}
+#fxCard .pad.empty{background:#13151a!important;border:2px dashed var(--pc)!important;color:var(--pc)!important;opacity:.85;font-size:22px!important;font-weight:400;box-shadow:none!important}
+#fxCard .pad .x{top:-6px;right:-6px}
+#fxCard .cap{font-size:11px!important;font-weight:500;line-height:1.2;min-height:0!important;color:#d3dbe6;-webkit-line-clamp:2}
+</style>
+<style>
+/* EFFECTS SLOTS: NEON LIGHT (kulay ng ilaw ay galing sa --pc ng bawat slot) */
+#fxCard{background:#06070b!important}
+#fxCard .pad{background:#090b10!important;background:color-mix(in srgb,var(--pc) 10%,#07080c)!important;
+  border:2px solid var(--pc)!important;color:var(--pc)!important;font-weight:800;
+  text-shadow:0 0 4px var(--pc),0 0 10px var(--pc)!important;
+  box-shadow:0 0 5px var(--pc),0 0 12px var(--pc)!important;
+  box-shadow:0 0 5px var(--pc),0 0 14px color-mix(in srgb,var(--pc) 70%,transparent),inset 0 0 9px color-mix(in srgb,var(--pc) 45%,transparent)!important}
+#fxCard .pad:active{transform:scale(.95)!important;box-shadow:0 0 3px var(--pc),inset 0 0 14px var(--pc)!important}
+#fxCard .pad.on{background:var(--pc)!important;color:#fff!important;border-color:#fff!important;
+  text-shadow:0 0 6px #000a!important;
+  box-shadow:0 0 8px #fff,0 0 18px var(--pc),0 0 34px var(--pc),inset 0 0 12px #fff8!important}
+#fxCard .pad.empty{background:#07080c!important;border:2px dashed var(--pc)!important;color:var(--pc)!important;opacity:.55;
+  text-shadow:0 0 6px var(--pc)!important;box-shadow:0 0 4px var(--pc)!important;
+  box-shadow:0 0 4px color-mix(in srgb,var(--pc) 60%,transparent),inset 0 0 6px color-mix(in srgb,var(--pc) 25%,transparent)!important}
+#fxCard .cap{color:#e8f1ff;text-shadow:0 0 6px #4da3ff66}
+</style>
+<style>/* neon ring sa outer ring ng platter: tinanggal */.jogring{position:relative}</style>
+<script>
+(function(){
+  decks.forEach(function(d){
+    var ring=document.querySelector('#deck'+d.i+' .jogring'); if(!ring)return;
+    var sync=function(){ ring.classList.toggle('playing',!d.audio.paused&&!d.audio.ended); };
+    ['play','playing','pause','ended','emptied','loadstart','seeked'].forEach(function(ev){ d.audio.addEventListener(ev,sync); });
+    sync();
+  });
+})();
+</script>
+<style>
+/* PLATTER: istilong CDJ (may dimples ang outer ring, pilak na gilid, itim na platter na may pinong guhit) + LOGO NG APP sa gitna */
+.jog{background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='-100 -100 200 200'%3E%3Cdefs%3E%3CradialGradient id='rg' cx='0' cy='0' r='100' gradientUnits='userSpaceOnUse'%3E%3Cstop offset='.74' stop-color='%231b1c20'/%3E%3Cstop offset='.9' stop-color='%23292b30'/%3E%3Cstop offset='1' stop-color='%230b0b0d'/%3E%3C/radialGradient%3E%3CradialGradient id='d' cx='.36' cy='.3' r='.85'%3E%3Cstop offset='0' stop-color='%236a6d74'/%3E%3Cstop offset='.45' stop-color='%23303237'/%3E%3Cstop offset='1' stop-color='%23111215'/%3E%3C/radialGradient%3E%3ClinearGradient id='sv' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%23f6f7f9'/%3E%3Cstop offset='.5' stop-color='%235b5f67'/%3E%3Cstop offset='1' stop-color='%23dcdee3'/%3E%3C/linearGradient%3E%3C/defs%3E%3Ccircle r='100' fill='%23050506'/%3E%3Ccircle r='99' fill='url(%23rg)'/%3E%3Cg transform='rotate(0)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(7.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(15)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(22.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(30)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(37.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(45)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(52.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(60)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(67.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(75)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(82.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(90)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(97.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(105)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(112.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(120)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(127.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(135)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(142.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(150)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(157.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(165)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(172.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(180)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(187.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(195)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(202.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(210)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(217.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(225)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(232.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(240)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(247.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(255)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(262.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(270)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(277.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(285)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(292.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(300)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(307.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(315)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(322.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(330)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(337.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Cg transform='rotate(345)'%3E%3Cellipse cx='0' cy='-87.5' rx='7.8' ry='8.8' fill='url(%23d)' stroke='%23000' stroke-opacity='.55' stroke-width='.7'/%3E%3Ccircle cx='0' cy='-87.5' r='0' /%3E%3C/g%3E%3Cg transform='rotate(352.5)'%3E%3Ccircle cx='0' cy='-82.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3Ccircle cx='0' cy='-92.5' r='1.15' fill='%233d4046' stroke='%23000' stroke-opacity='.6' stroke-width='.4'/%3E%3C/g%3E%3Ccircle r='79.3' fill='none' stroke='%23000' stroke-width='1.6'/%3E%3Ccircle r='77.4' fill='none' stroke='url(%23sv)' stroke-width='1.9'/%3E%3Ccircle r='98.7' fill='none' stroke='%2350535b' stroke-width='.6'/%3E%3C/svg%3E") center/100% 100% no-repeat,#0c0c0e!important;border:0!important;box-shadow:0 0 0 1px #000,0 3px 10px #000c!important}
+.jog.touch{box-shadow:0 0 0 1px #000,0 0 14px var(--c)!important}
+.jog::before{top:12%!important;right:12%!important;bottom:12%!important;left:12%!important;border:0!important;z-index:2;
+  background:conic-gradient(from 20deg,#0000 0 17%,#ffffff17 23%,#0000 30% 66%,#ffffff12 72%,#0000 79%)!important}
+.jogdisc{background:conic-gradient(from 0deg,#0000 0 42%,#ffffff0d 47%,#0000 53% 100%),repeating-radial-gradient(circle at 50% 50%,#08080a 0 1px,#141418 1px 2px)!important;
+  box-shadow:inset 0 0 0 1px #000,inset 0 0 22px #000!important}
+.jogdisc i{height:9%!important;top:3%!important;width:3px!important;margin-left:-1.5px!important}
+.jogdisc .jlogo,.jog>.jlogo{display:none!important}
+/* logo ng app sa gitna (nakatigil), ang play/pause button ay nasa ibabaw niya (hindi nakikita) */
+.jog>.gmLogo.jc{position:absolute;left:50%;top:50%;width:40%!important;height:40%!important;transform:translate(-50%,-50%);z-index:4;pointer-events:none;
+  border:calc(var(--jogs)*.012) solid #07070a;box-shadow:0 0 0 2px #1b1c20,0 0 12px #00c6fe66,0 0 18px #f604f533}
+.jog .jogc{width:40%!important;height:40%!important;background:transparent!important;border:0!important;box-shadow:none!important;color:transparent!important;font-size:0!important;z-index:6}
+</style>
+<script>
+(function(){
+  document.querySelectorAll('.jog').forEach(function(jog){
+    if(jog.querySelector('.gmLogo.jc'))return;
+    var l=document.createElement('div'); l.className='gmLogo jc'; l.setAttribute('aria-hidden','true'); jog.appendChild(l);
+  });
+})();
+</script>
+<style>
+/* PLAY/PAUSE: tinanggal sa jog wheel; nasa tabi na ng FADE OUT */
+.jog .jogc{display:none!important}
+.jbtns2{grid-template-columns:repeat(4,minmax(0,1fr))}
+.jbtns2>button[data-a=play]{font-size:13px!important}
+</style>
+<script>
+(function(){
+  decks.forEach(function(d){
+    var box=document.getElementById('deck'+d.i); if(!box)return;
+    var wrap=box.querySelector('.jbtns2'), play=box.querySelector('[data-a=play]');
+    var fade=d.i===0?document.getElementById('fadeBtn'):box.querySelector('.fadeMirror');
+    if(!wrap||!play||!fade)return;
+    fade.after(play);
+    box.querySelectorAll('.jogc').forEach(function(c){c.remove()});
+  });
+})();
+</script>
+<style>
+/* LOGO sa gitna ng jog: puti, transparent ang background, at umiikot kasama ng platter */
+.jogdisc>.gmLogo.jc{position:absolute;left:50%;top:50%;width:56%!important;height:56%!important;transform:translate(-50%,-50%);z-index:4;pointer-events:none;
+  border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent url(data:image/png;base64,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) center/contain no-repeat!important;opacity:.9}
+</style>
+<script>
+(function(){
+  document.querySelectorAll('.jog').forEach(function(jog){
+    var l=jog.querySelector('.gmLogo.jc'), disc=jog.querySelector('.jogdisc');
+    if(l&&disc&&l.parentNode!==disc)disc.appendChild(l);
+  });
+})();
+</script>
+<style>/* LOGO ng DECK 1: transparent na blue */
+#deck0 .jogdisc>.gmLogo.jc{background:transparent url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMAAAADACAYAAABS3GwHAAAXFUlEQVR42u1dPWxVSZb+uh8dvKXdmsm6jWakkYGADHlZ7FnBWg66TUA0ZE5WInBCBx3YMmYFMlqwxQs6aJIOLE3izB05ADqw3oIWjNwWGQFgrbSrfk3Wo3F7HSy2NrhVeuVy3Vun6lbdv3c+ybL93v2tOt+p75z6+wjPD8FgDCo+5iJgMAEYDCYAg8EEYDCYAAwGE4DBYAIwGEwABoMJwGAwARgMJgCDwQRgMBqBE1wEhWM447seFw8ToCkGPi1+TwI4I/7+U0arK4fl/pf4/RbAhvh7lQkSBx/xcOggBj+tGPpIpPscCnJIYqwyIZgAZRr9SkSDPyTEbfKYH5kQTIAmGL0LCdIgydDh6mIChMIsgJmCjD6P8ZvIcJ1bhWxwGjTd288C+A3AgwKN/zCQ8QPAlwD+B8AjAKNcpdwCUPEIwFSFnidUBf0I4N8AbHMVMwHSpM4dACcDXnMPwHvx91vxeyPj+Enl7zMwp00PAxCBpRET4IjceRPA8HdwNEWJQEam9itMasQ4zEmEK0yAwSZAHrmzB+AZyklBDhsI4YNdAPcwwFmjQSWAr9eXRl81CSEJMeNJhoFtDQYxCzQL4GdH498BMAfgU2EoVdPPPeHFTwP4J2HQLvgSwN+QPU6JCdAQyfPA4fjHAE4Jw6qLTNgWJP0DgHmH84YAvBYOgiVQA/EO9Hz+YzQnUyLl0bLDOfODEhcMAgFc9P4OgMtoZopQDuX4khAYDw1KXPDxABg/Ve/PCanT1Px4T5FGP1qk0K4gyiMmQP2Nn+L1T2FwUoGSCPNMguYSQMqeQff6WeiI1mDXIocaTYKmEsCm+fcGzOtntQa/s7QGkgSzTIB64B3B+M+Cx8LorcG8ZvQ6CZabSIKmZYFmkZ3n3xGSh5EuHV8rMYApNvhDk5xHkwhgC3rZ+MOQAEI2sQSqoO5Pw2M2fqe44FyG8Q81KShuCgEeZej+HdSzQ6ft+BODBI0PipsggbKkzx6SAWx1w58B/KfjOf8AYD+SHEJTpVATWoCnGcZ/lhVNkJZgKEUKzTIByvf+aQPcONUZjgTzBhLsAriFmg+hrjsB0gLfOTb+oOggGT80ZGgFVjgGqJb2b0K6sw3gvPL/hPjd1T7rKr+fF/Bcf0v5/FxdHU6dCZA2vv9UQ7y/zOycB/Aq4zj5/X4BzzSMZK2hXa0VqO38gboSIM37z6EZ43uqkgUy4RGSNKjeT/A7jgGKg0l37oEHtxWBKwbjr21GqK4EuGT4bLGBxvahos91zxAQT7IEKk/+pAW+7YJkwSBJoKyAuHbBcB13iDHJn8saQb7WmuQtADdQ/LqYs0hy5S8sx43j6AJVzwH8s+O9Qhp/G8Bt9LNPALAO4L5m7GpAPIRk8n2HCRAXZwzeX3qdUQAvAbS0Y8bE5xcLJsEtxcBt+EQzwDJb2P9OKcOrAP4iyruHpG9AvttuHSVQ3Qhg6vn9XvnOZPwSLQAPicZYNs4LCfTBoY5CSaAfMspwTHwvy3AD/YzQkCA8twCRMYf+4rNQvP/XGRUncaGGAfCHAuusTSijMQBLAG4KY1frYpqD4HLQFl7IRoCDgkn/yKHFeaBo7D8D+A9HhxWiBaCupFF0OXILoGEUwFcA/or+iMVWBZ+zqQtLtUQdbAvnI+cObDMB4hu+rvPvVzxmmUb2phgSvyhy7jmAzxzvVVa69xskGSwA2FSCZCZAIMh0ZgfAtZI8/SzoHT3qmqJyMsktRwnUFoblAtURLIDeMfhZQPKMiVjsJvrDpHtMAH+jk1sWPS45u+CyddIXASr9fIYBp9XZt8KQ24pHLhMrSDYf2UGSqatkdqiKQyGG0d+d8STqg0NFysTEB+2nqpCyb0TU5SNUcPLMxxU0/p9rZvhllmWIFvx8Qc86hWT6aqVIcKKCxl9FvAfwueHzk8jeqM5Fimx4PNeHjM9PIL0jTf38VYHlOCJIUJkl6KtEgKeBjSMkTjt4LrVifXVvnizQvuO5RWePRkR8cIUJcDTgHUF18U5pAd5bjlW9m0tHmDoYrg3g747P+JkSBP/d47wiMSXqvMMESHCn4vr+cyUusRFVzQK5jDv6JKAud6nX8yhmPrGOmSoQoApB8GxNg14dRWWBQuNVSfcdQdKxOfAEmEQzkLcsL2Hw8O8sgY6P768iFj2J6psFeuUhC1Udfwv1mCJ6hglgTi8WBTlWxwRVn64qBmqTOD3tPCp6mjF/6xALvNLO7QL4Fw/iFI0/DToBhkvW/7K7HhYSvHF4TnVdIts6+ypeoJ8aTBsOnQU1C+Qynzj2XOJDgg2U1icwaDvFl4EypgpWfZhEYwI3RjhsRCICgwlQC4TMhp1QfmyIORaIMt2w1CERZccAPSTDZV17gQ8QZl7A9YwgWA1gz4I+31Wt0HNIOsZUmILoL7TPnzsEsXowuw+3JVWeBypbn/NKX0miClmgt4IAhyW0UtMZnneVcNyGJahzmSS+oZzXFkb8iachTzicV9TCummB/8ATYAPZmZjYsmMqgxwyC5Q2IWbKYsi3HJ/litJyqOdSMlDqhJhFh/rtopyhELHintrFAKsWrViFZSveE46JORRiL0cQbJs8E3soxG7GzyoToL/CWJXxeU3KsuqtvcSQkD89JkA/GK0y3hM88aGhtXLRuDY5kHfEbBl9A7sZn19nr3C0FZgHsIz+MnvQ/o6RibhueSaJy47v4kNs9bxtHN+n91eh89PgOiHGd2eZEBm4e+AZYcfQEYHglyguPTaNZMK27tlP4uhuM08NMigtLlAnxKzAb0KMvj/vg4zzZMBblwkxL1ChFSKqtizKFaRvwRMDk8Qsy+eGY9L6LvQJMdSxQJOKYeh9B3MaOUPWdZETYtTxTpVAFQO3K0IO1RW/EHWwyzVCxAJpMUBRE2LuoYJLRVY1c9ERGvgF6o8hxzjG1AKYJI9PC1BGi/9C1GUlF8aq8spwPeExYq4js4H0SRlqjvqZOO6t8pvq9SYJz2BqAeRkGmpv8H5GK7GIcBkgagC8Kn4qvTRi3ZZHHwXwk/L/LSRrYsrP0zIU8vPGLOsdCWm7w5jK8h+RZKsWcHTmm/y8FqibMWyLAr4m/n9C9E4ttu1g0MvyiSLx1lCzJdKbskGGDPJaKa0AtwBhWoDGlWOT5gNQgqwttnFr3BWqrJkABeMmkg0apIdSfyS6bONk4z4w/LREGd9lAlQTkwoJ9J9lQRJGNu5mlKHcAWa/KS/bpBhAxagSKIcOzhbgntcHkg4xdReXJUML5vou+nc2fOcgc5bQn1jTNTw/E2AA0Qbwv57nbqI/LkhP56rfpQX3Emqa8QWSbYmoiL0ECkughuN2jnNvKH/rXns9w/u3NKKo3t/F+JfZ+I+DU4Ju+E5IEBUPNUNcNhwDTYLNKn8fZEgLnSjdjO/S7ivxmquPJVAMSaRu0E3Jj+s9p1L+tLXjfo/jOXl11Tld/tSqB3ZQWoC2VqFA9kCvGPjK8zxKwHdbM1BKfvyq9v8FpI/T0eVPL0P+vEy5xlZGfDFqKJ8nBdePOvL115Rj9utIgCWlqa/bUIQDIgEmtP/XLMcPGwyXWjbrGfIn6zrdDOP/yfD5vZLK24aLMVq4mASo85h+iifXvfABoYK+1v7fTDHQCcO1v80g3nLGPdeI8UWZoDiBKDFMTAIs1zzYteGaB2l0w72RQpoFjQAdRQaMGoLumw2vo91YMigmAZre6zrrKH90w93MaDGuGgwgjXgTON6ppj/X9gDWTyWC4KZiAen5eWqL0XWQVvcziDeG7P6AXXB2KBXcEeaHIS146wYMmK9p1+5kEM+GTTRw+EJIcD+AH4ZxNJ1L8bD6johp57RxdE2g7YzvKIEj9/4yARiM8mMAV+8FpC8P8muKZ2sHetYQXlNvJYry0tT7cgtRAAHk0OFQHWJyUoYp9beAsBM1toS2dxlKrb5vy+GdfO6V9776vU1DpZeQvdfAumOMsYDjGS4dctDgw4B1OV60BFryqAwXmMa9uA4NdoEt1y4rdqyAe8W67wGSoR33HcrU5VnTep71oH08cF1mDTUP3gJILxxz6IMp5Tga0fiBpFc7bULIEsL2estr3SQ4mZD3baE/DEK+ZzdguT4kEFAOCgxZl+tZX4ZMgy6JAow97qdr+KyIbn1T0/0CcYZ8zAtnkoZY94VwYNRYasLBNmxGfVH8/ibgu+hDSKIRYAnFjf25m6Mi8uCCR6WGfs/YUk+2BCGNcIFgG8tKq3414L23bEH+iQKNXwZceb3/vof82SRceyzCO2/muF9LvNu2B+k2c76nuj9DHowSEhObitwLVZd6QB2NAKMEQzAFVyFxjVBglDX6bZ51K/A7jyIZw9+yvNu2w303kT7AzoW8oVrUh7AvszgZoS7J+DjAC9oeeAhxu+NnPWIGn+O6DsHcHwnvvA23BaYeEo3Dlka9SfCi8l1tk2MuBND9+w7EWw9tPHlaANsLSnandVjtw7/jal/Rl7age414TVvhf0dsoi+CvvQIVWIsEMr6L45SMmYcQWmtljWyjhLe8QnRZvZjE6BN8LwXU/T6y5yF21E0oy1goozSbAu5Mma5Tg/AD46VStXaNlwllEnIZcglMX+BfU+wtlbPbUIdq7qfKn9aDrZDnj3mS4DblkJJM7xryJ8m3XUImC7AvsnGBcIz3SB6KNcx9rZWZ41w380I95XSp0cwyt9rBNgg6P5xz7iDYjubLk7IlwCzBIPxOY+SSbpP9BiywPI29dKrLxG8sKtMsBGKct9u4PvqBrRlOV7dE80l3+/yTC5wKg+fINimu9MYOBrA+3ciZCpsxn+TSN41x2tfI77rvIUkdwPft+tZVj66n/pMLliLTYCrngX4MODLxR76oBv/qCfp87SiUv5kwdrR4xG7rXmWFyVLdTOSMvCuB1cJ1EZ26iurALsW0kw4NM3XIhu+PioztNdcIhIqtPzxid0oGSNKRjBrbSJbzECVl87kdSXAOYKMSRvDbwvUXjhUNsVjuOxoLneo/yvib+pGkQo3iDLPpad2weG+rp7fR/e7SMFoE/hdJRDF837haRQ2D3KXGIMAyXDpIfH7gPgM9zOM32aIEw7vSUkRUpvxIYf73iU4AZ+5CGM5rxtLkkWLAWx4SdCursRStS41978vflNWdLaNvqQYwRLSO2na4vuXoKVcJS4QnjvrvsPi+58IMiPGri+2FC1F/kRd0SLGjLAW+luWbgXyIusOMUjX4Nkpk0buIhk66ztFcF54M9M7U/oagGTbV5cUpO2+1ETB7Yz39h0Ql6X7qY6vhaPrpm4ZynVL+99pCUXXGWFFDntWC/KEw/1PGaSMvopzlscaL+m9TbOrYg99Truv7qV/8riubbVqap342koUCbSG4uGS+99M0fH7RCk0lpJ5WSvJCLslG3+e69q88DcIP3nKefdKVwJsw208dgi45P7XLUEu5dnnYV7DZ7MEI7wZ8b63Ihk/dWjG1Yi2QobvpPgimmZdkthkyIHIimRpeNtG0FnXaiMZ5xJysrZt7L6aOWoVfF8fqUKpA1kPP0eUytGzQOPCg2yCnmb0gerRbemyDqHge0Qp1DIcty/ee9nznQ9EeS0LfTxONMJtYVRF31d9byr5LhKTCP8aWSpHbwFMXioGth3usR3hebcDvnOoRajkfb/C0QkrcqeXJxHuu0Q4xmUbVZ9F0hCw/oMTgMGoJXh1aMZAo4r7AwwDeOp4zveOGvARgDMOx78FcMXxGdVnotxPv0eecrmMfjr4XeD6Ua/tU1em994AsIr447BqIYHeARhxPGcPwKcOxj/leP3HmnFSrqF2yM0CeEC4z1wKkYcBvAFwklAOZz3u61vOPmWZhR2NYANHAN/0mF7xIY1fN2bKM+4AOO1BbNN5VCP2vacLdIL+RiClDwlOD2oMsOJ5HqUSfI1/RyPWNFGSmaSDDSM4mu6lGv9jg9EMBzZ+CJmiPtvJCDYwgnhZxUoTYDhwc6p7Ud9r68Y8Q2iNTDKmJwzVhjsKYamyyRQ7TAcuQ90RTEa0hcmijK5KQfB0gPM7KcafRwevOnrVZxnfXSfIp5MO0uJUhuybIRj0W4dyuO7orNKufyZCy9QIAtyJ5PnzGL/u9VYcDcXUCswRnsk12IWH/MkTbE4Tnu904ERHoyVQCD05Gdj4TfLnEqHibUbVEcflIeWnlvtMOxLbFbbW5VnAWGMgWoCZCITKa/y6lqeQdJF47UXP53uM7L4Cl/KcdTDGnmPrct1y35GI5HRCFdKglLTiHkEayPQZxfj3CMasGxul2T7lUHmuMiCtj8CnPF2gvxOlfNOC/TOBy7ARLQBFVy8KiTNFqPwHBEOacfRiFK8Xy3NR+zhcytM3BqK2Lr4Zt8couDe4CjHAJcIxq0i6y7MwQvB8c+Jarsbsm/sP5f17gcvTNwaK0beglvmVoo2vbAJQdHUoz/pYSIgVj4r3zf2bWqjfHI3oJJI+AaqcDNk5tRqxddHr5nQZBli2BJpxMMbVHIGt1PPUzraQuX/1Om88DXRKnG9zBCsEolIzNBuG+4VsXeSzXEcJg+CqQACKYemedc/DgNRgdpp4fMjcPzVwtOEpwUvaDHQRnjOniK3LDrF1c41rGimBqMGvqoPf5zB+aouz4WhUNon2CGFGZOrjhHzkZCdifcks3BxR1q2gAigrDUpN1ekpMZcBbbrxU9Otnzp67qz0JPV555D0hOcZ/mC71x7o/RQmwtiGZ6jlQA3yqf0ajZNAFCli8qwbRIMyFSzF4zzziFFWUwj+lCjxVClAaSlWDO9GiW1OerREHYfWRS2Hy8R4Z0pcu1MWAcqSQJRxP997XjvNq1ACuBC5fxnsUs5VjZ86RGLKIIWmI9SR2pk16VgOPfFuFDxAuP0BakEAijdJSyuuehq/T7rVJ/c/K2QW5V6nDeRZ9HQgMxHq6bpC6EuO5SBJMOdAguFBIQClshY9rpulJ2c8jNk1959n8gocWwG1byBG55Q6qG/aQui9DMfUEWSn4E0ZJCiaANTKSivQXoqBZBm/zz1n4Zb7zzt5xYf8sm8ghvx55uAI3iM7C3bZgdSFk6CMIHiOYIhZBXrWUOmdwPdcdSDMsAjON3K+l/ouG6DPiooxdLjjEIvZ7t9LqbNKgBfGYgw0eGEsxkDjBBdBKVjA8f29dpFvhxoGS6DKg7LTTKxNKxgsgUrDKJK9ruaRLFV+C8mQho/Ezyn0l5ufF8eOcrFxC9AU45ebBt6GfQlxdUMM2z5bDCZApSF3VwHcdi+UO9kAwB9RgWHDLIEYPtgQnlw3/iVk70vcE+e0APzAxcgEqKv0GYN5x8RZAPeQ7LWWpvW3xbljHA8wAeoIuQm0aedCubnzmND7aVsQ3dWuxQiMKvUDDAP4Av4Lo/qeNx7o+c9pWn1CBL423d9CkvmZwPHdG/eRZIYmDOf9X0H14rpkZZdwzCtUpL/jREUM/zWOdwzlbZ3Kju4vKJ6egjEk2SK9H6CL9L6DE0hSpjHr8V7g631Q/v6sbCJUgQA99HcMdBkwFWoJ7fGI79b1OGdeyKaslqOtGdOHEurtTs4yqUQrwGnQePggWgATwdI2GjdtYv1CtCY8bIWD4FphSxguBQdIeoJNm1i7SikGE6ASWBcB7oLluGUR/5h6iEfFNda5OFkCNUkGSc1u6x1m+cMtQK1xW2h9Pc9/URh1lvEviXM7XIzxwJ4lLu4LeSPTmDK9aesbkMOmN8FDo1kCNQAy62PK8uia/6Fy7DgXHROgKVAnw2wiyYfvot8BOIF+apQnxTABGolhAF8jGQzX0r47EHrf1gnGYAI0Am30e8Bfg+cCMwEYjKLBaVAGE4DBYAIwGEwABoMJwGAwARgMJgCDwQRgMJgADAYTgMFgAjAYTAAGgwnAYDABGIw64/8BwhAUlVNUdEMAAAAASUVORK5CYII=) center/contain no-repeat!important;opacity:.7}</style>
+<style>
+/* SCRATCH/SYNC button sa gitna: logo na lang, walang text */
+#syncOpen{display:flex;align-items:center;justify-content:center}
+#syncOpen .sLogo{display:block;width:100%;height:100%;max-height:28px;background:transparent url("data:image/svg+xml,%3Csvg%20xmlns%3D%27http%3A//www.w3.org/2000/svg%27%20viewBox%3D%270%200%2064%2064%27%20fill%3D%27none%27%20stroke%3D%27white%27%20stroke-linecap%3D%27round%27%20stroke-linejoin%3D%27round%27%3E%3Ccircle%20cx%3D%2727%27%20cy%3D%2734%27%20r%3D%2722%27%20stroke-width%3D%273.5%27/%3E%3Ccircle%20cx%3D%2727%27%20cy%3D%2734%27%20r%3D%2714%27%20stroke-width%3D%271.8%27%20opacity%3D%27.6%27/%3E%3Ccircle%20cx%3D%2727%27%20cy%3D%2734%27%20r%3D%276%27%20stroke-width%3D%273%27/%3E%3Ccircle%20cx%3D%2727%27%20cy%3D%2734%27%20r%3D%271.6%27%20fill%3D%27white%27%20stroke%3D%27none%27/%3E%3Cpath%20d%3D%27M57%206%20L45%2028%27%20stroke-width%3D%274%27/%3E%3Ccircle%20cx%3D%2757%27%20cy%3D%276%27%20r%3D%273%27%20fill%3D%27white%27%20stroke%3D%27none%27/%3E%3Cpath%20d%3D%27M45%2028%20L42%2033%27%20stroke-width%3D%275%27/%3E%3C/svg%3E") center/contain no-repeat;opacity:.9;pointer-events:none}
+</style>
+<script>
+(function(){
+  var o=document.getElementById('syncOpen'); if(!o)return;
+  o.textContent=''; o.setAttribute('aria-label','Scratch / Sync / Grid');
+  var l=document.createElement('span'); l.className='sLogo'; o.appendChild(l);
+})();
+</script>
+<style>
+/* mas maliit: vinyl icon at REC */
+#syncOpen .sLogo{width:18px!important;height:18px!important;max-height:none!important;flex:none}
+html body #specTop #recBtn,html body #toolsCard #recBtn,html body #recBtn{width:auto!important;min-width:40px!important;height:20px!important;font-size:8px!important;padding:0 4px!important;letter-spacing:0!important;line-height:1!important;border-radius:4px}
+html body #recBtn .rd{font-size:8px}
+</style>
+<style>/* REC: nakacenter (gitna ng dalawang spectrum) at medyo ibinaba */
+html body #specTop #recBtn{align-self:center!important;margin:0!important}</style>
+<style>
+/* ibinaba/pinaliit ang ilalim na panel (AUTO-MIX ... BEAT-MATCH) sa landscape para mas maluwag ang taas */
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  html body .card#micCard{align-self:end;margin:0!important;padding:4px 6px!important}
+  html body #micCard .row{margin-top:0!important}
+  html body #micCard .row button,html body #micCard #fxToggle,html body #micCard #djfxBtn{height:42px!important;font-size:9px!important}
+  html body #micCard #status{margin-top:4px!important;padding:2px 6px!important;font-size:10px!important}
+}
+</style>
+<style>
+/* BAGONG DESIGN: CUE / LOOP (DJ FX) — hot cue = glossy performance pads, loop = pill buttons (gumagana sa lumang Android WebView) */
+html body #djfx .padsrow{gap:7px!important;margin:2px 0 8px!important}
+html body #djfx .padsrow .hcue{border-radius:12px!important;font-size:17px!important;font-weight:800!important;letter-spacing:0!important;color:var(--pc)!important;
+  border:1px solid var(--pc)!important;
+  background:linear-gradient(180deg,rgba(6,7,11,.72),rgba(6,7,11,.9)),var(--pc)!important;
+  box-shadow:inset 0 1px 0 #ffffff2e,inset 0 -4px 0 var(--pc),0 3px 6px #000b!important;text-shadow:0 0 8px var(--pc)!important;transition:transform .06s,box-shadow .1s}
+html body #djfx .padsrow .hcue.set{color:#05060a!important;text-shadow:none!important;
+  background:linear-gradient(180deg,rgba(255,255,255,.45),rgba(255,255,255,0) 65%),var(--pc)!important;
+  box-shadow:inset 0 1px 0 #ffffffaa,inset 0 -4px 0 rgba(0,0,0,.35),0 0 16px var(--pc),0 3px 6px #000b!important}
+html body #djfx .padsrow .hcue:active{transform:translateY(2px);box-shadow:inset 0 2px 5px #000a,0 0 12px var(--pc)!important}
+html body #djfx .padsrow .lpbtn{border-radius:999px!important;font-size:14px!important;font-weight:800!important;letter-spacing:.5px!important;color:#cfe9ff!important;
+  background:linear-gradient(180deg,#1a2347,#0b1028)!important;border:1px solid #2e9bff88!important;
+  box-shadow:inset 0 1px 0 #7fb0ff33,0 2px 5px #000b!important;text-shadow:none!important}
+html body #djfx .padsrow .lpbtn.on{color:#1a0e00!important;border-color:#ffb347!important;
+  background:linear-gradient(180deg,#ffd27a,#ff9a1f)!important;
+  box-shadow:inset 0 1px 0 #fff9,0 0 16px #ff9a1fcc,0 2px 5px #000b!important}
+html body #djfx .padsrow .lpbtn:active{transform:translateY(1px)}
+</style>
+<style>
+/* NEON na mga ilaw sa outer ring ng jog (nakapatong lang sa dating gray dots): sumasabay sa music at umiikot */
+.jog>.jogleds{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;will-change:transform}
+</style>
+<script>
+(function(){
+  var NS='http://www.w3.org/2000/svg', EDGES=[0,1,2,3,4,6,8,11,15,20,27,36,48,64], N=24;
+  function hueAt(m){var j=m<=12?m:24-m;return 190+120*(j/12)}      // cyan -> blue -> purple -> magenta
+  var units=[];
+  decks.forEach(function(d){
+    var jog=document.querySelector('#deck'+d.i+' .jog'); if(!jog||jog.querySelector('.jogleds'))return;
+    var an=ctx.createAnalyser(); an.fftSize=256; an.smoothingTimeConstant=0.55;
+    try{ d.cross.connect(an); }catch(e){ return; }
+    var gid='jlg'+d.i, h='<defs><radialGradient id="'+gid+'"><stop offset="0" stop-color="currentColor" stop-opacity=".8"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs>';
+    for(var k=0;k<N;k++){
+      h+='<g class="bg" transform="rotate('+(k*15)+')"><circle class="hl" cx="0" cy="-87.5" r="8" fill="url(#'+gid+')" opacity="0"/>'
+        +'<ellipse class="lp" cx="0" cy="-87.5" rx="4.4" ry="5" fill="currentColor" opacity="0"/></g>'
+        +'<g class="sg" transform="rotate('+(k*15+7.5)+')"><circle class="sd" cx="0" cy="-82.5" r="0.85" fill="currentColor" opacity="0"/><circle class="sd" cx="0" cy="-92.5" r="0.85" fill="currentColor" opacity="0"/></g>';
+    }
+    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('class','jogleds'); svg.setAttribute('viewBox','-100 -100 200 200'); svg.setAttribute('aria-hidden','true'); svg.innerHTML=h;
+    jog.insertBefore(svg,jog.firstChild);
+    var bg=svg.querySelectorAll('.bg'), sg=svg.querySelectorAll('.sg');
+    units.push({d:d,an:an,data:new Uint8Array(an.frequencyBinCount),v:new Float32Array(13),pat:new Float32Array(N),phase:0,
+      bg:bg,sg:sg,lp:svg.querySelectorAll('.lp'),hl:svg.querySelectorAll('.hl'),sd:svg.querySelectorAll('.sd')});
+  });
+  if(!units.length)return;
+  function at(pat,m){ m=((m%N)+N)%N; var i=Math.floor(m), f=m-i; return pat[i]*(1-f)+pat[(i+1)%N]*f; }
+  var last=performance.now();
+  function setOp(el,val){ var t=val.toFixed(2); if(el._o!==t){ el._o=t; el.setAttribute('opacity',t); } }
+  function setCol(el,m){ var hh=Math.round(hueAt(((m%N)+N)%N)); if(el._h!==hh){ el._h=hh; el.style.color='hsl('+hh+',100%,60%)'; } }
+  (function tick(now){
+    requestAnimationFrame(tick);
+    if(document.hidden)return;
+    if(now-last<33)return;                                   // ~30fps lang para gumaan sa phone
+    var dt=Math.min(0.1,(now-last)/1000); last=now;
+    units.forEach(function(u){
+      var a=u.d.audio, playing=!a.paused&&!a.ended, g, b, sum, n, k, mx=0;
+      if(!playing&&u.dark)return;                            // naka-pause at patay na ang ilaw: walang gagawin
+      if(playing)u.an.getByteFrequencyData(u.data);
+      for(g=0;g<13;g++){
+        var t=0;
+        if(playing){ sum=0;n=0; for(b=EDGES[g];b<EDGES[g+1];b++){sum+=u.data[b];n++} t=Math.min(1,Math.pow(sum/n/255,2)*1.9); }
+        u.v[g]=Math.max(t,u.v[g]*0.8); if(u.v[g]>mx)mx=u.v[g];
+      }
+      u.dark=(!playing&&mx<0.02);
+      for(k=0;k<N;k++)u.pat[k]=u.dark?0:u.v[k<=12?k:24-k];
+      if(playing)u.phase=(u.phase+dt*6*(a.playbackRate||1))%N;     // umiikot (clockwise)
+      for(k=0;k<N;k++){
+        var m=k-u.phase, v=at(u.pat,m), ms=k+0.5-u.phase, vs=at(u.pat,ms);
+        if(v>0.01||u.lp[k]._o!=='0.00'){ setCol(u.bg[k],m); }
+        setOp(u.lp[k],v); setOp(u.hl[k],v*0.7);
+        if(vs>0.01||u.sd[2*k]._o!=='0.00'){ setCol(u.sg[k],ms); }
+        setOp(u.sd[2*k],vs); setOp(u.sd[2*k+1],vs);
+      }
+    });
+  })(performance.now());
+})();
+</script>
+<script>
+/* ANDROID 10 / lumang WebView: kung walang aspect-ratio, gawing parisukat ang jog at pads sa pamamagitan ng JS */
+(function(){
+  try{ if(window.CSS&&CSS.supports&&CSS.supports('aspect-ratio','1/1'))return; }catch(e){}
+  function fix(){ var l=document.querySelectorAll('.jogring,.pad'); for(var i=0;i<l.length;i++){ var w=l[i].getBoundingClientRect().width; if(w&&Math.abs((parseFloat(l[i].style.height)||0)-w)>1)l[i].style.height=w+'px'; } }
+  setInterval(fix,500); window.addEventListener('resize',fix); fix();
 })();
 </script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
