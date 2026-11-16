@@ -573,6 +573,12 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="128k" selected>128 kbps</option>
     <option value="192k">192 kbps</option>
   </select>
+  <label for="o_lite">Lite mode (lighter app: no spectrum, no glow/animations, slower refresh)</label>
+  <select id="o_lite">
+    <option value="auto" selected>Auto - on only while LIVE</option>
+    <option value="1">Always on</option>
+    <option value="0">Off</option>
+  </select>
   <label for="o_auto">Auto-lower bitrate when the connection is weak</label>
   <select id="o_auto">
     <option value="1" selected>On</option>
@@ -883,6 +889,14 @@ DJ FX</button>
     };
     window.clearInterval = function (id) { if (typeof id === 'string') { fns.delete(id); w.postMessage({ id, stop: true }); } else nativeClear(id); };
   } catch (e) {}
+})();
+// LITE MODE: kapag naka-on, ~20fps lang ang lahat ng animation (jog, LED, meter) para gumaan ang phone
+(function () {
+  const raf = window.requestAnimationFrame.bind(window);
+  window.requestAnimationFrame = function (cb) {
+    if (!window.__lite || window.__scr) return raf(cb);
+    return raf(function () { setTimeout(function () { cb(performance.now()); }, 34); });
+  };
 })();
 const $ = (s) => document.querySelector(s);
 // TOAST: non-blocking na kapalit ng toast() (hinaharang ng alert ang audio thread habang live)
@@ -2434,7 +2448,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
 
   function draw(now) {
     requestAnimationFrame(draw);
-    if (document.hidden) return;
+    if (document.hidden || window.__lite) return;
     if (!window.__scr && (now || 0) - (draw._t || 0) < 38) return; draw._t = now || 0;
     const nowMs = now || performance.now();
     for (const sp of specs) {
@@ -4051,6 +4065,23 @@ html body #djfx .padsrow .lpbtn:active{transform:translateY(1px)}
   try{ if(window.CSS&&CSS.supports&&CSS.supports('aspect-ratio','1/1'))return; }catch(e){}
   function fix(){ var l=document.querySelectorAll('.jogring,.pad'); for(var i=0;i<l.length;i++){ var w=l[i].getBoundingClientRect().width; if(w&&Math.abs((parseFloat(l[i].style.height)||0)-w)>1)l[i].style.height=w+'px'; } }
   setInterval(fix,500); window.addEventListener('resize',fix); fix();
+})();
+</script>
+<style>
+body.lite *{box-shadow:none!important;text-shadow:none!important;filter:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;animation:none!important;transition:none!important}
+body.lite canvas.spec{visibility:hidden}
+</style>
+<script>
+(function () {
+  const sel = document.getElementById('o_lite'); if (!sel) return;
+  try { const v = localStorage.getItem('jfm_lite'); if (v === 'auto' || v === '1' || v === '0') sel.value = v; } catch (e) {}
+  function apply() {
+    let on = sel.value === '1';
+    if (sel.value === 'auto') { try { on = !!(ws || wantLive); } catch (e) { on = false; } }
+    if (on !== !!window.__lite) { window.__lite = on; document.body.classList.toggle('lite', on); }
+  }
+  sel.addEventListener('change', function () { try { localStorage.setItem('jfm_lite', sel.value); } catch (e) {} apply(); });
+  setInterval(apply, 1000); apply();
 })();
 </script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
