@@ -1,4 +1,4 @@
-package com.groovemixer.app;
+package com.example.app; // PALITAN ito ng package name ng app mo (nasa MainActivity.java sa taas)
 
 import android.util.Base64;
 import com.getcapacitor.JSObject;
@@ -10,93 +10,78 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-/** Diretsong TCP papuntang Icecast/Shoutcast. JS API: connect({host,port}), write({data:base64}), read({timeoutMs}) -> {text}, close(). */
 @CapacitorPlugin(name = "TcpSocket")
 public class TcpSocketPlugin extends Plugin {
-    private volatile Socket socket;
-    private volatile InputStream in;
-    private volatile OutputStream out;
-    private final ExecutorService connEx = Executors.newSingleThreadExecutor();
-    private final ExecutorService wrEx = Executors.newSingleThreadExecutor();   // isang thread = tama ang pagkakasunod ng bytes
-    private final ExecutorService rdEx = Executors.newSingleThreadExecutor();
-
-    private void closeQuietly() {
-        Socket s = socket;
-        socket = null; in = null; out = null;
-        if (s != null) { try { s.close(); } catch (Exception ignored) {} }
-    }
+    private Socket socket;
+    private InputStream in;
+    private OutputStream out;
+    private final ExecutorService io = Executors.newSingleThreadExecutor();
 
     @PluginMethod
-    public void connect(final PluginCall call) {
+    public void connect(PluginCall call) {
         final String host = call.getString("host");
-        final Integer port = call.getInt("port");
-        if (host == null || port == null) { call.reject("host and port are required"); return; }
-        connEx.execute(() -> {
+        final int port = call.getInt("port", 0);
+        io.execute(() -> {
             try {
-                closeQuietly();
-                Socket s = new Socket();
-                s.connect(new InetSocketAddress(host, port), 10000);
-                s.setTcpNoDelay(true);
-                s.setKeepAlive(true);
-                socket = s; in = s.getInputStream(); out = s.getOutputStream();
+                closeQuiet();
+                socket = new Socket();
+                socket.setTcpNoDelay(true);
+                socket.connect(new InetSocketAddress(host, port), 10000);
+                in = socket.getInputStream();
+                out = socket.getOutputStream();
                 call.resolve();
             } catch (Exception e) {
-                closeQuietly();
-                call.reject("Cannot connect: " + e.getMessage());
+                closeQuiet();
+                call.reject("Connect failed: " + e.getMessage());
             }
         });
     }
 
     @PluginMethod
-    public void write(final PluginCall call) {
-        final String data = call.getString("data");
-        if (data == null) { call.reject("data is required"); return; }
-        wrEx.execute(() -> {
+    public void write(PluginCall call) {
+        final String data = call.getString("data", "");
+        io.execute(() -> {
             try {
-                OutputStream o = out;
-                if (o == null) throw new Exception("Not connected");
-                o.write(Base64.decode(data, Base64.DEFAULT));
-                o.flush();
+                if (out == null) { call.reject("Not connected"); return; }
+                out.write(Base64.decode(data, Base64.DEFAULT));
+                out.flush();
                 call.resolve();
             } catch (Exception e) {
-                call.reject(e.getMessage() == null ? "Write failed" : e.getMessage());
+                call.reject("Write failed: " + e.getMessage());
             }
         });
     }
 
     @PluginMethod
-    public void read(final PluginCall call) {
-        final int ms = call.getInt("timeoutMs", 5000);
-        rdEx.execute(() -> {
-            JSObject r = new JSObject();
+    public void read(PluginCall call) {
+        final int timeout = call.getInt("timeoutMs", 5000);
+        io.execute(() -> {
             try {
-                Socket s = socket; InputStream i = in;
-                if (s == null || i == null) throw new Exception("Not connected");
-                s.setSoTimeout(ms);
+                if (in == null) { call.reject("Not connected"); return; }
+                socket.setSoTimeout(timeout);
                 byte[] buf = new byte[4096];
-                int n = i.read(buf);
-                r.put("text", n > 0 ? new String(buf, 0, n, StandardCharsets.UTF_8) : "");
-                call.resolve(r);
-            } catch (SocketTimeoutException e) {
-                r.put("text", "");
+                int n;
+                try { n = in.read(buf); } catch (java.net.SocketTimeoutException t) { n = 0; }
+                JSObject r = new JSObject();
+                r.put("text", n > 0 ? new String(buf, 0, n, StandardCharsets.ISO_8859_1) : "");
                 call.resolve(r);
             } catch (Exception e) {
-                call.reject(e.getMessage() == null ? "Read failed" : e.getMessage());
+                call.reject("Read failed: " + e.getMessage());
             }
         });
     }
 
     @PluginMethod
     public void close(PluginCall call) {
-        closeQuietly();
-        call.resolve();
+        io.execute(() -> { closeQuiet(); call.resolve(); });
     }
 
-    @Override
-    protected void handleOnDestroy() { closeQuietly(); }
+    private void closeQuiet() {
+        try { if (socket != null) socket.close(); } catch (Exception ignored) {}
+        socket = null; in = null; out = null;
+    }
 }
