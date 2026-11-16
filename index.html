@@ -2241,7 +2241,7 @@ decks.forEach((d) => {
         if (d.loop && d.loop.n === n) { d.loop = null; render(); return; }
         const t = d.audio.currentTime;
         let bpm = d.bpm, start = t;
-        if (bpm && d.onset) start = Math.max(0, t - beatPhase(d, t) * 60 / bpm); else { bpm = 120; toast('BPM not detected: loop uses 120 BPM.'); }
+        if (bpm && d.onset) start = Math.max(0, t - beatPhase(d, t) * 60 / bpm); else { bpm = 120; }
         d.loop = { a: start, b: start + n * 60 / bpm, n }; render();
       };
       lb.push(b); wrap2.append(b);
@@ -3231,7 +3231,7 @@ const G=(v)=>{const g=ctx.createGain();g.gain.value=v;return g};
 const nowT=()=>ctx.currentTime;
 const amt=(d)=>d.fxAmt==null?1:d.fxAmt;
 const warned={};
-const beat=(d)=>{const b=d&&d.bpm;if(!b&&d&&!warned[d.i]){warned[d.i]=1;T('BPM not detected on Deck '+(d.i+1)+': FX use 120 BPM.')}return 60/((b||120)*(1+((d&&d.tempo)||0)/1000))};
+const beat=(d)=>{const b=d&&d.bpm;return 60/((b||120)*(1+((d&&d.tempo)||0)/1000))};
 const setR=(el,v)=>{el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}))};
 
 /* ---------- per-deck insert chain (after EQ, before crossfader) ---------- */
