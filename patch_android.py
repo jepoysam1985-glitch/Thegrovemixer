@@ -45,4 +45,18 @@ if sv.exists():
     s = re.sub(r'(<string name="app_name">)[^<]*(</string>)', r'\1THE GROOVE MIXER\2', s)
     s = re.sub(r'(<string name="title_activity_main">)[^<]*(</string>)', r'\1THE GROOVE MIXER\2', s)
     sv.write_text(s, encoding='utf-8')
+
+# FULL SCREEN theme: itago ang status/navigation bar at sakupin ang notch (landscape)
+st = root / 'res' / 'values' / 'styles.xml'
+if st.exists():
+    t = st.read_text(encoding='utf-8')
+    if 'windowFullscreen' not in t:
+        items = ('\n        <item name="android:windowFullscreen">true</item>'
+                 '\n        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>'
+                 '\n        <item name="android:windowBackground">@android:color/black</item>'
+                 '\n        <item name="android:statusBarColor">@android:color/transparent</item>'
+                 '\n        <item name="android:navigationBarColor">@android:color/transparent</item>')
+        t = re.sub(r'(<style name="AppTheme[^"]*"[^>]*>)', lambda m: m.group(1) + items, t)
+        st.write_text(t, encoding='utf-8')
+        print('styles.xml: fullscreen theme added')
 print('Android project patched OK')
