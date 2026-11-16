@@ -594,10 +594,6 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="1" selected>On</option>
     <option value="0">Off</option>
   </select>
-  <label for="o_npurl">Website now-playing URL (title + cover, only while LIVE)</label>
-  <input type="text" id="o_npurl" placeholder="https://your-site.com/api/nowplaying" autocapitalize="off" autocomplete="off" spellcheck="false">
-  <label for="o_npkey">Website now-playing key (NP_KEY)</label>
-  <input type="password" id="o_npkey" autocomplete="off">
   <select id="spStyle" hidden><option value="orig">Original (in each deck)</option></select>
   <label>Spectrum height (stacked styles): <b id="sphv">50</b> px</label>
   <input type="range" min="24" max="160" value="50" id="spH" aria-label="Spectrum height">
@@ -1465,9 +1461,6 @@ $('#fadeBtn').onclick = () => {
 let lastNP = '', npWarned = false;
 try { const sv = localStorage.getItem('tgm_np'); if (sv !== null) $('#o_np').value = sv; } catch {}
 $('#o_np').onchange = (e) => { try { localStorage.setItem('tgm_np', e.target.value); } catch {} };
-try { $('#o_npurl').value = localStorage.getItem('tgm_npurl') || ''; $('#o_npkey').value = localStorage.getItem('tgm_npkey') || ''; } catch {}
-$('#o_npurl').onchange = (e) => { try { localStorage.setItem('tgm_npurl', e.target.value.trim()); } catch {} };
-$('#o_npkey').onchange = (e) => { try { localStorage.setItem('tgm_npkey', e.target.value); } catch {} };
 async function sendNowPlaying(title) {
   if (!ws || !proc || $('#o_np').value !== '1' || !title || title === 'No track') return;
   const C = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.CapacitorHttp;
@@ -1498,6 +1491,8 @@ const npLabel = (d) => (d.meta && d.meta.label) || '';
 async function npSend(d) { try { await d._metaP; } catch {} const t = npLabel(d); if (t && t !== lastNP) { lastNP = t; sendNowPlaying(t); siteNP(d); } }
 // ===== WEBSITE NOW-PLAYING: title + artist + cover papunta sa /api/nowplaying ng website (kapag LIVE lang) =====
 let siteWarned = false;
+const NP_SITE_URL = 'https://jeiannefm.vercel.app/api/nowplaying';
+const NP_SITE_KEY = '__NP_KEY__';   // pinapalitan ng GitHub Actions mula sa Secret na NP_KEY habang nagbi-build (hindi nakasulat sa repo)
 async function coverData(blob) {
   if (!blob) return '';
   try {
@@ -1509,8 +1504,8 @@ async function coverData(blob) {
   } catch { return ''; }
 }
 async function sitePost(body) {
-  let u = '', k = ''; try { u = (localStorage.getItem('tgm_npurl') || '').trim(); k = localStorage.getItem('tgm_npkey') || ''; } catch {}
-  if (!u || !k) return null;
+  const u = NP_SITE_URL, k = NP_SITE_KEY;
+  if (!u || !k || /^__NP_KEY_/.test(k)) return null;   // walang key = naka-off (hindi nagpapadala)
   body.key = k;
   const C = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.CapacitorHttp;
   try {
