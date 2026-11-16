@@ -2312,7 +2312,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
   specs[0].top = true;
   const stack = document.createElement('div'); stack.id = 'specStack';
   const stSel = document.getElementById('spStyle'), hSl = document.getElementById('spH'), hv = document.getElementById('sphv');
-  SPS.mode = 'face';   // default lang ang spectrum style (inalis ang ibang style)
+  try { const m = localStorage.getItem('jfm_spstyle'); if (['orig', 'face', 'back', 'mirror', 'bars'].includes(m)) SPS.mode = m; } catch {}   // ang style na dati mong gamit ang itinitira (inalis na ang pagpipilian)
   stSel.value = SPS.mode;
   window.__spPlace = (land, slot) => {
     if (SPS.mode === 'orig') {
