@@ -525,7 +525,7 @@ button.on:not(.pad){background:linear-gradient(180deg,#5be0ff,#00c6fe 40%,#055bf
 .deck button.on:not(.pad){background:linear-gradient(180deg,#ffffff55,#ffffff00 55%),var(--c);color:#04101c;box-shadow:inset 0 1px 0 #fff8,0 0 12px var(--c)}
 #gearBtn,#mixBtn,#closeSettings,#closeMix,#closeEq,#fsBtn{background:radial-gradient(circle at 35% 28%,#2a3a8a,#141b48 60%,#070a1f);color:#bfe6ff;border:2px solid #02030a;box-shadow:inset 0 1px 0 #7fb0ff44,0 0 0 1px #00c6fe88,0 0 10px #055bfc66,0 3px 6px #000a}
 #status{color:#7fd8ff}
-#liveBtn:not(.live){background:linear-gradient(180deg,#232b5c,#11163a);border:1px solid #0a0f2a;border-bottom-width:4px;color:#dbe8ff;text-shadow:none;box-shadow:inset 0 1px 0 #7fb0ff26,0 1px 2px #000b;filter:none}
+#liveBtn:not(.live){background:linear-gradient(180deg,#ff6a6a,#d3162d 55%,#a50e22);border:2px solid #2b0a10;border-bottom-width:4px;color:#fff;text-shadow:0 -1px 0 #0006;box-shadow:inset 0 1px 0 #ffffff66,0 0 14px #ff335577,0 4px 8px #000a;filter:none}
 .now,#status{background:linear-gradient(180deg,#03040c,#080b1e)}
 input[type=range]{background:linear-gradient(90deg,var(--cc) var(--v),#03040c var(--v))}
 input[type=text],input[type=password],input[type=number],select{background:linear-gradient(180deg,#03040c,#0a0e24);color:#eef4ff}
@@ -816,7 +816,7 @@ OFF</button>
 MIC
 OFF</button>
     <button class="big" id="liveBtn">○
-OFF AIR</button>
+GO LIVE</button>
     <button id="monBtn" class="on">🎧
 Monitor
 ON</button>
@@ -1878,7 +1878,7 @@ function stopLive(msg) {
   clearInterval(timer);
   if (was && Tcp) Tcp.close().catch(() => {});
   if (wake) { wake.release().catch(() => {}); wake = null; }
-  $('#liveBtn').textContent = '○\nOFF AIR';
+  $('#liveBtn').textContent = '○\nGO LIVE';
   $('#liveBtn').classList.remove('live');
   setStatus(msg || 'Not live', false);
   if (wantLive) scheduleRetry(msg);
@@ -1928,7 +1928,7 @@ async function goLive(isRetry) {
   if (isRetry !== true && (ws || wantLive)) {          // pinindot ng user ang END / CANCEL
     wantLive = false; clearTimeout(retryT); retryT = 0; retryN = 0;
     if (ws) stopLive('Broadcast ended');
-    else { $('#liveBtn').textContent = '○\nOFF AIR'; $('#liveBtn').classList.remove('live'); setStatus('Broadcast ended', false); }
+    else { $('#liveBtn').textContent = '○\nGO LIVE'; $('#liveBtn').classList.remove('live'); setStatus('Broadcast ended', false); }
     return;
   }
   const c = getCfg(), miss = [];
@@ -2699,7 +2699,7 @@ decks.forEach((d)=>{
 });
 const play=(i)=>{ctx.resume();q('#deck'+i+' [data-a=play]').click()};
 const stop=(i)=>q('#deck'+i+' [data-a=stop]').click();
-const cueBtn=(i,k)=>{const b=document.querySelectorAll('#deck'+i+' .hcue')[k];if(b)b.click()};
+const cueBtn=(i,k)=>{const b=document.querySelectorAll('#fxp'+i+' .hcue')[k];if(b)b.click()};
 const cross=q('#cross'), nudge=(n)=>setR(cross,Math.max(0,Math.min(100,+cross.value+n)));
 // ---- keyboard ----
 document.addEventListener('keydown',(e)=>{
@@ -3523,6 +3523,28 @@ body{max-width:none!important}
   window.addEventListener('orientationchange',function(){ setTimeout(go,300); });
   window.addEventListener('resize',function(){ clearTimeout(window.__fsT); window.__fsT=setTimeout(native,250); });
   window.addEventListener('load',function(){ setTimeout(native,400); });
+})();
+</script>
+<style>
+/* CUE/LOOP ay nasa loob na ng DJ FX */
+#djfx .clpanel{margin:0}
+#djfx .padsrow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:5px;margin:0 0 5px}
+#djfx .padsrow button{height:46px!important;font-size:13px!important}
+.deck .btns [data-a=lock]{grid-column:span 3}
+</style>
+<script>
+/* Inilipat ang CUE/LOOP (hot cue A-D at loop 1/2/4/8) mula sa deck papunta sa DJ FX ng bawat deck */
+(function(){
+  decks.forEach(function(d){
+    var box=document.getElementById('deck'+d.i), pane=document.getElementById('fxp'+d.i);
+    if(!box||!pane) return;
+    var panel=box.querySelector('.clpanel'), tg=box.querySelector('.cltoggle');
+    if(!panel) return;
+    var h=document.createElement('div'); h.className='fxh'; h.textContent='Cue \u00b7 Loop';
+    panel.hidden=false;
+    pane.appendChild(h); pane.appendChild(panel);
+    if(tg) tg.remove();
+  });
 })();
 </script>
 </body>
