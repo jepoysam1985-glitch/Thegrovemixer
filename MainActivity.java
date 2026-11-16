@@ -1,4 +1,4 @@
-package com.example.app; // PALITAN ng package name mo
+package com.groove.mixer;
 
 import android.os.Bundle;
 import com.getcapacitor.BridgeActivity;

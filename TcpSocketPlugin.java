@@ -1,4 +1,4 @@
-package com.example.app; // PALITAN ito ng package name ng app mo (nasa MainActivity.java sa taas)
+package com.groove.mixer;
 
 import android.util.Base64;
 import com.getcapacitor.JSObject;
