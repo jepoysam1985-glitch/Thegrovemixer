@@ -3563,17 +3563,6 @@ decks.forEach((d)=>refresh(d.i));
   },true);
 })();
 </script>
-<script>
-/* ANDROID CHECK: lalabas sa simula kung APK (native) ba o web lang ang nakabukas */
-(function(){
-  setTimeout(function(){
-    try{
-      var C=window.Capacitor, native=!!(C&&C.isNativePlatform&&C.isNativePlatform());
-      toast(native?'\u2705 Android app mode (APK) v2-tcpfix':'\u26A0 WEB version ito, hindi ang APK. I-install ang app-debug.apk');
-    }catch(e){}
-  },900);
-})();
-</script>
 <style>
 .jogdisc .jlogo{width:84%!important}
 .jlogo img{display:block;width:100%;height:100%;object-fit:contain;filter:brightness(0) invert(1);opacity:.45}
