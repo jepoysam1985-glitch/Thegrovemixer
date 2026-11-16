@@ -594,14 +594,7 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="1" selected>On</option>
     <option value="0">Off</option>
   </select>
-  <label for="spStyle">Spectrum style</label>
-  <select id="spStyle">
-    <option value="orig">Original (in each deck)</option>
-    <option value="face">Facing (touching, face to face)</option>
-    <option value="back">Back-to-back (outward)</option>
-    <option value="mirror">Mirror wave (centered)</option>
-    <option value="bars">Chunky bars (face to face)</option>
-  </select>
+  <select id="spStyle" hidden><option value="face">Facing (touching, face to face)</option></select>
   <label>Spectrum height (stacked styles): <b id="sphv">50</b> px</label>
   <input type="range" min="24" max="160" value="50" id="spH" aria-label="Spectrum height">
   <button id="spReset" style="width:100%;height:40px;margin-top:8px;font-size:12px">Reset spectrum height</button>
@@ -2319,7 +2312,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
   specs[0].top = true;
   const stack = document.createElement('div'); stack.id = 'specStack';
   const stSel = document.getElementById('spStyle'), hSl = document.getElementById('spH'), hv = document.getElementById('sphv');
-  try { const m = localStorage.getItem('jfm_spstyle'); if (['orig', 'face', 'back', 'mirror', 'bars'].includes(m)) SPS.mode = m; } catch {}
+  SPS.mode = 'face';   // default lang ang spectrum style (inalis ang ibang style)
   stSel.value = SPS.mode;
   window.__spPlace = (land, slot) => {
     if (SPS.mode === 'orig') {
@@ -4088,6 +4081,33 @@ body.lite canvas.spec{visibility:hidden}
   }
   sel.addEventListener('change', function () { try { localStorage.setItem('jfm_lite', sel.value); } catch (e) {} apply(); });
   setInterval(apply, 1000); apply();
+})();
+</script>
+<script>
+/* HUWAG MAWALA ANG MUSIC: kapag lumabas saglit sa app (Add Track / file picker, atbp.), ituloy ang tunog */
+(function () {
+  const intent = [false, false], off = [0, 0];
+  decks.forEach(function (d, i) {
+    d.audio.addEventListener('play', function () { clearTimeout(off[i]); intent[i] = true; });
+    d.audio.addEventListener('pause', function () {
+      if (document.hidden) return;
+      clearTimeout(off[i]); off[i] = setTimeout(function () { intent[i] = false; }, 400);   // may palugit: baka sistema ang nag-pause habang lumalabas
+    });
+  });
+  let iv = 0;
+  function tick() {
+    try { if (ctx.state !== 'running') ctx.resume().catch(function () {}); } catch (e) {}
+    decks.forEach(function (d, i) {
+      const a = d.audio;
+      if (intent[i] && a.paused && !a.ended && isFinite(a.duration) && a.duration - a.currentTime > 15) a.play().catch(function () {});
+    });
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) {
+      off.forEach(function (t) { clearTimeout(t); });
+      if (intent.some(Boolean)) { clearInterval(iv); iv = setInterval(tick, 500); }
+    } else { clearInterval(iv); iv = 0; try { ctx.resume(); } catch (e) {} }
+  });
 })();
 </script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
