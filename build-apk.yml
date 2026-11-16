@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -46,14 +49,46 @@ jobs:
           fi
           ls -la www
 
+      - name: Patch index.html para sa Capacitor plugins (TcpSocket, ForegroundService)
+        run: python3 scripts/patch_web.py
+
+      - name: Compat Android 9+ (polyfill, syntax)
+        run: python3 scripts/patch_compat.py
+
       - name: Create Android project
         run: npx cap add android
 
       - name: Patch Android (manifest, plugins, icon)
         run: python3 scripts/patch_android.py
 
+      - name: Ensure native plugins (TcpSocket, ForegroundService)
+        run: python3 ensure_tcp.py
+
+      - name: Android 15+ edge-to-edge opt-out
+        run: python3 scripts/patch_edge.py
+
+      - name: Lock landscape (sensorLandscape)
+        run: |
+          M=android/app/src/main/AndroidManifest.xml
+          grep -q screenOrientation "$M" || sed -i '0,/<activity/s//<activity android:screenOrientation="sensorLandscape"/' "$M"
+          grep -n "screenOrientation" "$M"
+
+      - name: Install app icon (logo)
+        run: |
+          pip install pillow
+          python3 scripts/make_icons.py
+
       - name: Sync web files
         run: npx cap sync android
+
+      - name: Verify (laman ng APK)
+        run: |
+          echo "== Java files =="
+          find android/app/src -name "*.java"
+          echo "== registerPlugin =="
+          grep -rn "registerPlugin" android/app/src/main/java || { echo "::error::Walang registerPlugin"; exit 1; }
+          echo "== Manifest =="
+          grep -n "GrooveService\|FOREGROUND\|RECORD_AUDIO" android/app/src/main/AndroidManifest.xml || true
 
       - name: Build debug APK
         working-directory: android
@@ -69,3 +104,10 @@ jobs:
         with:
           name: THE-GROOVE-MIXER-apk
           path: THE-GROOVE-MIXER.apk
+
+      - name: Publish APK to Releases (direct .apk download)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: apk-${{ github.run_number }}
+          name: "The Groove Mixer APK #${{ github.run_number }}"
+          files: THE-GROOVE-MIXER.apk
