@@ -1843,7 +1843,15 @@ let _mtT = 0;
 })();
 
 // GO LIVE (APK: MP3 sa loob ng app + diretsong TCP sa Icecast/Shoutcast)
-const Tcp = window.Capacitor ? (Capacitor.registerPlugin ? Capacitor.registerPlugin('TcpSocket') : ((Capacitor.Plugins && Capacitor.Plugins.TcpSocket) || null)) : null;
+let _tcp = null;
+function getTcp() {
+  if (_tcp) return _tcp;
+  const C = window.Capacitor;
+  if (!C) return null;
+  _tcp = C.registerPlugin ? C.registerPlugin('TcpSocket') : ((C.Plugins && C.Plugins.TcpSocket) || null);
+  return _tcp;
+}
+const Tcp = new Proxy({}, { get: (_, k) => { const t = getTcp(); return t ? t[k].bind(t) : undefined; } });
 let pending = 0, dropped = 0;
 let ws = null, wake = null, liveSince = 0, timer = null, proc = null, mut = null, enc = null, q = Promise.resolve();
 const statusEl = $('#status');
@@ -1884,7 +1892,7 @@ function stopLive(msg) {
   if (mut) { try { mut.disconnect(); } catch {} mut = null; }
   enc = null; encMain = null; if (encW) { try { encW.terminate(); } catch {} encW = null; }
   clearInterval(timer);
-  if (was && Tcp) Tcp.close().catch(() => {});
+  if (was && getTcp()) Tcp.close().catch(() => {});
   if (wake) { wake.release().catch(() => {}); wake = null; }
   $('#liveBtn').textContent = '○\nGO LIVE';
   $('#liveBtn').classList.remove('live');
@@ -1946,7 +1954,7 @@ async function goLive(isRetry) {
   if (c.mode === 'icecast' && !c.user) miss.push('Username');
   if (!c.password) miss.push('Password');
   if (miss.length) { showSettings(true); setStatus('Missing: ' + miss.join(', '), false); return; }
-  if (!Tcp) { setStatus('This only works in the APK app, not in a browser', false); return; }
+  if (!getTcp()) { setStatus('No Capacitor/TcpSocket found. Capacitor=' + (!!window.Capacitor) + ' native=' + (!!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform())) + ' - not running inside the APK shell', false); return; }
   if (!window.lamejs) { setStatus('lame.min.js (MP3 encoder) is missing', false); return; }
   if (isRetry !== true && !micStream && !confirm('Your mic is OFF. Go live without your voice anyway?')) { setStatus('Turn on 🎤 MIC first', false); return; }
   wantLive = true;
@@ -3485,7 +3493,7 @@ decks.forEach((d)=>refresh(d.i));
   setTimeout(function(){
     try{
       var C=window.Capacitor, native=!!(C&&C.isNativePlatform&&C.isNativePlatform());
-      toast(native?'\u2705 Android app mode (APK)':'\u26A0 WEB version ito, hindi ang APK. I-install ang app-debug.apk');
+      toast(native?'\u2705 Android app mode (APK) v2-tcpfix':'\u26A0 WEB version ito, hindi ang APK. I-install ang app-debug.apk');
     }catch(e){}
   },900);
 })();
