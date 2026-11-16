@@ -52,11 +52,17 @@ jobs:
       - name: Patch index.html para sa Capacitor plugins (TcpSocket, ForegroundService)
         run: python3 scripts/patch_web.py
 
+      - name: Compat Android 9+ (polyfill, syntax)
+        run: python3 scripts/patch_compat.py
+
       - name: Create Android project
         run: npx cap add android
 
       - name: Patch Android (manifest, plugins, icon)
         run: python3 scripts/patch_android.py
+
+      - name: Android 15+ edge-to-edge opt-out
+        run: python3 scripts/patch_edge.py
 
       - name: Lock landscape (sensorLandscape)
         run: |
