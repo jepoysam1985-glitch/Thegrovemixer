@@ -594,7 +594,7 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="1" selected>On</option>
     <option value="0">Off</option>
   </select>
-  <select id="spStyle" hidden><option value="face">Facing (touching, face to face)</option></select>
+  <select id="spStyle" hidden><option value="orig">Original (in each deck)</option></select>
   <label>Spectrum height (stacked styles): <b id="sphv">50</b> px</label>
   <input type="range" min="24" max="160" value="50" id="spH" aria-label="Spectrum height">
   <button id="spReset" style="width:100%;height:40px;margin-top:8px;font-size:12px">Reset spectrum height</button>
@@ -974,17 +974,17 @@ function setEnh(v) {
   enhMud.gain.setTargetAtTime(e.mud, t, 0.05); enhPres.gain.setTargetAtTime(e.pres, t, 0.05); enhAir.gain.setTargetAtTime(e.air, t, 0.05);
   enhComp.threshold.value = e.thr; enhComp.ratio.value = e.ratio; enhMake.gain.setTargetAtTime(e.make, t, 0.05);
 }
-try { const sv = localStorage.getItem('jfm_enh'); if (sv !== null && ENH[sv] !== undefined) $('#micEnh').value = sv; } catch {}
+try { const sv = localStorage.getItem('tgm_enh'); if (sv !== null && ENH[sv] !== undefined) $('#micEnh').value = sv; } catch {}
 setEnh($('#micEnh').value);
 const mqTxt = (v) => (v > 0 ? '+' : '') + v.toFixed(1) + ' dB';
-function setMq(k, v) { MQ[k].gain.setTargetAtTime(v, ctx.currentTime, 0.03); $('#mqv' + k).textContent = mqTxt(v); try { localStorage.setItem('jfm_mq' + k, v); } catch {} }
+function setMq(k, v) { MQ[k].gain.setTargetAtTime(v, ctx.currentTime, 0.03); $('#mqv' + k).textContent = mqTxt(v); try { localStorage.setItem('tgm_mq' + k, v); } catch {} }
 [0, 1, 2].forEach((k) => {
-  try { const sv = parseFloat(localStorage.getItem('jfm_mq' + k)); if (!isNaN(sv)) $('#mq' + k).value = sv; } catch {}
+  try { const sv = parseFloat(localStorage.getItem('tgm_mq' + k)); if (!isNaN(sv)) $('#mq' + k).value = sv; } catch {}
   const v0 = parseFloat($('#mq' + k).value) || 0; MQ[k].gain.value = v0; $('#mqv' + k).textContent = mqTxt(v0);
   $('#mq' + k).oninput = (e) => { let v = parseFloat(e.target.value); if (Math.abs(v) <= 0.5) { v = 0; e.target.value = 0; } setMq(k, v); };
 });
 $('#mqReset').onclick = () => [0, 1, 2].forEach((k) => { $('#mq' + k).value = 0; setMq(k, 0); });
-$('#micEnh').onchange = (e) => { setEnh(e.target.value); try { localStorage.setItem('jfm_enh', e.target.value); } catch {} };
+$('#micEnh').onchange = (e) => { setEnh(e.target.value); try { localStorage.setItem('tgm_enh', e.target.value); } catch {} };
 
 const decks = [0, 1].map((i) => {
   const audio = new Audio();
@@ -1349,9 +1349,9 @@ function setNR(v) {
   micHP.frequency.value = nr ? lcHz : 10;
   if (!nr) { gate.gain.setTargetAtTime(1, ctx.currentTime, 0.02); gateOpen = true; }
 }
-try { const sv = localStorage.getItem('jfm_nr'); if (sv !== null && NR[sv] !== undefined) $('#nrLvl').value = sv; } catch {}
+try { const sv = localStorage.getItem('tgm_nr'); if (sv !== null && NR[sv] !== undefined) $('#nrLvl').value = sv; } catch {}
 setNR($('#nrLvl').value);
-$('#nrLvl').onchange = (e) => { setNR(e.target.value); try { localStorage.setItem('jfm_nr', e.target.value); } catch {} };
+$('#nrLvl').onchange = (e) => { setNR(e.target.value); try { localStorage.setItem('tgm_nr', e.target.value); } catch {} };
 const gBuf = new Float32Array(gateAn.fftSize);
 // SHARED RMS: isang beses lang binabasa ang gateAn kahit apat na timer ang gumagamit (mas magaan sa CPU)
 let _gT = -1e9, _gRms = 0;
@@ -1424,9 +1424,9 @@ decks.forEach((d) => {
 });
 // ===== AUTO-JINGLE: effect pad bawat ilang kanta o minuto =====
 let jSongs = 0, jLast = Date.now(), jWarned = false;
-try { const sv = localStorage.getItem('jfm_jm'); if (sv) $('#jingleMode').value = sv; const sl = localStorage.getItem('jfm_js'); if (sl) $('#jingleSlot').value = sl; } catch {}
-$('#jingleMode').onchange = (e) => { jSongs = 0; jLast = Date.now(); try { localStorage.setItem('jfm_jm', e.target.value); } catch {} };
-$('#jingleSlot').onchange = (e) => { try { localStorage.setItem('jfm_js', e.target.value); } catch {} };
+try { const sv = localStorage.getItem('tgm_jm'); if (sv) $('#jingleMode').value = sv; const sl = localStorage.getItem('tgm_js'); if (sl) $('#jingleSlot').value = sl; } catch {}
+$('#jingleMode').onchange = (e) => { jSongs = 0; jLast = Date.now(); try { localStorage.setItem('tgm_jm', e.target.value); } catch {} };
+$('#jingleSlot').onchange = (e) => { try { localStorage.setItem('tgm_js', e.target.value); } catch {} };
 function playJingle() {
   const loaded = fx.map((f, i) => (f.buf ? i : -1)).filter((i) => i >= 0);
   if (!loaded.length) { if (!jWarned) { jWarned = true; toast('Auto-jingle: no effects loaded. Add some in 🔔 Effects.'); } return; }
@@ -1458,8 +1458,8 @@ $('#fadeBtn').onclick = () => {
 };
 // ===== NOW-PLAYING: ipinapadala ang pamagat ng kanta sa server (best effort) =====
 let lastNP = '', npWarned = false;
-try { const sv = localStorage.getItem('jfm_np'); if (sv !== null) $('#o_np').value = sv; } catch {}
-$('#o_np').onchange = (e) => { try { localStorage.setItem('jfm_np', e.target.value); } catch {} };
+try { const sv = localStorage.getItem('tgm_np'); if (sv !== null) $('#o_np').value = sv; } catch {}
+$('#o_np').onchange = (e) => { try { localStorage.setItem('tgm_np', e.target.value); } catch {} };
 async function sendNowPlaying(title) {
   if (!ws || !proc || $('#o_np').value !== '1' || !title || title === 'No track') return;
   const C = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.CapacitorHttp;
@@ -1529,7 +1529,7 @@ $('#recBtn').onclick = () => {
   toast('Recording started (same mix as the stream).');
 };
 // ===== PLAYLISTS: naka-save ang pangalan at ayos ng mga kanta; kapag ni-load, piliin muli ang mga file at ibabalik ang ayos =====
-const PLK = 'jfm_pl';
+const PLK = 'tgm_pl';
 const plLoad = () => { try { return JSON.parse(localStorage.getItem(PLK) || '[]'); } catch { return []; } };
 const plSaveAll = (a) => { try { localStorage.setItem(PLK, JSON.stringify(a.slice(0, 30))); } catch { toast('Could not save the playlist.'); } };
 const pm = document.createElement('div'); pm.className = 'modal'; pm.id = 'plModal'; pm.hidden = true;
@@ -1572,13 +1572,13 @@ plFile.onchange = () => {
 $('#plBtn').onclick = () => { plRender(); showModal('#plModal', true); };
 $('#closePl').onclick = $('#closePl2').onclick = () => showModal('#plModal', false);
 // AUTO-RECONNECT setting
-try { const sv = localStorage.getItem('jfm_retry'); if (sv !== null) $('#o_retry').value = sv; } catch {}
-$('#o_retry').onchange = (e) => { try { localStorage.setItem('jfm_retry', e.target.value); } catch {} };
+try { const sv = localStorage.getItem('tgm_retry'); if (sv !== null) $('#o_retry').value = sv; } catch {}
+$('#o_retry').onchange = (e) => { try { localStorage.setItem('tgm_retry', e.target.value); } catch {} };
 // DEAD-AIR ALARM: beep (sa phone lang, hindi sa stream) + babala kapag walang tunog sa stream
 let daSec = 10, daSince = 0, daAlarm = false, daLast = 0;
-try { const sv = localStorage.getItem('jfm_da'); if (sv !== null && !isNaN(sv)) $('#deadAir').value = sv; } catch {}
+try { const sv = localStorage.getItem('tgm_da'); if (sv !== null && !isNaN(sv)) $('#deadAir').value = sv; } catch {}
 daSec = parseInt($('#deadAir').value, 10) || 0;
-$('#deadAir').onchange = (e) => { daSec = parseInt(e.target.value, 10) || 0; daSince = 0; daAlarm = false; try { localStorage.setItem('jfm_da', e.target.value); } catch {} };
+$('#deadAir').onchange = (e) => { daSec = parseInt(e.target.value, 10) || 0; daSince = 0; daAlarm = false; try { localStorage.setItem('tgm_da', e.target.value); } catch {} };
 const daBuf = new Float32Array(analyser.fftSize);
 function beep() { try { const o = ctx.createOscillator(), g = ctx.createGain(); o.frequency.value = 880; g.gain.value = 0.12; o.connect(g); g.connect(ctx.destination); o.start(); o.stop(ctx.currentTime + 0.25); } catch {} }
 setInterval(() => {
@@ -1599,8 +1599,8 @@ function pttApply() {
   micIn.gain.setTargetAtTime(!pttOn || pttHeld ? 1 : 0, ctx.currentTime, 0.01);
   ptt.classList.toggle('on', pttOn && pttHeld); ptt.textContent = pttHeld ? '🎙 ON AIR' : '🎙 HOLD TO TALK';
 }
-function setPttMode(v) { pttOn = v === '1'; ptt.hidden = !pttOn; pttHeld = false; pttApply(); try { localStorage.setItem('jfm_ptt', v); } catch {} }
-try { const sv = localStorage.getItem('jfm_ptt'); if (sv === '0' || sv === '1') $('#pttMode').value = sv; } catch {}
+function setPttMode(v) { pttOn = v === '1'; ptt.hidden = !pttOn; pttHeld = false; pttApply(); try { localStorage.setItem('tgm_ptt', v); } catch {} }
+try { const sv = localStorage.getItem('tgm_ptt'); if (sv === '0' || sv === '1') $('#pttMode').value = sv; } catch {}
 setPttMode($('#pttMode').value); $('#pttMode').onchange = (e) => setPttMode(e.target.value);
 ptt.addEventListener('pointerdown', (e) => {
   e.preventDefault();
@@ -1617,9 +1617,9 @@ let ltTarget = null, ltDb = 0, ltPow = 0, ltTick = 0;
 function setLt(v) {
   ltTarget = LT[v] === undefined ? null : LT[v]; ltPow = 0;
   if (ltTarget === null) { ltDb = 0; autoLvl.gain.setTargetAtTime(1, ctx.currentTime, 0.3); $('#alv').textContent = 'off'; }
-  try { localStorage.setItem('jfm_lt', v); } catch {}
+  try { localStorage.setItem('tgm_lt', v); } catch {}
 }
-try { const sv = localStorage.getItem('jfm_lt'); if (sv !== null && LT[sv] !== undefined) $('#ltLvl').value = sv; } catch {}
+try { const sv = localStorage.getItem('tgm_lt'); if (sv !== null && LT[sv] !== undefined) $('#ltLvl').value = sv; } catch {}
 setLt($('#ltLvl').value); $('#ltLvl').onchange = (e) => setLt(e.target.value);
 const ltBuf = new Float32Array(analyser.fftSize);
 setInterval(() => {
@@ -1637,8 +1637,8 @@ setInterval(() => {
 }, 50);
 // MASTER GLUE levels
 const GL = { 0: { thr: 0, ratio: 1, mk: 1 }, 1: { thr: -18, ratio: 2, mk: 1.1 }, 2: { thr: -22, ratio: 3, mk: 1.25 } };
-function setGlue(v) { const g = GL[v] || GL[0]; glue.threshold.value = g.thr; glue.ratio.value = g.ratio; glueMk.gain.setTargetAtTime(g.mk, ctx.currentTime, 0.05); try { localStorage.setItem('jfm_gl', v); } catch {} }
-try { const sv = localStorage.getItem('jfm_gl'); if (sv !== null && GL[sv] !== undefined) $('#glueLvl').value = sv; } catch {}
+function setGlue(v) { const g = GL[v] || GL[0]; glue.threshold.value = g.thr; glue.ratio.value = g.ratio; glueMk.gain.setTargetAtTime(g.mk, ctx.currentTime, 0.05); try { localStorage.setItem('tgm_gl', v); } catch {} }
+try { const sv = localStorage.getItem('tgm_gl'); if (sv !== null && GL[sv] !== undefined) $('#glueLvl').value = sv; } catch {}
 setGlue($('#glueLvl').value); $('#glueLvl').onchange = (e) => setGlue(e.target.value);
 // VOICE REVERB: maliit na "studio room" para sa boses (stream lang, hindi sa monitor)
 const revSend = ctx.createGain(); revSend.gain.value = 0;
@@ -1649,18 +1649,18 @@ const rev = ctx.createConvolver();
 const revLP = ctx.createBiquadFilter(); revLP.type = 'lowpass'; revLP.frequency.value = 4500;
 micGain.connect(revSend); revSend.connect(rev); rev.connect(revLP); revLP.connect(master);
 const REV = { 0: 0, 1: 0.12, 2: 0.22, 3: 0.35 };
-function setRev(v) { revSend.gain.setTargetAtTime(REV[v] || 0, ctx.currentTime, 0.05); try { localStorage.setItem('jfm_rv', v); } catch {} }
-try { const sv = localStorage.getItem('jfm_rv'); if (sv !== null && REV[sv] !== undefined) $('#revLvl').value = sv; } catch {}
+function setRev(v) { revSend.gain.setTargetAtTime(REV[v] || 0, ctx.currentTime, 0.05); try { localStorage.setItem('tgm_rv', v); } catch {} }
+try { const sv = localStorage.getItem('tgm_rv'); if (sv !== null && REV[sv] !== undefined) $('#revLvl').value = sv; } catch {}
 setRev($('#revLvl').value); $('#revLvl').onchange = (e) => setRev(e.target.value);
 // ADJUSTABLE LOW-CUT
-try { const sv = parseInt(localStorage.getItem('jfm_lc'), 10); if (sv) { $('#lowCut').value = sv; lcHz = sv; } } catch {}
+try { const sv = parseInt(localStorage.getItem('tgm_lc'), 10); if (sv) { $('#lowCut').value = sv; lcHz = sv; } } catch {}
 micHP.frequency.value = nr ? lcHz : 10;
-$('#lowCut').onchange = (e) => { lcHz = parseInt(e.target.value, 10) || 90; micHP.frequency.value = nr ? lcHz : 10; try { localStorage.setItem('jfm_lc', lcHz); } catch {} };
+$('#lowCut').onchange = (e) => { lcHz = parseInt(e.target.value, 10) || 90; micHP.frequency.value = nr ? lcHz : 10; try { localStorage.setItem('tgm_lc', lcHz); } catch {} };
 // DE-ESSER: sinusukat ang lakas ng 6.5kHz; kapag lumampas sa threshold, ibinababa ang band na iyon
 const DE = { 0: null, 1: { thr: -40, max: 4 }, 2: { thr: -37, max: 7 }, 3: { thr: -34, max: 10 } };
 let deCur = DE[1];
-function setDe(v) { deCur = DE[v] || null; try { localStorage.setItem('jfm_de', v); } catch {} }
-try { const sv = localStorage.getItem('jfm_de'); if (sv !== null && DE[sv] !== undefined) $('#deEss').value = sv; } catch {}
+function setDe(v) { deCur = DE[v] || null; try { localStorage.setItem('tgm_de', v); } catch {} }
+try { const sv = localStorage.getItem('tgm_de'); if (sv !== null && DE[sv] !== undefined) $('#deEss').value = sv; } catch {}
 setDe($('#deEss').value); $('#deEss').onchange = (e) => setDe(e.target.value);
 const deBuf = new Float32Array(deAn.fftSize);
 setInterval(() => {
@@ -1676,9 +1676,9 @@ setInterval(() => {
 // MUSIC CARVE: kapag may boses, bahagyang hinihina ang 2.5kHz ng kanta (stream at monitor) para lumitaw ang boses
 const CV = { 0: 0, 1: -3, 2: -5, 3: -8 };
 let carveV = CV[1], vFloor = 0.01, vHold = 0, vOn = false, lastCv = 0;
-try { const sv = localStorage.getItem('jfm_cv'); if (sv !== null && CV[sv] !== undefined) $('#carveLvl').value = sv; } catch {}
+try { const sv = localStorage.getItem('tgm_cv'); if (sv !== null && CV[sv] !== undefined) $('#carveLvl').value = sv; } catch {}
 carveV = CV[$('#carveLvl').value];
-$('#carveLvl').onchange = (e) => { carveV = CV[e.target.value]; try { localStorage.setItem('jfm_cv', e.target.value); } catch {} };
+$('#carveLvl').onchange = (e) => { carveV = CV[e.target.value]; try { localStorage.setItem('tgm_cv', e.target.value); } catch {} };
 const vBuf = new Float32Array(gateAn.fftSize);
 setInterval(() => {
   let on = false;
@@ -1696,16 +1696,16 @@ const PRESETS = { warm: { mq: [3, -1, -1], enh: 2, de: 1 }, bright: { mq: [-2, 1
 $('#voicePreset').onchange = (e) => {
   const pr = PRESETS[e.target.value]; if (!pr) return;
   pr.mq.forEach((v, k) => { $('#mq' + k).value = v; setMq(k, v); });
-  $('#micEnh').value = pr.enh; setEnh(pr.enh); try { localStorage.setItem('jfm_enh', pr.enh); } catch {}
+  $('#micEnh').value = pr.enh; setEnh(pr.enh); try { localStorage.setItem('tgm_enh', pr.enh); } catch {}
   $('#deEss').value = pr.de; setDe(pr.de);
 };
 // MIC MONITOR LOGIC: bukas lang ang boses sa speaker kapag may nagsasalita; sa monitor lang humihina ang kanta nang konti habang nagsasalita
 let mmLevelV = 0.35, mmHold = 0, mmOpen = false, mmFloor = 0.01;
-try { const sv = localStorage.getItem('jfm_mm'); if (sv !== null && !isNaN(sv)) { $('#micMon').value = sv; mmLevelV = sv / 100; } } catch {}
+try { const sv = localStorage.getItem('tgm_mm'); if (sv !== null && !isNaN(sv)) { $('#micMon').value = sv; mmLevelV = sv / 100; } } catch {}
 mmLevel.gain.value = mmLevelV; $('#mmv').textContent = Math.round(mmLevelV * 100) + '%';
 $('#micMon').oninput = (e) => {
   mmLevelV = e.target.value / 100; mmLevel.gain.setTargetAtTime(mmLevelV, ctx.currentTime, 0.03); $('#mmv').textContent = e.target.value + '%';
-  try { localStorage.setItem('jfm_mm', e.target.value); } catch {}
+  try { localStorage.setItem('tgm_mm', e.target.value); } catch {}
 };
 const mmBuf = new Float32Array(gateAn.fftSize);
 setInterval(() => {
@@ -1744,7 +1744,7 @@ fxGain.connect(master); fxGain.connect(monitor);
 const fx = Array.from({ length: FX_N }, () => ({ name: '', buf: null, src: null }));
 let fxEdit = false, fxTarget = -1;
 const fxDB = () => new Promise((res, rej) => {
-  const r = indexedDB.open('jfm', 2);
+  const r = indexedDB.open('tgm', 2);
   r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('fx')) db.createObjectStore('fx'); if (!db.objectStoreNames.contains('tracks')) db.createObjectStore('tracks'); };
   r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
 });
@@ -1913,7 +1913,7 @@ function stopLive(msg) {
   if (wantLive) scheduleRetry(msg);
 }
 let encW = null, encMain = null, capReady = null;
-const CAP_CODE = "class P extends AudioWorkletProcessor{constructor(){super();this.n=0;this.l=new Float32Array(4096);this.r=new Float32Array(4096)}process(i){var c=i[0];if(c&&c[0]){var a=c[0],b=c[1]||c[0];this.l.set(a,this.n);this.r.set(b,this.n);this.n+=a.length;if(this.n>=4096){this.port.postMessage({l:this.l,r:this.r},[this.l.buffer,this.r.buffer]);this.l=new Float32Array(4096);this.r=new Float32Array(4096);this.n=0}}return true}}registerProcessor('jfm-cap',P)";
+const CAP_CODE = "class P extends AudioWorkletProcessor{constructor(){super();this.n=0;this.l=new Float32Array(4096);this.r=new Float32Array(4096)}process(i){var c=i[0];if(c&&c[0]){var a=c[0],b=c[1]||c[0];this.l.set(a,this.n);this.r.set(b,this.n);this.n+=a.length;if(this.n>=4096){this.port.postMessage({l:this.l,r:this.r},[this.l.buffer,this.r.buffer]);this.l=new Float32Array(4096);this.r=new Float32Array(4096);this.n=0}}return true}}registerProcessor('tgm-cap',P)";
 async function startEncoder(br) {         // MP3 encoder sa Web Worker (hindi na bumibigat ang main thread); kapag hindi gumana, babalik sa dating paraan
   encMain = null;
   try {
@@ -1956,7 +1956,7 @@ async function startCapture(onBlock) {    // AudioWorklet (mas matatag); kapag h
     if (!ctx.audioWorklet) throw 0;
     if (!capReady) capReady = ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([CAP_CODE], { type: 'application/javascript' })));
     await capReady;
-    const n = new AudioWorkletNode(ctx, 'jfm-cap', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit' });
+    const n = new AudioWorkletNode(ctx, 'tgm-cap', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit' });
     n.port.onmessage = (e) => onBlock(e.data.l, e.data.r);
     limiter.connect(n); n.connect(mute); return n;
   } catch { capReady = null; }
@@ -2043,11 +2043,11 @@ function getCfg() {
   };
 }
 function saveCfg() {
-  try { localStorage.setItem('jfm_cfg', JSON.stringify(getCfg())); } catch {}   // sine-save na ang password para hindi mawala
+  try { localStorage.setItem('tgm_cfg', JSON.stringify(getCfg())); } catch {}   // sine-save na ang password para hindi mawala
   $('#o_mountbox').style.display = $('#o_mode').value === 'icecast' ? 'block' : 'none';
 }
 try {
-  const c = JSON.parse(localStorage.getItem('jfm_cfg') || 'null');
+  const c = JSON.parse(localStorage.getItem('tgm_cfg') || 'null');
   if (c) {
     $('#o_mode').value = c.mode || 'icecast'; $('#o_host').value = c.host || ''; $('#o_port').value = c.port || '';
     $('#o_mount').value = c.mount || ''; $('#o_user').value = c.user || 'source';
@@ -2240,7 +2240,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
   const PPS = 34;                  // pixel kada segundo sa zoomed waveform
   const OV = 240;                  // bilang ng column ng overview
   const OV_H = 8;                  // taas ng overview strip
-  const WF_MAX = 8 * 1048576; let CUR = null; const SPS = { mode: 'face' };      // mas malaking file = live waveform na lang (iwas ubos ng memory sa phone)
+  const WF_MAX = 8 * 1048576; let CUR = null; const SPS = { mode: 'orig' };      // mas malaking file = live waveform na lang (iwas ubos ng memory sa phone)
 
   // PRE-ANALYSIS: binabasa ang buong kanta nang isang beses at kinukuha ang laki ng bass/mid/high bawat 10ms
   window.wfAnalyze = async function (d) {
@@ -2312,7 +2312,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
   specs[0].top = true;
   const stack = document.createElement('div'); stack.id = 'specStack';
   const stSel = document.getElementById('spStyle'), hSl = document.getElementById('spH'), hv = document.getElementById('sphv');
-  try { const m = localStorage.getItem('jfm_spstyle'); if (['orig', 'face', 'back', 'mirror', 'bars'].includes(m)) SPS.mode = m; } catch {}   // ang style na dati mong gamit ang itinitira (inalis na ang pagpipilian)
+  try { const m = localStorage.getItem('tgm_spstyle'); if (['orig', 'face', 'back', 'mirror', 'bars'].includes(m)) SPS.mode = m; } catch {}   // ang style na dati mong gamit ang itinitira (inalis na ang pagpipilian)
   stSel.value = SPS.mode;
   window.__spPlace = (land, slot) => {
     if (SPS.mode === 'orig') {
@@ -2327,12 +2327,12 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
       else { const dk = document.querySelector('.decks'); if (dk && stack.nextElementSibling !== dk) dk.before(stack); }
     }
   };
-  stSel.onchange = () => { SPS.mode = stSel.value; try { localStorage.setItem('jfm_spstyle', SPS.mode); } catch {} if (window.__spPlaceAll) window.__spPlaceAll(); };
-  const setH = (v, save) => { v = Math.max(24, Math.min(160, Math.round(v))); document.documentElement.style.setProperty('--sph', v + 'px'); document.body.classList.add('spcustom'); hSl.value = v; hv.textContent = v; if (save) { try { localStorage.setItem('jfm_sph', v); } catch {} } };
-  let sv = NaN; try { sv = parseInt(localStorage.getItem('jfm_sph'), 10); } catch {}
+  stSel.onchange = () => { SPS.mode = stSel.value; try { localStorage.setItem('tgm_spstyle', SPS.mode); } catch {} if (window.__spPlaceAll) window.__spPlaceAll(); };
+  const setH = (v, save) => { v = Math.max(24, Math.min(160, Math.round(v))); document.documentElement.style.setProperty('--sph', v + 'px'); document.body.classList.add('spcustom'); hSl.value = v; hv.textContent = v; if (save) { try { localStorage.setItem('tgm_sph', v); } catch {} } };
+  let sv = NaN; try { sv = parseInt(localStorage.getItem('tgm_sph'), 10); } catch {}
   if (sv) setH(sv, false);
   hSl.oninput = () => setH(+hSl.value, true);
-  document.getElementById('spReset').onclick = () => { document.documentElement.style.removeProperty('--sph'); document.body.classList.remove('spcustom'); try { localStorage.removeItem('jfm_sph'); } catch {} };
+  document.getElementById('spReset').onclick = () => { document.documentElement.style.removeProperty('--sph'); document.body.classList.remove('spcustom'); try { localStorage.removeItem('tgm_sph'); } catch {} };
   // STRETCH GAMIT ANG DALIRI: dalawang daliri sa spectrum; ilayo (pataas/pababa) = tataas, ilapit = liliit
   const pts = new Map(); let pz = null;
   const isSpec = (t) => t && t.tagName === 'CANVAS' && t.classList.contains('spec');
@@ -2346,7 +2346,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
     pts.set(e.pointerId, e.clientY);
     if (pz && pts.size >= 2) { const [a, b] = [...pts.values()]; setH(pz.h0 * Math.max(30, Math.abs(a - b)) / pz.d0, false); }
   }, true);
-  const pend = (e) => { if (!pts.delete(e.pointerId)) return; if (!pts.size) { if (pz) { try { localStorage.setItem('jfm_sph', hSl.value); } catch {} } pz = null; window.__pinch = false; } };
+  const pend = (e) => { if (!pts.delete(e.pointerId)) return; if (!pts.size) { if (pz) { try { localStorage.setItem('tgm_sph', hSl.value); } catch {} } pz = null; window.__pinch = false; } };
   document.addEventListener('pointerup', pend, true); document.addEventListener('pointercancel', pend, true);
 
   // GALAWIN ANG SPECTRUM: i-drag pakaliwa/pakanan ang waveform para ilipat ang tugtog (parang scrub); i-tap o i-drag ang manipis na overview sa ibaba para tumalon sa kahit saang bahagi ng kanta
@@ -2659,7 +2659,7 @@ if (mq.matches) { if (cvs[1] && cvs[1].parentNode === slot) slot.insertBefore(re
       if (!ctx.audioWorklet) throw 0;
       if (!capReady) capReady = ctx.audioWorklet.addModule(URL.createObjectURL(new Blob([CAP_CODE], { type: 'application/javascript' })));
       await capReady;
-      const n = new AudioWorkletNode(ctx, 'jfm-cap', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit' });
+      const n = new AudioWorkletNode(ctx, 'tgm-cap', { numberOfInputs: 1, numberOfOutputs: 1, outputChannelCount: [2], channelCount: 2, channelCountMode: 'explicit' });
       n.port.onmessage = (e) => onBlock(e.data.l, e.data.r);
       limiter.connect(n); n.connect(mute); return { n, mute };
     } catch (e) { capReady = null; }
@@ -3032,7 +3032,7 @@ decks.forEach((d)=>{try{Object.defineProperty(d.audio,'currentTime',{configurabl
 (function () {
   const S = 'tracks';
   const open = () => new Promise((res, rej) => {
-    const r = indexedDB.open('jfm', 2);
+    const r = indexedDB.open('tgm', 2);
     r.onupgradeneeded = () => { const db = r.result; if (!db.objectStoreNames.contains('fx')) db.createObjectStore('fx'); if (!db.objectStoreNames.contains(S)) db.createObjectStore(S); };
     r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
   });
@@ -3498,7 +3498,7 @@ decks.forEach((d)=>refresh(d.i));
 <script>
 /* AUDIO SETTINGS: naka-save lahat ng setting; pagbalik sa app, naandoon pa rin ang na-set mo */
 (function(){
-  const KEY='jfm_as_',IDS=['tracksGain','fxVol','micGain','micAec','echoAmt','echoTime','duckLvl','mixSec','voicePreset'];
+  const KEY='tgm_as_',IDS=['tracksGain','fxVol','micGain','micAec','echoAmt','echoTime','duckLvl','mixSec','voicePreset'];
   IDS.forEach((id)=>{
     const el=document.getElementById(id);if(!el)return;
     let sv=null;try{sv=localStorage.getItem(KEY+id)}catch{}
@@ -4073,13 +4073,13 @@ body.lite canvas.spec{visibility:hidden}
 <script>
 (function () {
   const sel = document.getElementById('o_lite'); if (!sel) return;
-  try { const v = localStorage.getItem('jfm_lite'); if (v === 'auto' || v === '1' || v === '0') sel.value = v; } catch (e) {}
+  try { const v = localStorage.getItem('tgm_lite'); if (v === 'auto' || v === '1' || v === '0') sel.value = v; } catch (e) {}
   function apply() {
     let on = sel.value === '1';
     if (sel.value === 'auto') { try { on = !!(ws || wantLive); } catch (e) { on = false; } }
     if (on !== !!window.__lite) { window.__lite = on; document.body.classList.toggle('lite', on); }
   }
-  sel.addEventListener('change', function () { try { localStorage.setItem('jfm_lite', sel.value); } catch (e) {} apply(); });
+  sel.addEventListener('change', function () { try { localStorage.setItem('tgm_lite', sel.value); } catch (e) {} apply(); });
   setInterval(apply, 1000); apply();
 })();
 </script>
