@@ -573,6 +573,11 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="128k" selected>128 kbps</option>
     <option value="192k">192 kbps</option>
   </select>
+  <label for="o_auto">Auto-lower bitrate when the connection is weak</label>
+  <select id="o_auto">
+    <option value="1" selected>On</option>
+    <option value="0">Off</option>
+  </select>
   <label for="o_retry">Auto-reconnect when the stream drops</label>
   <select id="o_retry">
     <option value="1" selected>On</option>
@@ -1853,6 +1858,7 @@ function getTcp() {
 }
 const Tcp = new Proxy({}, { get: (_, k) => { const t = getTcp(); return t ? t[k].bind(t) : undefined; } });
 let pending = 0, dropped = 0;
+let curBr = 128, maxBr = 128, hotN = 0, calmN = 0, adaptT = 0;   // AUTO BITRATE (mahinang wifi)
 let ws = null, wake = null, liveSince = 0, timer = null, proc = null, mut = null, enc = null, q = Promise.resolve();
 const statusEl = $('#status');
 // SETTINGS POPUPS: ⚙ (Output/Encoder) at 🎚 (Audio); nakatago kapag sarado
@@ -1881,7 +1887,7 @@ const b64 = (u) => { let s = ''; for (let i = 0; i < u.length; i += 0x8000) s +=
 const toI16 = (f) => { const o = new Int16Array(f.length); for (let i = 0; i < f.length; i++) { const v = Math.max(-1, Math.min(1, f[i])); o[i] = v < 0 ? v * 32768 : v * 32767; } return o; };
 function sendBytes(u) {
   if (!ws) return;
-  if (pending > 96000) { dropped++; return; }   // ~6s na backlog sa 128k: itapon ang bago imbes na lumaki ang delay/memory
+  if (pending > Math.max(24000, curBr * 750)) { dropped++; return; }   // ~6s na backlog: itapon ang bago imbes na lumaki ang delay/memory
   pending += u.length;
   q = q.then(() => Tcp.write({ data: b64(u) })).then(() => { pending -= u.length; }).catch((e) => stopLive('Connection lost: ' + (e.message || e)));
 }
@@ -1891,7 +1897,7 @@ function stopLive(msg) {
   if (proc) { try { limiter.disconnect(proc); } catch {} proc.onaudioprocess = null; try { proc.port.close(); } catch {} try { proc.disconnect(); } catch {} proc = null; }
   if (mut) { try { mut.disconnect(); } catch {} mut = null; }
   enc = null; encMain = null; if (encW) { try { encW.terminate(); } catch {} encW = null; }
-  clearInterval(timer);
+  clearInterval(timer); clearInterval(adaptT); adaptT = 0;
   if (was && getTcp()) Tcp.close().catch(() => {});
   if (wake) { wake.release().catch(() => {}); wake = null; }
   $('#liveBtn').textContent = '○\nGO LIVE';
@@ -1904,7 +1910,7 @@ const CAP_CODE = "class P extends AudioWorkletProcessor{constructor(){super();th
 async function startEncoder(br) {         // MP3 encoder sa Web Worker (hindi na bumibigat ang main thread); kapag hindi gumana, babalik sa dating paraan
   encMain = null;
   try {
-    const code = 'importScripts(' + JSON.stringify(new URL('lame.min.js', location.href).href) + ');var e;onmessage=function(m){var d=m.data;if(d.init){try{e=new lamejs.Mp3Encoder(2,d.sr,d.br);postMessage("ready")}catch(x){postMessage("fail")}return}if(!e)return;var o=e.encodeBuffer(d.l,d.r);if(o.length)postMessage(o)}';
+    const code = 'importScripts(' + JSON.stringify(new URL('lame.min.js', location.href).href) + ');var e;onmessage=function(m){var d=m.data;if(d.init){try{if(e){var f=e.flush();if(f.length)postMessage(f)}e=new lamejs.Mp3Encoder(2,d.sr,d.br);postMessage("ready")}catch(x){postMessage("fail")}return}if(!e)return;var o=e.encodeBuffer(d.l,d.r);if(o.length)postMessage(o)}';
     const w = new Worker(URL.createObjectURL(new Blob([code], { type: 'application/javascript' })));
     const ok = await new Promise((res) => {
       const t = setTimeout(() => res(false), 2500);
@@ -1912,10 +1918,30 @@ async function startEncoder(br) {         // MP3 encoder sa Web Worker (hindi na
       w.onerror = () => { clearTimeout(t); res(false); };
       w.postMessage({ init: true, sr: ctx.sampleRate, br });
     });
-    if (ok) { w.onerror = null; w.onmessage = (m) => sendBytes(m.data); encW = w; return; }
+    if (ok) { w.onerror = null; w.onmessage = (m) => { if (typeof m.data !== 'string') sendBytes(m.data); }; encW = w; return; }
     w.terminate();
   } catch {}
   encMain = new lamejs.Mp3Encoder(2, ctx.sampleRate, br);
+}
+const BR_STEPS = [48, 64, 96, 128, 192];
+function setLiveBitrate(br) {          // palitan ang MP3 bitrate habang live, walang reconnect
+  curBr = br;
+  if (encW) encW.postMessage({ init: true, sr: ctx.sampleRate, br });
+  else if (encMain) encMain = new lamejs.Mp3Encoder(2, ctx.sampleRate, br);
+}
+function adaptBitrate() {              // tumatakbo kada 1s: kapag naiipon ang data (mahina ang net), ibaba ang bitrate; kapag maayos na ulit, unti-unting ibalik
+  if (!ws || $('#o_auto').value !== '1') return;
+  const perSec = curBr * 125;
+  if (pending > perSec) { hotN++; calmN = 0; } else if (pending < perSec * 0.1) { calmN++; hotN = 0; } else { hotN = 0; calmN = 0; }
+  if (hotN >= 2) {
+    hotN = 0;
+    const lower = BR_STEPS.filter((x) => x < curBr).pop();
+    if (lower) setLiveBitrate(lower);
+  } else if (calmN >= 45 && curBr < maxBr) {
+    calmN = 0;
+    const higher = BR_STEPS.find((x) => x > curBr && x <= maxBr) || maxBr;
+    setLiveBitrate(Math.min(higher, maxBr));
+  }
 }
 async function startCapture(onBlock) {    // AudioWorklet (mas matatag); kapag hindi suportado, ScriptProcessor
   const mute = mut = ctx.createGain(); mute.gain.value = 0; mute.connect(ctx.destination);
@@ -1962,6 +1988,7 @@ async function goLive(isRetry) {
   setStatus(isRetry === true ? 'Reconnecting...' : 'Connecting...', false);
   ws = {}; q = Promise.resolve(); pending = 0; dropped = 0;
   const br = parseInt(c.bitrate, 10) || 128;
+  curBr = maxBr = br; hotN = calmN = 0;
   try {
     await Tcp.connect({ host: c.host, port: parseInt(c.port, 10) });
     const rd = async (ms) => (await Tcp.read({ timeoutMs: ms })).text || '';
@@ -1994,7 +2021,8 @@ async function goLive(isRetry) {
     liveSince = (isRetry === true && liveSince) ? liveSince : Date.now(); retryN = 0; daSince = 0; daAlarm = false; setTimeout(npAnnounce, 1500);
     $('#liveBtn').textContent = '■\nEND LIVE';
     $('#liveBtn').classList.add('live');
-    timer = setInterval(() => setStatus('🔴 LIVE  ' + fmt((Date.now() - liveSince) / 1000) + (dropped ? '  ⚠' + dropped : '') + (daAlarm ? '  ⚠ DEAD AIR' : ''), true), 1000);
+    clearInterval(adaptT); adaptT = setInterval(adaptBitrate, 1000);
+    timer = setInterval(() => setStatus('🔴 LIVE  ' + fmt((Date.now() - liveSince) / 1000) + (curBr < maxBr ? '  ↓' + curBr + 'k' : '') + (dropped ? '  ⚠' + dropped : '') + (daAlarm ? '  ⚠ DEAD AIR' : ''), true), 1000);
     setStatus('🔴 LIVE', true);
     if (navigator.wakeLock) navigator.wakeLock.request('screen').then((w) => (wake = w)).catch(() => {});
   } catch (e) { if (e && e.fatal) wantLive = false; stopLive(e.message || String(e)); }
