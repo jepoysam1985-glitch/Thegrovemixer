@@ -3957,8 +3957,9 @@ body{max-width:none!important}
 <style>
 /* PLAY/PAUSE: tinanggal sa jog wheel; nasa tabi na ng FADE OUT */
 .jog .jogc{display:none!important}
-.jbtns2{grid-template-columns:repeat(4,minmax(0,1fr))}
+.jbtns2{grid-template-columns:repeat(5,minmax(0,1fr))}
 .jbtns2>button[data-a=play]{font-size:13px!important}
+.jbtns2>button[data-a=stop]{font-size:13px!important}
 </style>
 <script>
 (function(){
@@ -3968,6 +3969,7 @@ body{max-width:none!important}
     var fade=d.i===0?document.getElementById('fadeBtn'):box.querySelector('.fadeMirror');
     if(!wrap||!play||!fade)return;
     fade.after(play);
+    var stopB=box.querySelector('[data-a=stop]'); if(stopB)fade.after(stopB);   /* STOP: kasunod ng FADE OUT */
     box.querySelectorAll('.jogc').forEach(function(c){c.remove()});
   });
 })();
