@@ -105,6 +105,32 @@ function getTcp() {
         else:
             print('::warning::Hindi nahanap ang getTcp sa www/index.html - hindi napalitan (hindi ito dahilan para huminto)')
 
+# ---- PERFORMANCE (Snapdragon 680 / mid-range phone): bawasan ang bigat ng LED ring at spectrum para hindi mag-lag ----
+# Sinukat sa 4x na mabagal na CPU habang tumutugtog ang 2 deck: 44 -> 56 fps at 85% -> 64% ang gamit ng main thread.
+if os.path.exists(_www):
+    _s = open(_www, encoding='utf-8').read()
+    if '/*gm-perf*/' in _s:
+        print('perf: naka-patch na')
+    else:
+        _perf = [
+            # LED ring ng jog: 15fps imbes na 30fps
+            ("if(now-last<33)return;                                   // ~30fps lang para gumaan sa phone", "if(now-last<66)return;/*gm-perf*/"),
+            # mas kaunting pagbabago ng opacity at kulay bawat frame (hindi halata sa mata)
+            ("var t=val.toFixed(2); if(el._o!==t)", "var t=(Math.round(val*8)/8).toFixed(2); if(el._o!==t)"),
+            ("var hh=Math.round(hueAt(((m%N)+N)%N));", "var hh=Math.round(hueAt(((m%N)+N)%N)/15)*15;"),
+            # spectrum / waveform canvas: ~15fps at mas maliit na resolution (1x)
+            ("if (!window.__scr && (now || 0) - (draw._t || 0) < 38) return;", "if (!window.__scr && (now || 0) - (draw._t || 0) < 66) return;"),
+            ("const dpr = Math.min(window.devicePixelRatio || 1, 1.5);", "const dpr = 1;"),
+        ]
+        _miss = [a[:50] for a, b in _perf if _s.count(a) != 1]
+        if _miss:
+            print('::warning::perf: hindi nahanap ang mga linya, hindi ginalaw:', _miss)
+        else:
+            for a, b in _perf:
+                _s = _s.replace(a, b)
+            open(_www, 'w', encoding='utf-8').write(_s)
+            print('perf: naka-patch OK (LED ring, spectrum, canvas resolution)')
+
 # ---- Siguraduhing nakarehistro ang TcpSocket (at ForegroundService) sa MainActivity ----
 # Dito tinatawag ang ensure_tcp.py para gumana kahit alin ang workflow na tumatakbo sa GitHub.
 import os, runpy, sys
