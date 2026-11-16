@@ -2255,6 +2255,10 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
     d.wf = null; d.wfState = 'busy'; d.bpm = 0; d.onset = null; bpmUpdate(d);
     if (!file) { d.wfState = 'none'; return; }
     if (file.size > WF_MAX) { d.wfState = 'live'; bpmUpdate(d); return; }
+    let onAir = false; try { onAir = !!(ws || wantLive); } catch (e) {}
+    if (onAir && file.size > 6 * 1048576) { d.wfState = 'live'; bpmUpdate(d); return; }   // habang on-air: malaking file = live waveform na lang (walang mabigat na decode)
+    await new Promise((r) => setTimeout(r, onAir ? 3000 : 400));   // hintayin munang tumahimik ang paglo-load/paglipat bago mag-analyze
+    if (tok !== d.wfTok) return;
     try {
       const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;   // 11025 Hz = ~4x mas maliit na memory
       let ac; try { ac = new AC(1, 1, 11025); } catch { ac = ctx; }
@@ -3064,7 +3068,9 @@ decks.forEach((d)=>{try{Object.defineProperty(d.audio,'currentTime',{configurabl
     busy = false;
     if (again) { again = false; save(); }
   }
-  window.persistTracks = () => { if (!ready) return; clearTimeout(tm); tm = setTimeout(save, 400); };
+  const isLiveNow = () => { try { return !!(ws || wantLive); } catch (e) { return false; } };
+  const saveLater = () => { if (isLiveNow()) { tm = setTimeout(saveLater, 8000); } else save(); };   // habang on-air, huwag munang kopyahin ang mga file sa storage; sasave pagkatapos
+  window.persistTracks = () => { if (!ready) return; clearTimeout(tm); tm = setTimeout(saveLater, 1500); };
   async function restore() {
     try {
       const db = await open();
