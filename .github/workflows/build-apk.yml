@@ -49,6 +49,24 @@ jobs:
           fi
           ls -la www
 
+      - name: Ilagay ang website now-playing key (galing sa GitHub Secret NP_KEY, wala sa repo)
+        env:
+          NP_KEY: ${{ secrets.NP_KEY }}
+        run: |
+          python3 - <<'PY'
+          import os
+          p = 'www/index.html'
+          s = open(p, encoding='utf-8').read()
+          k = os.environ.get('NP_KEY', '').strip()
+          if not k:
+              print('::warning::Walang NP_KEY secret: hindi magpapadala ng now-playing sa website ang APK na ito.')
+          else:
+              assert s.count('__NP_KEY__') == 1, 'placeholder not found exactly once'
+              s = s.replace('__NP_KEY__', k.replace('\\', '\\\\').replace("'", "\\'"))
+              open(p, 'w', encoding='utf-8').write(s)
+              print('NP_KEY inserted')
+          PY
+
       - name: Patch index.html para sa Capacitor plugins (TcpSocket, ForegroundService)
         run: python3 scripts/patch_web.py
 
