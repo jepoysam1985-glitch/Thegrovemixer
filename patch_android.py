@@ -1,4 +1,4 @@
-import re, shutil, pathlib
+import re, shutil, pathlib, os, sys
 root = pathlib.Path('android/app/src/main')
 mf = root / 'AndroidManifest.xml'
 x = mf.read_text(encoding='utf-8')
@@ -31,7 +31,11 @@ if 'AndroidForegroundService' not in x:
     x = x.replace('</application>', svc + '\n    </application>', 1)
 mf.write_text(x, encoding='utf-8')
 
-pkg_dir = root / 'java' / 'com' / 'groovemixer' / 'app'
+# Ang package folder ay DAPAT tugma sa appId (capacitor.config.json). Dati, 'com/groovemixer/app' ang
+# nilalagyan kaya nadodoble ang MainActivity at hindi nakarehistro ang TcpSocket sa APK.
+import json
+_app_id = json.load(open('capacitor.config.json', encoding='utf-8'))['appId']
+pkg_dir = root / 'java' / pathlib.Path(*_app_id.split('.'))
 pkg_dir.mkdir(parents=True, exist_ok=True)
 for f in pathlib.Path('native/java').glob('*.java'):
     shutil.copy(f, pkg_dir / f.name)
@@ -60,3 +64,53 @@ if st.exists():
         st.write_text(t, encoding='utf-8')
         print('styles.xml: fullscreen theme added')
 print('Android project patched OK')
+
+# ---- Mas malinaw na GO LIVE: hanapin ang TcpSocket sa iba't ibang paraan at ipakita kung ano ang nakarehistro ----
+# Inaayos ang www/index.html bago ang `cap sync`. Ligtas patakbuhin ulit; kapag iba ang code, babala lang (hindi titigil ang build).
+_www = 'www/index.html'
+if os.path.exists(_www):
+    _s = open(_www, encoding='utf-8').read()
+    if 'function nativePlugins()' in _s:
+        print('index.html: naka-patch na ang getTcp')
+    else:
+        _a = _s.find("let _tcp = null;\nfunction getTcp() {")
+        _b = _s.find("const Tcp = new Proxy({}")
+        _c = _s.find("  if (!getTcp()) { setStatus('No Capacitor/TcpSocket found.")
+        _d = _s.find("  if (!window.lamejs)", _c) if _c != -1 else -1
+        if _a != -1 and _b > _a and _c > _b and _d > _c:
+            NEW_GET = '''let _tcp = null;
+function nativePlugins() {   // pangalan ng mga native plugin na nakarehistro sa APK (null = hindi malaman)
+  try { const h = window.Capacitor && Capacitor.PluginHeaders; if (Array.isArray(h)) return h.map((x) => x.name); } catch (_e) {}
+  return null;
+}
+function getTcp() {
+  if (_tcp) return _tcp;
+  const C = window.Capacitor;
+  if (!C) return null;
+  let t = null;
+  try { if (C.Plugins && C.Plugins.TcpSocket) t = C.Plugins.TcpSocket; } catch (_e) {}
+  if (!t && typeof C.registerPlugin === 'function') { try { t = C.registerPlugin('TcpSocket'); } catch (_e) {} }
+  if (!t && typeof C.nativePromise === 'function') t = new Proxy({}, { get: (_, m) => (m === 'then' ? undefined : (o) => C.nativePromise('TcpSocket', m, o || {})) });
+  return (_tcp = t);
+}
+'''
+            NEW_CHK = '''  { const np = nativePlugins(), isNative = !!(window.Capacitor && Capacitor.isNativePlatform && Capacitor.isNativePlatform());
+    if (!window.Capacitor) { setStatus('Not running inside the APK app (no Capacitor). Install the APK, do not open in a browser.', false); return; }
+    if (!getTcp() || (np && !np.includes('TcpSocket'))) {
+      setStatus('APK is missing the TcpSocket plugin' + (isNative ? '' : ' (not native)') + (np ? ' - found: ' + (np.join(', ') || 'none') : '') + '. Rebuild the APK from the latest GitHub files.', false); return; } }
+'''
+            _s = _s[:_a] + NEW_GET + _s[_b:_c] + NEW_CHK + _s[_d:]
+            open(_www, 'w', encoding='utf-8').write(_s)
+            print('index.html: getTcp at diagnostics ay napalitan')
+        else:
+            print('::warning::Hindi nahanap ang getTcp sa www/index.html - hindi napalitan (hindi ito dahilan para huminto)')
+
+# ---- Siguraduhing nakarehistro ang TcpSocket (at ForegroundService) sa MainActivity ----
+# Dito tinatawag ang ensure_tcp.py para gumana kahit alin ang workflow na tumatakbo sa GitHub.
+import os, runpy, sys
+for _cand in ('ensure_tcp.py', 'scripts/ensure_tcp.py'):
+    if os.path.exists(_cand):
+        runpy.run_path(_cand, run_name='__main__')
+        break
+else:
+    sys.exit('::error::Walang ensure_tcp.py - i-upload ito sa pinakaibabaw ng repo')
