@@ -3197,30 +3197,41 @@ body.spcustom canvas.spec{height:var(--sph)!important}
 })();
 </script>
 <script>
-/* ON AIR SA BACKGROUND: habang live, tumatakbo ang foreground service (Android) para hindi mamatay ang tugtog at stream kapag lumabas sa app */
+/* BACKGROUND AUDIO: habang LIVE o may tumutugtog na deck, tumatakbo ang foreground service (Android) para hindi mawala ang music kapag lumabas sa app o nag-screen lock */
 (function(){
   const live=document.getElementById('liveBtn'); if(!live) return;
   const FS=window.Capacitor?(Capacitor.registerPlugin?Capacitor.registerPlugin('ForegroundService'):((Capacitor.Plugins&&Capacitor.Plugins.ForegroundService)||null)):null;
   const isLive=()=>live.classList.contains('live');
+  const isPlay=()=>{try{return decks.some((d)=>d.audio&&!d.audio.paused&&!d.audio.ended)}catch{return false}};
+  const want=()=>isLive()||isPlay();
   const ms=(s)=>{try{if('mediaSession' in navigator)navigator.mediaSession.playbackState=s}catch{}};
-  let on=false;
+  let on=false,mode='',offT=0,asked=false;
   async function start(){
-    if(on)return; on=true; ms('playing');
+    clearTimeout(offT);
+    const m=isLive()?'live':'play';
+    if(on&&m===mode)return; on=true; mode=m; ms('playing');
     if(!FS)return;
-    try{await FS.requestPermissions()}catch{}
-    try{await FS.startForegroundService({id:4242,title:'THE GROOVE MIXER \u2022 ON AIR',body:'Live ka pa. I-tap para bumalik sa app.',smallIcon:'ic_stat_icon'})}
-    catch(e){try{toast('Background service did not start: '+(e&&e.message||e))}catch{}}
+    if(!asked){asked=true;try{await FS.requestPermissions()}catch{}}
+    try{await FS.startForegroundService(m==='live'
+      ?{id:4242,title:'THE GROOVE MIXER \u2022 ON AIR',body:'Live ka pa. I-tap para bumalik sa app.',smallIcon:'ic_stat_icon'}
+      :{id:4242,title:'THE GROOVE MIXER',body:'Tumutugtog ang music. I-tap para bumalik sa app.',smallIcon:'ic_stat_icon'})}
+    catch(e){on=false;mode='';try{toast('Background service did not start: '+(e&&e.message||e))}catch{}}
   }
   async function stop(){
-    if(!on)return; on=false; ms('none');
+    if(!on)return; on=false; mode=''; ms('none');
     if(FS){try{await FS.stopForegroundService()}catch{}}
   }
-  const sync=()=>{isLive()?start():stop()};
+  const sync=()=>{
+    if(want()) start();
+    else if(on){clearTimeout(offT);offT=setTimeout(()=>{if(!want())stop()},8000)}   /* palugit habang lumilipat ng kanta */
+  };
   new MutationObserver(sync).observe(live,{attributes:true,attributeFilter:['class']});
+  try{decks.forEach((d)=>['play','playing','pause','ended','emptied'].forEach((ev)=>d.audio.addEventListener(ev,sync)))}catch{}
   sync();
-  const keep=()=>{if(isLive()&&document.hidden){try{if(ctx.state!=='running')ctx.resume()}catch{}}};
+  const keep=()=>{if(want()&&document.hidden){try{if(ctx.state!=='running')ctx.resume()}catch{}}};
   document.addEventListener('visibilitychange',keep);
   setInterval(keep,1500);
+  setInterval(sync,2000);
 })();
 </script>
 <style>
