@@ -1,5 +1,6 @@
 package com.groove.mixer;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.webkit.WebView;
 import com.getcapacitor.BridgeActivity;
@@ -8,6 +9,7 @@ public class MainActivity extends BridgeActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         registerPlugin(TcpSocketPlugin.class);   // dapat BAGO ang super.onCreate
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);   // LANDSCAPE LANG: walang portrait
         super.onCreate(savedInstanceState);
     }
 
