@@ -2301,7 +2301,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
   const PPS = 34;                  // pixel kada segundo sa zoomed waveform
   const OV = 240;                  // bilang ng column ng overview
   const OV_H = 8;                  // taas ng overview strip
-  const WF_MAX = 6 * 1048576; let CUR = null; const SPS = { mode: 'orig' };      // mas malaking file = live waveform na lang (iwas ubos ng memory sa phone)
+  const WF_MAX = 20 * 1048576; let CUR = null; const SPS = { mode: 'orig' };      // mas malaking file = live waveform na lang (iwas ubos ng memory sa phone)
 
   // PRE-ANALYSIS: binabasa ang buong kanta nang isang beses at kinukuha ang laki ng bass/mid/high bawat 10ms
   window.wfAnalyze = async function (d) {
@@ -2310,11 +2310,11 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
     if (!file) { d.wfState = 'none'; return; }
     if (file.size > WF_MAX) { d.wfState = 'live'; bpmUpdate(d); return; }
     let onAir = false; try { onAir = !!(ws || wantLive); } catch (e) {}
-    if (onAir && file.size > 6 * 1048576) { d.wfState = 'live'; bpmUpdate(d); return; }   // habang on-air: malaking file = live waveform na lang (walang mabigat na decode)
+    if (onAir && file.size > 12 * 1048576) { d.wfState = 'live'; bpmUpdate(d); return; }   // habang on-air: malaking file = live waveform na lang (walang mabigat na decode)
     await new Promise((r) => setTimeout(r, onAir ? 3000 : 600));   // hintayin munang tumahimik ang paglo-load/paglipat bago mag-analyze
     if (tok !== d.wfTok) return;
     const _anyPlay = () => { try { return decks.some((x) => x.audio && !x.audio.paused && !x.audio.ended); } catch (e) { return false; } };
-    if (_anyPlay()) { d.wfState = 'live'; bpmUpdate(d); return; }   // may tumutugtog: walang mabigat na decode (para hindi maputol ang music); live waveform na lang
+    if (_anyPlay() && file.size > 12 * 1048576) { d.wfState = 'live'; bpmUpdate(d); return; }   // may tumutugtog: walang mabigat na decode (para hindi maputol ang music); live waveform na lang
 
     try {
       const AC = window.OfflineAudioContext || window.webkitOfflineAudioContext;   // 11025 Hz = ~4x mas maliit na memory
