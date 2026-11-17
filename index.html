@@ -787,9 +787,11 @@ li.cur{background:#0f2a66;color:#fff}
     <ul id="list0"></ul>
     <input type="file" accept="audio/*,.mp3,.m4a,.aac,.wav,.ogg,.opus,.flac" multiple hidden id="file0">
   </div>
-  <div class="card vmeter" aria-label="Music and microphone level">
+  <div class="card vmeter" aria-label="Deck 1 and Deck 2 volume, microphone level">
     <div class="vmpair">
+      <div class="vscol d0"><span class="vl">D1</span><div class="vs" data-d="0" role="slider" tabindex="0" aria-orientation="vertical" aria-label="Deck 1 volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i></i><b></b></div></div>
       <div class="vmcol"><span class="vl" id="micLbl" aria-label="Microphone">🎤</span><div class="vm"><i id="meterMic"></i></div></div>
+      <div class="vscol d1"><span class="vl">D2</span><div class="vs" data-d="1" role="slider" tabindex="0" aria-orientation="vertical" aria-label="Deck 2 volume" aria-valuemin="0" aria-valuemax="100" aria-valuenow="100"><i></i><b></b></div></div>
     </div>
   </div>
   <div class="card deck" id="deck1">
@@ -4338,6 +4340,59 @@ html body .lrow>.jbtns2{flex:1 1 100%;width:auto;min-width:0;margin:4px 0 0}
       });
     })(0);
   }catch(e){ try{console.error('deck level',e);}catch(x){} }
+})();
+</script>
+<style>
+/* VOLUME SLIDER NG DECK 1 at DECK 2 sa gitna (patayo, magkabukod; kasabay ng Volume sa Audio Settings) */
+.vscol{display:flex;flex-direction:column;align-items:center;gap:4px;min-height:0}
+.vscol.d0{--c:var(--c1,#00e5ff)}.vscol.d1{--c:var(--c2,#ff3da6)}
+.vscol .vl{font-size:8px;letter-spacing:0;color:var(--c);text-shadow:0 0 5px var(--c)}
+.vs{position:relative;flex:1;width:14px;min-height:100px;border-radius:99px;background:#05050a;border:1px solid #ffffff2a;touch-action:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.vs::before{content:"";position:absolute;top:-4px;bottom:-4px;left:-6px;right:-6px}
+.vs i{position:absolute;left:0;right:0;bottom:0;height:100%;border-radius:99px;background:var(--c);opacity:.8;box-shadow:0 0 8px var(--c);pointer-events:none}
+.vs b{position:absolute;left:-4px;right:-4px;bottom:100%;height:9px;margin-bottom:-4.5px;border-radius:4px;background:#f2f2f8;border:1px solid #000;box-shadow:0 0 6px var(--c);pointer-events:none}
+.vs:focus-visible{box-shadow:0 0 0 2px var(--c)}
+@media not all and (orientation:landscape) and (max-height:900px) and (min-width:480px){
+  .decks,body>.decks{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)}
+  .vmpair{gap:2px}
+}
+</style>
+<script>
+(function(){
+  var sl=document.querySelectorAll('.vs[data-d]'); if(!sl.length||typeof decks==='undefined')return;
+  function src(i){ return document.querySelector('input[data-a=vol][data-deck="'+i+'"]')||document.querySelector('#deck'+i+' [data-a=vol]'); }
+  [].forEach.call(sl,function(el){
+    var i=+el.getAttribute('data-d'), fill=el.querySelector('i'), knob=el.querySelector('b'), pid=null;
+    function paint(v){ v=Math.max(0,Math.min(100,+v||0)); fill.style.height=v+'%'; knob.style.bottom=v+'%'; el.setAttribute('aria-valuenow',Math.round(v)); }
+    el._paint=paint;
+    function set(v){
+      v=Math.max(0,Math.min(100,Math.round(v)));
+      var s=src(i);
+      if(s){ s.value=v; s.dispatchEvent(new Event('input',{bubbles:true})); paint(+s.value); }
+      else { var d=decks[i]; d.vol=v/100; if(typeof applyFader==='function')applyFader(d); paint(v); }
+    }
+    function fromPt(e){ var r=el.getBoundingClientRect(); if(!r.height)return; set((1-(e.clientY-r.top)/r.height)*100); }
+    el.addEventListener('pointerdown',function(e){
+      if(pid!==null||(e.pointerType==='mouse'&&e.button!==0))return;
+      pid=e.pointerId; e.preventDefault(); try{el.setPointerCapture(pid)}catch(x){}
+      fromPt(e);
+    });
+    el.addEventListener('pointermove',function(e){ if(e.pointerId===pid)fromPt(e); });
+    function end(e){ if(e.pointerId===pid){ pid=null; try{el.releasePointerCapture(e.pointerId)}catch(x){} } }
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('lostpointercapture',end);
+    el.addEventListener('touchstart',function(e){ e.preventDefault(); },{passive:false});
+    el.addEventListener('keydown',function(e){
+      var s=src(i), cur=s?+s.value:+el.getAttribute('aria-valuenow'), k=e.key;
+      if(k==='ArrowUp'||k==='ArrowRight')set(cur+2); else if(k==='ArrowDown'||k==='ArrowLeft')set(cur-2); else return;
+      e.preventDefault();
+    });
+    var s0=src(i); paint(s0?+s0.value:100);
+  });
+  document.addEventListener('input',function(e){
+    var t=e.target; if(!t||!t.getAttribute||t.getAttribute('data-a')!=='vol')return;
+    var i=t.getAttribute('data-deck'); if(i===null){ var b=t.closest&&t.closest('.deck'); i=b?b.id.replace('deck',''):null; } if(i===null)return;
+    var el=document.querySelector('.vs[data-d="'+i+'"]'); if(el&&el._paint)el._paint(+t.value);
+  });
 })();
 </script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
