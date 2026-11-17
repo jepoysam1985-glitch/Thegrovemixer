@@ -2184,31 +2184,37 @@ decks.forEach((d) => {
 });
 </script>
 <script>
-// EQ bawat deck: LOW / MID / HIGH (-40 dB = kill, 0 = flat, +6 dB). Ang "EQ" button sa tabi ng Volume ang nagbubukas ng settings.
+// MASTER EQ (12-band): isa lang para sa lahat ng tracks (Deck 1 + Deck 2). Ang "EQ" button ay nasa gitna, sa ilalim ng mic meter. (-40 dB = kill, 0 = flat, +6 dB)
 (function () {
-  const BANDS = [['lowshelf', 31], ['peaking', 62], ['peaking', 125], ['peaking', 250], ['peaking', 500], ['peaking', 1000], ['peaking', 2000], ['peaking', 3000], ['peaking', 4000], ['peaking', 8000], ['peaking', 12000], ['highshelf', 16000]];   // 12-band EQ
-  const NB = BANDS.length, IDX = BANDS.map((_, k) => k);
+  const BANDS = [['lowshelf', 31], ['peaking', 62], ['peaking', 125], ['peaking', 250], ['peaking', 500], ['peaking', 1000], ['peaking', 2000], ['peaking', 3000], ['peaking', 4000], ['peaking', 8000], ['peaking', 12000], ['highshelf', 16000]];
+  const NB = BANDS.length, IDX = BANDS.map((_, k) => k), KEY = 'tgm_meq';
   const eqDb = (v) => (v >= 0 ? v * 0.06 : v * 0.4);
   const eqTxt = (v) => (v <= -98 ? 'KILL' : (v > 0 ? '+' : '') + eqDb(v).toFixed(0));
-  let cur = decks[0];
+  const nodes = BANDS.map(([type, f]) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (type === 'peaking') n.Q.value = 1.0; return n; });
+  let vals = IDX.map(() => 0);
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (Array.isArray(s) && s.length === NB) vals = s.map((x) => +x || 0); } catch (e) {}
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(vals)); } catch (e) {} };
+  nodes.forEach((n, k) => { n.gain.value = eqDb(vals[k]); });
+  try { tracksGain.disconnect(carve); } catch (e) {}
+  tracksGain.connect(nodes[0]); for (let k = 0; k < NB - 1; k++) nodes[k].connect(nodes[k + 1]); nodes[NB - 1].connect(carve);
+  // (nananatili ang .volrow sa bawat deck dahil ginagamit ito ng Audio Settings para sa Tempo/BPM)
   decks.forEach((d) => {
-    d.eqNodes = BANDS.map(([type, f]) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (type === 'peaking') n.Q.value = 1.0; return n; });
-    d.eqVals = IDX.map(() => 0);
-    d.fader.disconnect();
-    d.fader.connect(d.eqNodes[0]); for (let k = 0; k < NB - 1; k++) d.eqNodes[k].connect(d.eqNodes[k + 1]); d.eqNodes[NB - 1].connect(d.cross);
     const vol = $('#deck' + d.i + ' [data-a=vol]');
     const row = document.createElement('div'); row.className = 'volrow';
-    const b = document.createElement('button'); b.className = 'eqbtn'; b.textContent = 'EQ'; b.setAttribute('aria-label', 'Deck ' + (d.i + 1) + ' EQ settings');
-    vol.before(row); row.append(vol); d.eqBtn = b; const vcol = document.querySelector('.vscol.d' + d.i); if (vcol) vcol.appendChild(b); else row.append(b);   // EQ button: nasa ilalim ng volume slider sa gitna
-    b.onclick = () => {
-      cur = d; $('#eqTitle').textContent = 'EQ · Deck ' + (d.i + 1);
-      IDX.forEach((k) => { $('#eq' + k).value = d.eqVals[k]; $('#eqv' + k).textContent = eqTxt(d.eqVals[k]); });
-      showModal('#eqModal', true);
-    };
+    vol.before(row); row.append(vol);
   });
+  const b = document.createElement('button'); b.className = 'eqbtn'; b.textContent = 'EQ'; b.setAttribute('aria-label', 'Master EQ');
+  const mc = document.querySelector('.vmcol'); if (mc) mc.appendChild(b); else document.body.appendChild(b);
+  const paint = () => b.classList.toggle('on', vals.some((x) => x !== 0));
+  paint();
+  b.onclick = () => {
+    $('#eqTitle').textContent = 'MASTER EQ';
+    IDX.forEach((k) => { $('#eq' + k).value = vals[k]; $('#eqv' + k).textContent = eqTxt(vals[k]); });
+    showModal('#eqModal', true);
+  };
   function setBand(k, v) {
-    cur.eqVals[k] = v; cur.eqNodes[k].gain.setTargetAtTime(eqDb(v), ctx.currentTime, 0.02);
-    $('#eqv' + k).textContent = eqTxt(v); cur.eqBtn.classList.toggle('on', cur.eqVals.some((x) => x !== 0));
+    vals[k] = v; nodes[k].gain.setTargetAtTime(eqDb(v), ctx.currentTime, 0.02);
+    $('#eqv' + k).textContent = eqTxt(v); paint(); save();
   }
   IDX.forEach((k) => {
     $('#eq' + k).oninput = (e) => { let v = parseFloat(e.target.value); if (Math.abs(v) <= 4) { v = 0; e.target.value = 0; } setBand(k, v); };
@@ -3569,7 +3575,7 @@ decks.forEach((d)=>refresh(d.i));
 })();
 </script>
 <style>
-.vscol .eqbtn{width:100%!important;max-width:34px;min-width:0!important;height:22px!important;padding:0!important;margin:2px 0 0!important;font-size:9px!important;font-weight:700;line-height:1}
+.vscol .eqbtn,.vmcol .eqbtn{width:100%!important;max-width:34px;min-width:0!important;height:22px!important;padding:0!important;margin:2px 0 0!important;font-size:9px!important;font-weight:700;line-height:1}
 .eqcols12{display:flex;gap:2px;justify-content:space-between;margin-top:14px}
 .eqcols12 .eqc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px}
 .eqcols12 .eqc input[type=range]{writing-mode:vertical-lr;direction:rtl;width:24px!important;height:170px;margin:0;padding:0}
