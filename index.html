@@ -4144,8 +4144,7 @@ body.lite canvas.spec{visibility:hidden}
     var st = document.createElement('style');
     st.textContent =
       '#list0,#list1{display:none!important}' +
-      '.addrow{grid-template-columns:1fr auto}' +
-      '.addrow .lbtn{width:46px;padding:0;font-size:16px}' +
+      '.addrow .lbtn{width:100%;font-size:12px}' +
       '#listModal #lmList{max-height:62vh!important;margin-top:10px}' +
       '#listModal .lmtabs{display:flex;gap:6px;margin-top:10px}' +
       '#listModal .lmtabs button{flex:1;height:38px}' +
@@ -4191,7 +4190,7 @@ body.lite canvas.spec{visibility:hidden}
     [0, 1].forEach(function (i) {
       var a = document.querySelector('#deck' + i + ' [data-a="add"]') || adds[i];
       if (!a || !a.parentNode) return;
-      var b = document.createElement('button'); b.type = 'button'; b.className = 'lbtn'; b.textContent = '\uD83D\uDCC2'; b.setAttribute('aria-label', 'Open track list of deck ' + (i + 1));
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'lbtn'; b.textContent = '\uD83D\uDCC2 LIST'; b.setAttribute('aria-label', 'Open track list of deck ' + (i + 1));
       b.onclick = function () { open(i); };
       a.after(b);
     });
