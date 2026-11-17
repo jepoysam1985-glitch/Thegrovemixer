@@ -4302,6 +4302,45 @@ html body .lrow>.jbtns2{flex:1 1 100%;width:auto;min-width:0;margin:4px 0 0}
   }catch(e){}
 })();
 </script>
+<style>
+/* LEVEL NG MUSIC: magkabukod para sa DECK 1 at DECK 2 (nasa ilalim ng mga button ng deck) */
+.dlv{flex:1 1 100%;display:flex;align-items:center;gap:6px;margin-top:4px;min-width:0}
+.dlv .dlt{flex:none;font-size:9px;font-weight:700;letter-spacing:.5px;color:#bffaff;text-shadow:0 0 5px #00f0ff,0 0 11px #00f0ff}
+.dlv .dlbar{position:relative;flex:1;min-width:0;height:10px;border-radius:4px;overflow:hidden;background:linear-gradient(90deg,#00f0ff 0%,#3d7bff 45%,#b026ff 75%,#ff2bd6 100%);box-shadow:0 0 6px #00f0ff88}
+.dlv .dlbar i{position:absolute;top:0;right:0;bottom:0;left:0;background:rgba(3,4,8,.9);transform-origin:100% 50%;will-change:transform}
+.dlv .dlbar::after{content:"";position:absolute;top:0;right:0;bottom:0;left:0;pointer-events:none;background:repeating-linear-gradient(90deg,transparent 0 5px,#050508 5px 7px)}
+</style>
+<script>
+(function(){
+  try{
+    if(typeof decks==='undefined'||typeof ctx==='undefined')return;
+    var meters=[];
+    decks.forEach(function(d){
+      var lr=document.getElementById('lrow'+d.i); if(!lr||document.getElementById('dlv'+d.i))return;
+      var wrap=document.createElement('div'); wrap.className='dlv'; wrap.id='dlv'+d.i; wrap.setAttribute('aria-label','Music level ng Deck '+(d.i+1));
+      var t=document.createElement('span'); t.className='dlt'; t.textContent='\u266A D'+(d.i+1);
+      var bar=document.createElement('div'); bar.className='dlbar'; var fill=document.createElement('i'); bar.appendChild(fill);
+      wrap.appendChild(t); wrap.appendChild(bar); lr.appendChild(wrap);
+      var an=ctx.createAnalyser(); an.fftSize=512;
+      try{ d.fader.connect(an); }catch(e){ return; }   /* kinukuha pagkatapos ng volume/mute ng deck; hindi nakakaapekto sa tunog */
+      meters.push({an:an,buf:new Float32Array(512),el:fill,lv:0,last:-1});
+    });
+    if(!meters.length)return;
+    var T=0;
+    (function loop(t){
+      requestAnimationFrame(loop);
+      if(t-T<40||document.hidden)return; T=t||0;   /* ~25fps lang: magaan */
+      meters.forEach(function(m){
+        m.an.getFloatTimeDomainData(m.buf);
+        var p=0; for(var i=0;i<m.buf.length;i++){var v=m.buf[i]<0?-m.buf[i]:m.buf[i]; if(v>p)p=v;}
+        m.lv=Math.max(Math.min(1,p),m.lv*0.82);
+        var sc=Math.round((1-m.lv)*50)/50;
+        if(sc!==m.last){m.last=sc; m.el.style.transform='scaleX('+sc+')';}
+      });
+    })(0);
+  }catch(e){ try{console.error('deck level',e);}catch(x){} }
+})();
+</script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
