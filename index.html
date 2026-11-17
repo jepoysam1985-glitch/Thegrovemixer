@@ -2688,7 +2688,7 @@ if (mq.matches) { if (cvs[1] && cvs[1].parentNode === slot) slot.insertBefore(re
   }
   if (mq.addEventListener) mq.addEventListener('change', placeBm); else mq.addListener(placeBm);
   placeBm();
-  const pl = document.getElementById('plBtn'); if (pl) pl.remove();   // inalis ang LISTS (folder) button
+  // ibinalik ang 📂 LISTS (folder) button: popup ng playlists
   if (mq.addEventListener) mq.addEventListener('change', place); else mq.addListener(place);
   window.__spPlaceAll = place;
   place();
