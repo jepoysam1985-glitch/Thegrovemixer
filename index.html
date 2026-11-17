@@ -4150,18 +4150,18 @@ body.lite canvas.spec{visibility:hidden}
       '.lrow .lbtn{flex:1 1 0;width:auto;min-width:0;height:34px;overflow:hidden;white-space:nowrap;background:transparent;border-style:dashed;font-size:12px}' +
       '.lrow #mixBtn,.lrow #gearBtn{flex:none;width:32px!important;height:22px!important;border-radius:8px!important;font-size:12px!important;padding:0!important;line-height:1!important}' +
       '@media (orientation:landscape) and (max-height:900px) and (min-width:480px){.lrow .lbtn{height:22px!important;font-size:10px!important;padding:0 2px!important}#listModal #lmList{max-height:48vh!important}}' +
-      '#waveHead{display:none}' +
+      '#waveHead{display:none}.wAdd{display:none}' +
       '@media (orientation:landscape) and (max-height:900px) and (min-width:480px){' +
         '#waveBox{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}' +
         '#waveBox>#specTop{flex:none;width:100%}' +
         '#waveHead{display:flex;gap:8px;align-items:center;min-width:0}' +
         '#waveHead .wh{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:5px}' +
         '#whMid{flex:none}' +
-        '#waveHead .wAdd{flex:none;width:auto;height:24px;padding:0 8px;font-size:10px;white-space:nowrap;border-radius:8px}' +
-        '#waveHead .wNow{flex:none;min-width:0;height:16px;line-height:16px;padding:0 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7px;font-weight:600;background:#02030a;border-radius:6px;border-left:3px solid}' +
-        '#waveHead .wh0 .wNow{color:var(--c1);border-left-color:var(--c1)}#waveHead .wh1 .wNow{color:var(--c2);border-left-color:var(--c2)}' +
+        '.wAdd{display:flex;align-items:center;justify-content:center;flex:none;align-self:stretch;width:40px;min-height:38px;padding:0;border-radius:10px;background:#d8d8d8;border:0}.wAdd svg{width:22px;height:22px;fill:#111}' +
+        '#waveHead .wNow{flex:none;min-width:0;height:14px;line-height:14px;padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;font-weight:600;background:none;border:0;color:#e6e6e6;cursor:pointer}' +
+        '#waveHead .wh1 .wcol{align-items:flex-end;text-align:right}' +
         '#waveHead .wcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:1px}' +
-        '#waveHead .wTime{font-family:ui-monospace,"Courier New",monospace;font-size:8px;line-height:10px;padding:0 6px;white-space:nowrap;opacity:.9}' +
+        '#waveHead .wTime{font-family:ui-monospace,"Courier New",monospace;font-size:8px;line-height:10px;padding:0;white-space:nowrap;opacity:.9}' +
         '#waveHead .wh0 .wTime{color:var(--c1)}#waveHead .wh1 .wTime{color:var(--c2)}' +
         '.wHide{display:none!important}#now0,#now1,#time0,#time1{display:none!important}' +
       '}' +
@@ -4236,19 +4236,21 @@ body.lite canvas.spec{visibility:hidden}
       var wb = document.createElement('div'); wb.id = 'waveBox';
       var hd = document.createElement('div'); hd.id = 'waveHead';
       var mid = document.createElement('div'); mid.id = 'whMid';
+      var abs = [];
       var halves = [0, 1].map(function (i) {
         var h = document.createElement('div'); h.className = 'wh wh' + i;
-        var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'wAdd'; ab.textContent = '\uD83C\uDFB5 Add Tracks';
+        var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'wAdd'; ab.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="9,4 21,2 21,6.2 9,8.2"/><rect x="9" y="4" width="2" height="13"/><rect x="19" y="2" width="2" height="13"/><ellipse cx="7.6" cy="17.6" rx="3.6" ry="2.7" transform="rotate(-20 7.6 17.6)"/><ellipse cx="17.6" cy="15.6" rx="3.6" ry="2.7" transform="rotate(-20 17.6 15.6)"/></svg>';
         ab.setAttribute('aria-label', 'Add tracks to deck ' + (i + 1));
         ab.onclick = function () { var f = document.getElementById('file' + i); if (f) f.click(); };
         var nt = document.createElement('div'); nt.className = 'wNow'; nt.id = 'wNow' + i;
         var tm = document.createElement('div'); tm.className = 'wTime'; tm.id = 'wTime' + i; tm.textContent = '0:00 / 0:00';
         var col = document.createElement('div'); col.className = 'wcol'; col.appendChild(nt); col.appendChild(tm);
-        h.appendChild(ab); h.appendChild(col);
+        abs[i] = ab; h.appendChild(col);
         return h;
       });
       hd.appendChild(halves[0]); hd.appendChild(mid); hd.appendChild(halves[1]);
       spt.parentNode.insertBefore(wb, spt); wb.appendChild(hd); wb.appendChild(spt);
+      var tbar = wb.parentNode; tbar.insertBefore(abs[0], wb); tbar.insertBefore(abs[1], wb.nextSibling);
       [0, 1].forEach(function (i) {
         var ts = document.getElementById('time' + i), td = document.getElementById('wTime' + i);
         if (ts && td) {
@@ -4258,7 +4260,8 @@ body.lite canvas.spec{visibility:hidden}
         }
         var src = document.getElementById('now' + i), dst = document.getElementById('wNow' + i);
         if (!src || !dst) return;
-        var sync = function () { var x = (src.textContent || '').replace(/\s+/g, ' ').trim(); if (dst.textContent !== (x || 'No track')) dst.textContent = x || 'No track'; };
+        var sync = function () { var x = (src.textContent || '').replace(/\s+/g, ' ').trim(); if (!x || x === 'No track') x = 'Add Track'; if (dst.textContent !== x) dst.textContent = x; };
+        dst.onclick = function () { if (dst.textContent === 'Add Track') { var f = document.getElementById('file' + i); if (f) f.click(); } };
         sync();
         try { new MutationObserver(sync).observe(src, { childList: true, characterData: true, subtree: true }); } catch (e) {}
         setInterval(sync, 2000);
