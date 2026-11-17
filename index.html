@@ -2184,19 +2184,37 @@ decks.forEach((d) => {
 });
 </script>
 <script>
-// MASTER EQ (12-band): isa lang para sa lahat ng tracks (Deck 1 + Deck 2). Ang "EQ" button ay nasa gitna, sa ilalim ng mic meter. (-40 dB = kill, 0 = flat, +6 dB)
+// MASTER EQ (12-band): isa lang para sa lahat ng tracks (Deck 1 + Deck 2). Ang "EQ" button ay nasa gitna, sa ilalim ng mic meter.
+// Pantay na ±12 dB bawat band (dB mismo ang halaga ng slider), 0 = flat. Octave-spaced ang Q kaya makinis ang pagsasama ng mga band, at may auto-headroom para hindi mag-clip kapag nag-boost.
 (function () {
-  const BANDS = [['lowshelf', 31], ['peaking', 62], ['peaking', 125], ['peaking', 250], ['peaking', 500], ['peaking', 1000], ['peaking', 2000], ['peaking', 3000], ['peaking', 4000], ['peaking', 8000], ['peaking', 12000], ['highshelf', 16000]];
-  const NB = BANDS.length, IDX = BANDS.map((_, k) => k), KEY = 'tgm_meq';
-  const eqDb = (v) => (v >= 0 ? v * 0.06 : v * 0.4);
-  const eqTxt = (v) => (v <= -98 ? 'KILL' : (v > 0 ? '+' : '') + eqDb(v).toFixed(0));
-  const nodes = BANDS.map(([type, f]) => { const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f; if (type === 'peaking') n.Q.value = 1.0; return n; });
+  const BANDS = [
+    ['lowshelf', 31, 0.7], ['peaking', 62, 1.4], ['peaking', 125, 1.4], ['peaking', 250, 1.4],
+    ['peaking', 500, 1.4], ['peaking', 1000, 1.4], ['peaking', 2000, 1.4], ['peaking', 3000, 2.2],
+    ['peaking', 4000, 2.2], ['peaking', 8000, 1.4], ['peaking', 12000, 1.4], ['highshelf', 16000, 0.7]
+  ];
+  const NB = BANDS.length, IDX = BANDS.map((_, k) => k), KEY = 'tgm_meq2';
+  const RANGE = 12, STEP = 0.5, SNAP = 0.5;
+  const clampDb = (v) => Math.max(-RANGE, Math.min(RANGE, +v || 0));
+  const eqTxt = (v) => (v > 0 ? '+' : '') + (Math.round(v * 2) / 2).toFixed(1).replace(/\.0$/, '');
+  const nodes = BANDS.map(([type, f, q]) => {
+    const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f;
+    if (type === 'peaking') n.Q.value = q; else n.Q.value = 0.7071;
+    n.gain.value = 0; return n;
+  });
+  // auto-headroom: binabawasan ang kabuuang level depende sa pinakamalaking boost para walang clipping
+  const headroom = ctx.createGain(); headroom.gain.value = 1;
   let vals = IDX.map(() => 0);
-  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (Array.isArray(s) && s.length === NB) vals = s.map((x) => +x || 0); } catch (e) {}
+  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (Array.isArray(s) && s.length === NB) vals = s.map(clampDb); } catch (e) {}
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify(vals)); } catch (e) {} };
-  nodes.forEach((n, k) => { n.gain.value = eqDb(vals[k]); });
+  const applyHeadroom = () => {
+    const peak = Math.max(0, ...vals);
+    headroom.gain.setTargetAtTime(Math.pow(10, -(peak * 0.6) / 20), ctx.currentTime, 0.05);
+  };
+  nodes.forEach((n, k) => { n.gain.value = vals[k]; });
+  applyHeadroom();
   try { tracksGain.disconnect(carve); } catch (e) {}
-  tracksGain.connect(nodes[0]); for (let k = 0; k < NB - 1; k++) nodes[k].connect(nodes[k + 1]); nodes[NB - 1].connect(carve);
+  tracksGain.connect(nodes[0]); for (let k = 0; k < NB - 1; k++) nodes[k].connect(nodes[k + 1]);
+  nodes[NB - 1].connect(headroom); headroom.connect(carve);
   // (nananatili ang .volrow sa bawat deck dahil ginagamit ito ng Audio Settings para sa Tempo/BPM)
   decks.forEach((d) => {
     const vol = $('#deck' + d.i + ' [data-a=vol]');
@@ -2207,17 +2225,21 @@ decks.forEach((d) => {
   const mc = document.querySelector('.vmcol'); if (mc) mc.appendChild(b); else document.body.appendChild(b);
   const paint = () => b.classList.toggle('on', vals.some((x) => x !== 0));
   paint();
-  b.onclick = () => {
-    $('#eqTitle').textContent = 'MASTER EQ';
-    IDX.forEach((k) => { $('#eq' + k).value = vals[k]; $('#eqv' + k).textContent = eqTxt(vals[k]); });
-    showModal('#eqModal', true);
-  };
+  IDX.forEach((k) => {
+    const el = $('#eq' + k);
+    el.min = -RANGE; el.max = RANGE; el.step = STEP;
+  });
+  const show = () => IDX.forEach((k) => { $('#eq' + k).value = vals[k]; $('#eqv' + k).textContent = eqTxt(vals[k]); });
+  b.onclick = () => { $('#eqTitle').textContent = 'MASTER EQ (dB)'; show(); showModal('#eqModal', true); };
   function setBand(k, v) {
-    vals[k] = v; nodes[k].gain.setTargetAtTime(eqDb(v), ctx.currentTime, 0.02);
-    $('#eqv' + k).textContent = eqTxt(v); paint(); save();
+    v = clampDb(v); vals[k] = v;
+    nodes[k].gain.setTargetAtTime(v, ctx.currentTime, 0.02);
+    $('#eqv' + k).textContent = eqTxt(v); applyHeadroom(); paint(); save();
   }
   IDX.forEach((k) => {
-    $('#eq' + k).oninput = (e) => { let v = parseFloat(e.target.value); if (Math.abs(v) <= 4) { v = 0; e.target.value = 0; } setBand(k, v); };
+    const el = $('#eq' + k);
+    el.oninput = (e) => { let v = parseFloat(e.target.value); if (Math.abs(v) <= SNAP) { v = 0; e.target.value = 0; } setBand(k, v); };
+    el.ondblclick = () => { el.value = 0; setBand(k, 0); };
   });
   $('#eqReset').onclick = () => IDX.forEach((k) => { $('#eq' + k).value = 0; setBand(k, 0); });
   $('#closeEq').onclick = $('#closeEq2').onclick = () => showModal('#eqModal', false);
