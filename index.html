@@ -789,7 +789,6 @@ li.cur{background:#0f2a66;color:#fff}
   </div>
   <div class="card vmeter" aria-label="Music and microphone level">
     <div class="vmpair">
-      <div class="vmcol"><span class="vl" aria-label="Music">♪</span><div class="vm"><i id="meterMusic"></i></div></div>
       <div class="vmcol"><span class="vl" id="micLbl" aria-label="Microphone">🎤</span><div class="vm"><i id="meterMic"></i></div></div>
     </div>
   </div>
@@ -1894,7 +1893,7 @@ $('#fxVol').oninput = (e) => { fxGain.gain.value = e.target.value / 100; $('#fxv
 fxRender(); fxLoadAll();
 
 // METER
-const meterMusic = $('#meterMusic'), meterMic = $('#meterMic');
+const meterMic = $('#meterMic');
 const musicAn = ctx.createAnalyser(); musicAn.fftSize = 512;
 duckGain.connect(musicAn); fxGain.connect(musicAn);          // MUSIC = mga kanta + effects (bago ang mic)
 const mBuf = new Float32Array(512), cBuf = new Float32Array(micAn.fftSize);   // MIC = boses mula sa mic (pagkatapos ng noise gate at gain)
@@ -1909,7 +1908,7 @@ let _mtT = 0;
   requestAnimationFrame(loop);
   if (t - _mtT < 22) return;      // ~30fps lang ang meter: mas magaan, hindi halata sa mata
   _mtT = t || 0;
-  peakOf(musicAn, mBuf, meterMusic); const mp = peakOf(micAn, cBuf, meterMic), nc = performance.now();
+  const mp = peakOf(micAn, cBuf, meterMic), nc = performance.now();
   if (mp >= 0.95) clipUntil = nc + 1500;
   const cl = nc < clipUntil; if (cl !== clipOn) { clipOn = cl; micLbl.textContent = cl ? '🔴' : '🎤'; }
 })();
