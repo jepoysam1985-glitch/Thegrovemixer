@@ -3841,14 +3841,16 @@ body{max-width:none!important}
 (function(){
   var sheet=document.querySelector('#mixSettings .sheet'), head=sheet&&sheet.querySelector('.sheethead'); if(!head||typeof decks==='undefined')return;
   var sec=document.createElement('div'); sec.id='deckAudio';
+  var hid=document.createElement('div'); hid.id='deckVolHidden'; hid.hidden=true; hid.style.display='none'; document.body.appendChild(hid);
   decks.forEach(function(d){
     var box=document.getElementById('deck'+d.i); if(!box)return;
     var vr=box.querySelector('.volrow'), bpm=box.querySelector('.bpmrow'); if(!vr||!bpm)return;
     var g=document.createElement('div'); g.className='dset d'+d.i;
     var t=document.createElement('b'); t.textContent='DECK '+(d.i+1); g.appendChild(t);
     var vol=vr.querySelector('input[data-a=vol]'); if(vol)vol.setAttribute('data-deck',d.i);
-    var lb=vr.previousElementSibling; if(lb&&lb.tagName==='LABEL')g.appendChild(lb);
-    g.appendChild(vr);
+    /* TINANGGAL sa Audio Settings: Volume slider + EQ button ng Deck 1 & 2 (nasa DOM pa rin, nakatago, para gumana pa rin ang volume sa gitna at MIDI) */
+    var lb=vr.previousElementSibling; if(lb&&lb.tagName==='LABEL')hid.appendChild(lb);
+    hid.appendChild(vr);
     var bl=document.createElement('label'); bl.textContent='Tempo / BPM'; g.appendChild(bl);
     g.appendChild(bpm); sec.appendChild(g);
   });
