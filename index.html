@@ -896,7 +896,7 @@ const $ = (s) => document.querySelector(s);
 // TOAST: non-blocking na kapalit ng toast() (hinaharang ng alert ang audio thread habang live)
 let toastT;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), Math.min(9000, 3000 + msg.length * 45)); }
-const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100, latencyHint: 0 });
+const ctx = new (window.AudioContext || window.webkitAudioContext)({ latencyHint: 0 });
 const master = ctx.createGain();
 const tracksGain = ctx.createGain();
 const duckGain = ctx.createGain();
