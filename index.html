@@ -643,6 +643,7 @@ li.cur{background:#0f2a66;color:#fff}
   <div class="sheethead"><b>Audio Settings</b><button id="closeMix" aria-label="Close audio settings">✕</button></div>
   <label style="margin-top:14px">Tracks Gain: <b id="tgdb">0.0 dB</b></label>
   <input type="range" min="0" max="150" value="100" id="tracksGain" aria-label="Tracks Gain">
+  <div id="eq12"></div>
   <label>Effects Volume: <b id="fxv">100%</b></label>
   <input type="range" min="0" max="150" value="100" id="fxVol">
   <label>Microphone Gain: <b id="mgdb">0.0 dB</b></label>
@@ -3581,6 +3582,45 @@ decks.forEach((d)=>refresh(d.i));
   new MutationObserver(()=>m.classList.toggle('on',fb.classList.contains('on'))).observe(fb,{attributes:true,attributeFilter:['class']});
 })();
 </script>
+<style>
+#eq12{margin:10px 0 4px;padding:8px 6px 10px;border:1px solid #ffffff22;border-radius:10px}
+#eq12 .eqh{display:flex;justify-content:space-between;align-items:center;font-size:12px;letter-spacing:1px;margin:0 4px 6px}
+#eq12 .eqh button{height:28px;padding:0 10px;font-size:11px}
+#eq12 .eqcols{display:flex;gap:2px;justify-content:space-between}
+#eq12 .eqc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+#eq12 .eqc input[type=range]{writing-mode:vertical-lr;direction:rtl;width:26px!important;height:120px;margin:0;padding:0}
+#eq12 .eqc small{font-size:9px;opacity:.8;line-height:1}
+#eq12 .eqc em{font-style:normal;font-size:9px;opacity:.65;line-height:1}
+</style>
+<script>
+/* 12-BAND MASTER EQ (Tracks): nasa ilalim ng Tracks Gain; -12 hanggang +12 dB; naka-save */
+(function(){
+  var box=document.getElementById('eq12'); if(!box||typeof ctx==='undefined'||typeof tracksGain==='undefined')return;
+  var F=[31,62,125,250,500,1000,2000,3000,4000,8000,12000,16000];
+  var LBL=['31','62','125','250','500','1k','2k','3k','4k','8k','12k','16k'];
+  var KEY='tgm_eq12', vals=F.map(function(){return 0});
+  try{var s=JSON.parse(localStorage.getItem(KEY)||'null'); if(Array.isArray(s)&&s.length===12)vals=s.map(function(x){return +x||0});}catch(e){}
+  var nodes=F.map(function(f,i){var n=ctx.createBiquadFilter(); n.type=i===0?'lowshelf':(i===F.length-1?'highshelf':'peaking'); n.frequency.value=f; if(n.type==='peaking')n.Q.value=1.4; n.gain.value=vals[i]; return n;});
+  try{ tracksGain.disconnect(carve); }catch(e){}
+  tracksGain.connect(nodes[0]); for(var k=0;k<nodes.length-1;k++)nodes[k].connect(nodes[k+1]); nodes[nodes.length-1].connect(carve);
+  var h=document.createElement('div'); h.className='eqh'; h.innerHTML='<b>EQ 12-BAND</b>';
+  var rs=document.createElement('button'); rs.textContent='Reset'; h.appendChild(rs); box.appendChild(h);
+  var cols=document.createElement('div'); cols.className='eqcols'; box.appendChild(cols);
+  var ins=[],outs=[];
+  function txt(v){return (v>0?'+':'')+v.toFixed(0)}
+  function save(){try{localStorage.setItem(KEY,JSON.stringify(vals))}catch(e){}}
+  function set(i,v){vals[i]=v; nodes[i].gain.setTargetAtTime(v,ctx.currentTime,0.02); outs[i].textContent=txt(v);}
+  F.forEach(function(f,i){
+    var c=document.createElement('div'); c.className='eqc';
+    var o=document.createElement('em'); outs.push(o);
+    var r=document.createElement('input'); r.type='range'; r.min=-12; r.max=12; r.step=0.5; r.value=vals[i]; r.setAttribute('aria-label','EQ '+LBL[i]+' Hz'); ins.push(r);
+    var l=document.createElement('small'); l.textContent=LBL[i];
+    r.oninput=function(){var v=parseFloat(r.value); if(Math.abs(v)<=0.75){v=0;r.value=0;} set(i,v); save();};
+    c.append(o,r,l); cols.appendChild(c); o.textContent=txt(vals[i]);
+  });
+  rs.onclick=function(){ins.forEach(function(r,i){r.value=0;set(i,0)}); save();};
+})();
+</script>
 <script>
 /* AUDIO SETTINGS: naka-save lahat ng setting; pagbalik sa app, naandoon pa rin ang na-set mo */
 (function(){
@@ -3846,7 +3886,6 @@ body{max-width:none!important}
     var box=document.getElementById('deck'+d.i); if(!box)return;
     var vr=box.querySelector('.volrow'), bpm=box.querySelector('.bpmrow'); if(!vr||!bpm)return;
     var g=document.createElement('div'); g.className='dset d'+d.i;
-    var t=document.createElement('b'); t.textContent='DECK '+(d.i+1); g.appendChild(t);
     var vol=vr.querySelector('input[data-a=vol]'); if(vol)vol.setAttribute('data-deck',d.i);
     /* TINANGGAL sa Audio Settings: Volume slider + EQ button ng Deck 1 & 2 (nasa DOM pa rin, nakatago, para gumana pa rin ang volume sa gitna at MIDI) */
     var lb=vr.previousElementSibling; if(lb&&lb.tagName==='LABEL')hid.appendChild(lb);
