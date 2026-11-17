@@ -4136,6 +4136,72 @@ body.lite canvas.spec{visibility:hidden}
   });
 })();
 </script>
+<script>
+// TRACK LIST POPUP: 📂 button sa tabi ng "+ Add Tracks"; ang listahan ng kanta ay lalabas na lang bilang popup (nakatago na ang mahabang listahan sa loob ng deck)
+(function () {
+  try {
+    if (typeof decks === 'undefined') return;
+    var st = document.createElement('style');
+    st.textContent =
+      '#list0,#list1{display:none!important}' +
+      '.addrow{grid-template-columns:1fr auto}' +
+      '.addrow .lbtn{width:46px;padding:0;font-size:16px}' +
+      '#listModal #lmList{max-height:62vh!important;margin-top:10px}' +
+      '#listModal .lmtabs{display:flex;gap:6px;margin-top:10px}' +
+      '#listModal .lmtabs button{flex:1;height:38px}' +
+      '#listModal .lmtabs button.on{background:var(--c,#22d3ee);color:#000;font-weight:700}' +
+      '#listModal li{cursor:pointer}' +
+      '#listModal li .lmt{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}';
+    document.head.appendChild(st);
+
+    var cur = 0;
+    var m = document.createElement('div'); m.className = 'modal'; m.id = 'listModal'; m.hidden = true;
+    m.innerHTML = '<div class="card sheet" role="dialog" aria-modal="true" aria-label="Track List">' +
+      '<div class="sheethead"><b>\uD83D\uDCC2 Track List</b><button id="closeLm" type="button" aria-label="Close track list" style="flex:none;width:42px;height:42px;border-radius:50%;font-size:18px">\u2715</button></div>' +
+      '<div class="lmtabs"><button type="button" data-d="0">DECK 1</button><button type="button" data-d="1">DECK 2</button></div>' +
+      '<ul id="lmList"></ul></div>';
+    document.body.appendChild(m);
+
+    function render() {
+      var d = decks[cur], ul = document.getElementById('lmList');
+      ul.innerHTML = '';
+      m.querySelectorAll('.lmtabs button').forEach(function (b) { b.classList.toggle('on', +b.dataset.d === cur); });
+      if (!d.list.length) { var e = document.createElement('li'); e.textContent = 'Walang tracks pa. I-tap ang + Add Tracks.'; ul.appendChild(e); return; }
+      d.list.forEach(function (f, k) {
+        var li = document.createElement('li');
+        var t = document.createElement('span'); t.className = 'lmt'; t.textContent = (k + 1) + '. ' + f.name.replace(/\.[^.]+$/, '');
+        var up = document.createElement('b'); up.className = 'x up'; up.textContent = '\u25B2'; up.setAttribute('role', 'button'); up.setAttribute('aria-label', 'Move track up');
+        up.onclick = function (ev) { ev.stopPropagation(); if (d.locked) return; try { moveTrack(d, k); } catch (er) {} render(); };
+        var x = document.createElement('b'); x.className = 'x'; x.textContent = '\u2715'; x.setAttribute('role', 'button'); x.setAttribute('aria-label', 'Remove track');
+        x.onclick = function (ev) { ev.stopPropagation(); if (d.locked) return; try { removeTrack(d, k); } catch (er) {} render(); };
+        li.append(t, up, x);
+        if (k === d.idx && !d.orphan) li.className = 'cur';
+        li.onclick = function () { if (d.locked) return; try { load(d, k); play(d); } catch (er) {} showModal('#listModal', false); };
+        ul.appendChild(li);
+      });
+      var c = ul.querySelector('li.cur'); if (c && c.scrollIntoView) c.scrollIntoView({ block: 'center' });
+    }
+    function open(i) { cur = i; render(); showModal('#listModal', true); var c = document.querySelector('#lmList li.cur'); if (c && c.scrollIntoView) c.scrollIntoView({ block: 'center' }); }
+
+    m.querySelectorAll('.lmtabs button').forEach(function (b) { b.onclick = function () { cur = +b.dataset.d; render(); }; });
+    document.getElementById('closeLm').onclick = function () { showModal('#listModal', false); };
+    m.addEventListener('click', function (e) { if (e.target === m) showModal('#listModal', false); });
+
+    var adds = Array.prototype.slice.call(document.querySelectorAll('[data-a="add"]'));
+    [0, 1].forEach(function (i) {
+      var a = document.querySelector('#deck' + i + ' [data-a="add"]') || adds[i];
+      if (!a || !a.parentNode) return;
+      var b = document.createElement('button'); b.type = 'button'; b.className = 'lbtn'; b.textContent = '\uD83D\uDCC2'; b.setAttribute('aria-label', 'Open track list of deck ' + (i + 1));
+      b.onclick = function () { open(i); };
+      a.after(b);
+    });
+
+    // kapag nagbago ang listahan habang bukas ang popup (hal. nag-add ng tracks, tapos na ang kanta), i-refresh
+    var _rl = window.renderList;
+    if (typeof _rl === 'function') window.renderList = function (d) { var r = _rl.apply(this, arguments); try { if (!m.hidden) render(); } catch (e) {} return r; };
+  } catch (err) { try { console.error('track list popup', err); } catch (e) {} }
+})();
+</script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
