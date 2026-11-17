@@ -4037,64 +4037,6 @@ html body #djfx .padsrow .lpbtn.on{color:#1a0e00!important;border-color:#ffb347!
   box-shadow:inset 0 1px 0 #fff9,0 0 16px #ff9a1fcc,0 2px 5px #000b!important}
 html body #djfx .padsrow .lpbtn:active{transform:translateY(1px)}
 </style>
-<style>
-/* NEON na mga ilaw sa outer ring ng jog (nakapatong lang sa dating gray dots): sumasabay sa music at umiikot */
-.jog>.jogleds{position:absolute;left:0;top:0;width:100%;height:100%;overflow:visible;pointer-events:none;will-change:transform}
-</style>
-<script>
-(function(){
-  var NS='http://www.w3.org/2000/svg', EDGES=[0,1,2,3,4,6,8,11,15,20,27,36,48,64], N=24;
-  function hueAt(m){var j=m<=12?m:24-m;return 190+120*(j/12)}      // cyan -> blue -> purple -> magenta
-  var units=[];
-  decks.forEach(function(d){
-    var jog=document.querySelector('#deck'+d.i+' .jog'); if(!jog||jog.querySelector('.jogleds'))return;
-    var an=ctx.createAnalyser(); an.fftSize=256; an.smoothingTimeConstant=0.55;
-    try{ d.cross.connect(an); }catch(e){ return; }
-    var gid='jlg'+d.i, h='<defs><radialGradient id="'+gid+'"><stop offset="0" stop-color="currentColor" stop-opacity=".8"/><stop offset="1" stop-color="currentColor" stop-opacity="0"/></radialGradient></defs>';
-    for(var k=0;k<N;k++){
-      h+='<g class="bg" transform="rotate('+(k*15)+')"><circle class="hl" cx="0" cy="-87.5" r="8" fill="url(#'+gid+')" opacity="0"/>'
-        +'<ellipse class="lp" cx="0" cy="-87.5" rx="4.4" ry="5" fill="currentColor" opacity="0"/></g>'
-        +'<g class="sg" transform="rotate('+(k*15+7.5)+')"><circle class="sd" cx="0" cy="-82.5" r="0.85" fill="currentColor" opacity="0"/><circle class="sd" cx="0" cy="-92.5" r="0.85" fill="currentColor" opacity="0"/></g>';
-    }
-    var svg=document.createElementNS(NS,'svg'); svg.setAttribute('class','jogleds'); svg.setAttribute('viewBox','-100 -100 200 200'); svg.setAttribute('aria-hidden','true'); svg.innerHTML=h;
-    jog.insertBefore(svg,jog.firstChild);
-    var bg=svg.querySelectorAll('.bg'), sg=svg.querySelectorAll('.sg');
-    units.push({d:d,an:an,data:new Uint8Array(an.frequencyBinCount),v:new Float32Array(13),pat:new Float32Array(N),phase:0,
-      bg:bg,sg:sg,lp:svg.querySelectorAll('.lp'),hl:svg.querySelectorAll('.hl'),sd:svg.querySelectorAll('.sd')});
-  });
-  if(!units.length)return;
-  function at(pat,m){ m=((m%N)+N)%N; var i=Math.floor(m), f=m-i; return pat[i]*(1-f)+pat[(i+1)%N]*f; }
-  var last=performance.now();
-  function setOp(el,val){ var t=val.toFixed(2); if(el._o!==t){ el._o=t; el.setAttribute('opacity',t); } }
-  function setCol(el,m){ var hh=Math.round(hueAt(((m%N)+N)%N)); if(el._h!==hh){ el._h=hh; el.style.color='hsl('+hh+',100%,60%)'; } }
-  (function tick(now){
-    requestAnimationFrame(tick);
-    if(document.hidden)return;
-    if(now-last<33)return;                                   // ~30fps lang para gumaan sa phone
-    var dt=Math.min(0.1,(now-last)/1000); last=now;
-    units.forEach(function(u){
-      var a=u.d.audio, playing=!a.paused&&!a.ended, g, b, sum, n, k, mx=0;
-      if(!playing&&u.dark)return;                            // naka-pause at patay na ang ilaw: walang gagawin
-      if(playing)u.an.getByteFrequencyData(u.data);
-      for(g=0;g<13;g++){
-        var t=0;
-        if(playing){ sum=0;n=0; for(b=EDGES[g];b<EDGES[g+1];b++){sum+=u.data[b];n++} t=Math.min(1,Math.pow(sum/n/255,2)*1.9); }
-        u.v[g]=Math.max(t,u.v[g]*0.8); if(u.v[g]>mx)mx=u.v[g];
-      }
-      u.dark=(!playing&&mx<0.02);
-      for(k=0;k<N;k++)u.pat[k]=u.dark?0:u.v[k<=12?k:24-k];
-      if(playing)u.phase=(u.phase+dt*6*(a.playbackRate||1))%N;     // umiikot (clockwise)
-      for(k=0;k<N;k++){
-        var m=k-u.phase, v=at(u.pat,m), ms=k+0.5-u.phase, vs=at(u.pat,ms);
-        if(v>0.01||u.lp[k]._o!=='0.00'){ setCol(u.bg[k],m); }
-        setOp(u.lp[k],v); setOp(u.hl[k],v*0.7);
-        if(vs>0.01||u.sd[2*k]._o!=='0.00'){ setCol(u.sg[k],ms); }
-        setOp(u.sd[2*k],vs); setOp(u.sd[2*k+1],vs);
-      }
-    });
-  })(performance.now());
-})();
-</script>
 <script>
 /* ANDROID 10 / lumang WebView: kung walang aspect-ratio, gawing parisukat ang jog at pads sa pamamagitan ng JS */
 (function(){
