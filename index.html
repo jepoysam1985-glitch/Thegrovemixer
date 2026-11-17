@@ -1165,11 +1165,21 @@ function dropFinished(d) {              // laging alisin sa listahan ang natapos
   d.list.splice(d.idx, 1); d.idx--;
   if (!d.list.length) clearDeck(d); else renderList(d);
 }
+// SAFE PLAY: sinisigurong tumatakbo ang audio context, nakakabit ang deck sa mixer, at ipinapakita ang error (hindi na tahimik)
+function safePlay(d) {
+  const go = () => {
+    if (!(d.eng && d.eng.on)) { try { d.src.connect(d.xfx.hpf); } catch {} }   // ibalik ang koneksyon kung nakalas
+    if (typeof mon !== 'undefined' && !mon) toast('Monitor OFF: walang tunog sa phone (stream lang). I-ON ang 🎧 Monitor.');
+    return d.audio.play().catch((e) => { if (e && e.name !== 'AbortError') toast('Hindi ma-play: ' + (e.name || 'error')); });
+  };
+  if (ctx.state !== 'running') return ctx.resume().then(go, go);
+  return go();
+}
 function play(d) {
   ctx.resume();
   if (d.idx < 0 && d.list.length) load(d, 0);
   if (autoMix && d.audio.paused && decks[1 - d.i].audio.paused && !fading) { $('#cross').value = d.i === 1 ? 100 : 0; applyCross(); }
-  if (d.audio.paused) d.audio.play().catch(() => {}); else d.audio.pause();
+  if (d.audio.paused) safePlay(d); else d.audio.pause();
   updatePlayBtn(d);
 }
 function updatePlayBtn(d) {
@@ -1191,7 +1201,7 @@ function nextIdx(d) {                    // susunod na kanta: shuffle / repeat /
 }
 function next(d) {
   const nk = nextIdx(d);
-  if (nk >= 0) { load(d, nk); d.audio.play().catch(() => {}); }
+  if (nk >= 0) { load(d, nk); safePlay(d); }
   updatePlayBtn(d);
 }
 
