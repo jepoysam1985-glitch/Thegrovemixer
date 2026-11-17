@@ -574,6 +574,18 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="128k" selected>128 kbps</option>
     <option value="192k">192 kbps</option>
   </select>
+  <label for="o_lat">Audio buffer (kapag pumuputol ang tunog: piliin ang Stable; kapag may delay: Low delay) - i-restart ang app</label>
+  <select id="o_lat">
+    <option value="interactive">Low delay (pinakamabilis, pwedeng pumutol)</option>
+    <option value="balanced" selected>Balanced (recommended)</option>
+    <option value="playback">Stable (pinakamatatag, may konting delay)</option>
+  </select>
+  <label for="o_sr">Audio quality / sample rate (mas mababa = mas magaan sa phone) - i-restart ang app</label>
+  <select id="o_sr">
+    <option value="44100" selected>44.1 kHz (best sound)</option>
+    <option value="32000">32 kHz (magaan, ok pa ang tunog)</option>
+    <option value="22050">22 kHz (pinakamagaan, mas muffled)</option>
+  </select>
   <label for="o_lite">Lite mode (lighter app: no spectrum, no glow/animations, slower refresh)</label>
   <select id="o_lite">
     <option value="auto">Auto - on only while LIVE</option>
@@ -896,7 +908,10 @@ const $ = (s) => document.querySelector(s);
 // TOAST: non-blocking na kapalit ng toast() (hinaharang ng alert ang audio thread habang live)
 let toastT;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), Math.min(9000, 3000 + msg.length * 45)); }
-const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 44100, latencyHint: 'interactive' });   // 44.1 kHz = malinaw na tunog (valid MP3 rate); 'interactive' = mababang delay pero stable (ang 0 / 8000 Hz ang nagpapapangit at nagpapa-crackle)
+// AUDIO SETTINGS: 'balanced' buffer = hindi pumuputol; puwedeng palitan sa Settings (kailangan i-restart ang app)
+const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'balanced'; })();
+const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 44100; })();
+const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _lat });
 const master = ctx.createGain();
 const tracksGain = ctx.createGain();
 const duckGain = ctx.createGain();
@@ -1694,7 +1709,7 @@ const rev = ctx.createConvolver();
 const revLP = ctx.createBiquadFilter(); revLP.type = 'lowpass'; revLP.frequency.value = 4500;
 micGain.connect(revSend); revSend.connect(rev); rev.connect(revLP); revLP.connect(master);
 const REV = { 0: 0, 1: 0.12, 2: 0.22, 3: 0.35 };
-function setRev(v) { revSend.gain.setTargetAtTime(REV[v] || 0, ctx.currentTime, 0.05); try { localStorage.setItem('tgm_rv', v); } catch {} }
+function setRev(v) { revSend.gain.setTargetAtTime(REV[v] || 0, ctx.currentTime, 0.05); try { if (REV[v]) revSend.connect(rev); else revSend.disconnect(rev); } catch (e) {} try { localStorage.setItem('tgm_rv', v); } catch {} }
 try { const sv = localStorage.getItem('tgm_rv'); if (sv !== null && REV[sv] !== undefined) $('#revLvl').value = sv; } catch {}
 setRev($('#revLvl').value); $('#revLvl').onchange = (e) => setRev(e.target.value);
 // ADJUSTABLE LOW-CUT
@@ -4049,6 +4064,15 @@ html body #djfx .padsrow .lpbtn:active{transform:translateY(1px)}
 body.lite *{box-shadow:none!important;text-shadow:none!important;filter:none!important;-webkit-backdrop-filter:none!important;backdrop-filter:none!important;animation:none!important;transition:none!important}
 body.lite canvas.spec{visibility:hidden}
 </style>
+<script>
+(function () {
+  [['o_lat', 'tgm_lat', 'balanced'], ['o_sr', 'tgm_sr', '44100']].forEach(function (a) {
+    const el = document.getElementById(a[0]); if (!el) return;
+    try { const v = localStorage.getItem(a[1]); if (v && Array.prototype.some.call(el.options, function (o) { return o.value === v; })) el.value = v; } catch (e) {}
+    el.addEventListener('change', function () { try { localStorage.setItem(a[1], el.value); } catch (e) {} try { toast('Naka-save. Isara at buksan ulit ang app para umepekto.'); } catch (e) {} });
+  });
+})();
+</script>
 <script>
 (function () {
   const sel = document.getElementById('o_lite'); if (!sel) return;
