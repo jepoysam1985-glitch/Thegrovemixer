@@ -390,7 +390,8 @@ print(s)
 mf = os.path.join(SRC, 'main', 'AndroidManifest.xml')
 m = rd(mf)
 perms = ['INTERNET', 'RECORD_AUDIO', 'MODIFY_AUDIO_SETTINGS', 'WAKE_LOCK', 'FOREGROUND_SERVICE',
-         'FOREGROUND_SERVICE_MEDIA_PLAYBACK', 'FOREGROUND_SERVICE_MICROPHONE', 'POST_NOTIFICATIONS']
+         'FOREGROUND_SERVICE_MEDIA_PLAYBACK', 'FOREGROUND_SERVICE_MICROPHONE', 'POST_NOTIFICATIONS',
+         'REQUEST_IGNORE_BATTERY_OPTIMIZATIONS']
 add = ''.join('    <uses-permission android:name="android.permission.%s" />\n' % p
               for p in perms if ('android.permission.%s"' % p) not in m)
 if add:
