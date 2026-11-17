@@ -4158,9 +4158,12 @@ body.lite canvas.spec{visibility:hidden}
         '#waveHead .wh{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:5px}' +
         '#whMid{flex:none}' +
         '#waveHead .wAdd{flex:none;width:auto;height:24px;padding:0 8px;font-size:10px;white-space:nowrap;border-radius:8px}' +
-        '#waveHead .wNow{flex:1 1 0;min-width:0;height:20px;line-height:20px;padding:0 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8.5px;font-weight:600;background:#02030a;border-radius:6px;border-left:3px solid}' +
+        '#waveHead .wNow{flex:none;min-width:0;height:16px;line-height:16px;padding:0 6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:7px;font-weight:600;background:#02030a;border-radius:6px;border-left:3px solid}' +
         '#waveHead .wh0 .wNow{color:var(--c1);border-left-color:var(--c1)}#waveHead .wh1 .wNow{color:var(--c2);border-left-color:var(--c2)}' +
-        '.wHide{display:none!important}#now0,#now1{display:none!important}' +
+        '#waveHead .wcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:1px}' +
+        '#waveHead .wTime{font-family:ui-monospace,"Courier New",monospace;font-size:8px;line-height:10px;padding:0 6px;white-space:nowrap;opacity:.9}' +
+        '#waveHead .wh0 .wTime{color:var(--c1)}#waveHead .wh1 .wTime{color:var(--c2)}' +
+        '.wHide{display:none!important}#now0,#now1,#time0,#time1{display:none!important}' +
       '}' +
       '#listModal #lmList{max-height:62vh!important;margin-top:10px}' +
       '#listModal .lmtabs{display:flex;gap:6px;margin-top:10px}' +
@@ -4239,12 +4242,20 @@ body.lite canvas.spec{visibility:hidden}
         ab.setAttribute('aria-label', 'Add tracks to deck ' + (i + 1));
         ab.onclick = function () { var f = document.getElementById('file' + i); if (f) f.click(); };
         var nt = document.createElement('div'); nt.className = 'wNow'; nt.id = 'wNow' + i;
-        h.appendChild(ab); h.appendChild(nt);
+        var tm = document.createElement('div'); tm.className = 'wTime'; tm.id = 'wTime' + i; tm.textContent = '0:00 / 0:00';
+        var col = document.createElement('div'); col.className = 'wcol'; col.appendChild(nt); col.appendChild(tm);
+        h.appendChild(ab); h.appendChild(col);
         return h;
       });
       hd.appendChild(halves[0]); hd.appendChild(mid); hd.appendChild(halves[1]);
       spt.parentNode.insertBefore(wb, spt); wb.appendChild(hd); wb.appendChild(spt);
       [0, 1].forEach(function (i) {
+        var ts = document.getElementById('time' + i), td = document.getElementById('wTime' + i);
+        if (ts && td) {
+          var syncT = function () { var x = ts.textContent || ''; if (td.textContent !== x) td.textContent = x; };
+          syncT();
+          try { new MutationObserver(syncT).observe(ts, { childList: true, characterData: true, subtree: true }); } catch (e) {}
+        }
         var src = document.getElementById('now' + i), dst = document.getElementById('wNow' + i);
         if (!src || !dst) return;
         var sync = function () { var x = (src.textContent || '').replace(/\s+/g, ' ').trim(); if (dst.textContent !== (x || 'No track')) dst.textContent = x || 'No track'; };
