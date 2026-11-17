@@ -4283,9 +4283,13 @@ html body .lrow{flex-wrap:wrap}
 html body .lrow .lbtn{flex:1 1 100%!important}
 html body .lrow>.jbtns2{flex:1 1 100%;width:auto;min-width:0;margin:4px 0 0}
 @media (orientation:landscape) and (max-height:900px) and (min-width:480px){
-  html body .lrow{flex-wrap:nowrap}
-  html body .lrow .lbtn{flex:0 0 auto!important;min-width:46px;padding:0 6px!important}
-  html body .lrow>.jbtns2{flex:1 1 0;margin:0}
+  /* landscape: masikip sa tabi ng LIST, kaya nasa ilalim ng LIST (sa bakanteng espasyo ng deck), 2 column */
+  html body .lrow{flex-wrap:wrap;row-gap:4px}
+  html body .lrow .lbtn{flex:1 1 0!important}
+  html body .lrow>.jbtns2{flex:1 1 100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px;margin:2px 0 0}
+  html body .lrow>.jbtns2>button{height:32px!important;font-size:10px!important;grid-column:auto!important}
+  html body .lrow>.jbtns2>#fadeBtn,html body .lrow>.jbtns2>.fadeMirror{grid-column:1/-1!important}
+  html body .lrow>.jbtns2>button[data-a=play],html body .lrow>.jbtns2>button[data-a=stop]{font-size:14px!important}
 }
 </style>
 <script>
