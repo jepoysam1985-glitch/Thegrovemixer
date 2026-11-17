@@ -407,7 +407,7 @@ li .x.up{background:#1d2530;color:#8fc7ff;min-width:30px}
 #specTop{display:none}
 @media (orientation:landscape) and (max-height:900px) and (min-width:480px){
   #specTop{display:flex;flex:1;min-width:0;gap:8px;align-items:stretch}
-  #specTop .spec{flex:1;min-width:0;width:auto;height:40px;margin:0}
+  #specTop .spec{flex:1;min-width:0;width:auto;height:24px;margin:0}
   #specTop .spec:first-child{border-bottom:2px solid var(--c1)}
   #specTop .spec:last-child{border-bottom:2px solid var(--c2)}
   #specTop #recBtn{flex:none;width:74px;height:40px;font-size:10px;padding:0 2px;letter-spacing:0}
@@ -608,8 +608,8 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="0">Off</option>
   </select>
   <select id="spStyle" hidden><option value="orig">Original (in each deck)</option></select>
-  <label>Spectrum height (stacked styles): <b id="sphv">50</b> px</label>
-  <input type="range" min="24" max="160" value="50" id="spH" aria-label="Spectrum height">
+  <label>Spectrum height (stacked styles): <b id="sphv">24</b> px</label>
+  <input type="range" min="24" max="160" value="24" id="spH" aria-label="Spectrum height">
   <button id="spReset" style="width:100%;height:40px;margin-top:8px;font-size:12px">Reset spectrum height</button>
   <button id="closeSettings2" style="width:100%;height:50px;margin-top:14px;background:var(--acc);border-color:var(--acc);color:#fff;font-size:13.5px">Done</button>
   <div class="gmCred"><div class="gmLogo sm"></div>@The Groove Mixer<br>Created by DJBERMAS</div>
@@ -2393,6 +2393,7 @@ document.addEventListener('keydown', (e) => { if ((e.key === 'Enter' || e.key ==
   };
   stSel.onchange = () => { SPS.mode = stSel.value; try { localStorage.setItem('tgm_spstyle', SPS.mode); } catch {} if (window.__spPlaceAll) window.__spPlaceAll(); };
   const setH = (v, save) => { v = Math.max(24, Math.min(160, Math.round(v))); document.documentElement.style.setProperty('--sph', v + 'px'); document.body.classList.add('spcustom'); hSl.value = v; hv.textContent = v; if (save) { try { localStorage.setItem('tgm_sph', v); } catch {} } };
+  try { if (localStorage.getItem('tgm_sph_v') !== '24') { localStorage.removeItem('tgm_sph'); localStorage.setItem('tgm_sph_v', '24'); } } catch {}   // default ng waveform = 24px (isang beses na reset ng lumang saved na taas)
   let sv = NaN; try { sv = parseInt(localStorage.getItem('tgm_sph'), 10); } catch {}
   if (sv) setH(sv, false);
   hSl.oninput = () => setH(+hSl.value, true);
@@ -3169,8 +3170,8 @@ decks.forEach((d)=>{try{Object.defineProperty(d.audio,'currentTime',{configurabl
 </script>
 <style>
 /* SPECTRUM STACK: magkadikit, walang puwang; ang taas ay galing sa --sph (bawat spectrum) */
-:root{--sph:50px}
-@media (orientation:landscape) and (max-height:900px) and (min-width:480px){:root{--sph:30px}}
+:root{--sph:24px}
+@media (orientation:landscape) and (max-height:900px) and (min-width:480px){:root{--sph:24px}}
 #specStack{grid-column:1/-1;display:flex;flex-direction:column;margin:0 0 8px;background:#050608;border:1px solid #000;border-radius:6px;overflow:hidden;box-shadow:inset 0 1px 0 #ffffff12,0 4px 10px #000a}
 #specStack canvas.spec{display:block!important;flex:none!important;width:100%!important;min-width:0!important;height:var(--sph)!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;background:#050608!important}
 .sgrip{flex:none;height:12px;touch-action:none;cursor:ns-resize;background:linear-gradient(180deg,#2a2d35,#15171c);position:relative}
