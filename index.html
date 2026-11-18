@@ -4791,6 +4791,16 @@ html body #deck1>#syncOpen .sLogo{width:28px!important;height:28px!important;max
   window.addEventListener('blur',function(){owner=null;});
 })();
 </script>
+<style>
+/* GM-BIG-BARS: mas malaking Music level bar (♪ D1/D2) at Pitch slider */
+html body .dlv{margin-top:6px;gap:8px}
+html body .dlv .dlt,html body .dpitch .dpt{font-size:13px!important}
+html body .dlv .dlbar{height:22px!important;border-radius:6px!important}
+html body .dpitch{margin-top:8px;gap:8px}
+html body .dpitch .ps{height:28px!important;margin:0 9px!important}
+html body .dpitch .ps::before{top:-8px;bottom:-8px;left:-10px;right:-10px}
+html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border-radius:4px}
+</style>
 <script>
 /* GM-MT-PATCH: GUMAGALAW NA TITLE (marquee) sa header ng waveform (landscape), para kita ang buong pamagat ng kanta */
 (function(){
