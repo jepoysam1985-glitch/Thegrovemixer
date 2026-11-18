@@ -4761,7 +4761,10 @@ input[type=range]{touch-action:none}
 html body button.eqbtn{display:flex!important;flex-direction:row;align-items:center;justify-content:center;gap:5px;width:66px!important;min-width:66px!important;max-width:none!important;height:40px!important;margin:0!important;padding:0!important;border-radius:12px;line-height:1;flex:none;position:relative;z-index:6}
 html body button.eqbtn svg{display:block;width:24px!important;height:24px!important}
 html body button.eqbtn span{font-size:13px!important;font-weight:800;letter-spacing:.6px}
-html body #lrow0 .lbtn{flex:1 1 0!important}
+html body #deck0{position:relative}
+html body #deck0>button.eqbtn{position:absolute!important;right:6px;bottom:4px;left:auto;top:auto;flex-direction:column;gap:1px;width:44px!important;min-width:44px!important;height:44px!important;border-radius:50%!important;z-index:8}
+html body #deck0>button.eqbtn svg{width:20px!important;height:20px!important}
+html body #deck0>button.eqbtn span{font-size:10px!important}
 html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stretch;text-overflow:clip}
 #waveHead .wNow .mq{display:inline-block;will-change:transform}
 </style>
@@ -4815,12 +4818,12 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 })();
 </script>
 <script>
-/* GM-MT-PATCH: EQ button sa gilid ng Deck 1 (katabi ng 📂 LIST) */
+/* GM-MT-PATCH: EQ button sa kanang-baba ng Deck 1 (sa tabi ng jog wheel) */
 (function(){
   function place(){
-    var b=document.querySelector('button.eqbtn'),lr=document.getElementById('lrow0'),l=lr&&lr.querySelector('.lbtn');
-    if(b&&l&&b.previousElementSibling!==l)l.after(b);
-    return !!(b&&l);
+    var b=document.querySelector('button.eqbtn'),d=document.getElementById('deck0');
+    if(b&&d&&b.parentNode!==d)d.appendChild(b);
+    return !!(b&&d);
   }
   if(!place()){var n=0,t=setInterval(function(){if(place()||++n>20)clearInterval(t);},500);}
 })();
