@@ -4021,6 +4021,9 @@ body{max-width:none!important}
   (mq.addEventListener?mq.addEventListener.bind(mq,'change'):mq.addListener.bind(mq))(function(){setTimeout(place,0);});
   window.addEventListener('resize',function(){clearTimeout(window.__bpmP);window.__bpmP=setTimeout(place,200);});
   place();
+  /* Walang laman na ang mga kahon ng Deck Audio (nasa deck na ang BPM): alisin para walang espasyo sa ilalim ng "Audio Settings" */
+  document.querySelectorAll('#deckAudio .dset').forEach(function(g){ if(!g.children.length) g.remove(); });
+  var da=document.getElementById('deckAudio'); if(da && !da.children.length) da.remove();
 })();
 </script>
 <style>
