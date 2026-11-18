@@ -4730,7 +4730,7 @@ html body #eqModal .eqpre button.on{
 })();
 </script>
 <style>
-/* GM-MT-PATCH: multi-touch sliders / mas malaking EQ button / gumagalaw na title */
+/* GM-MT-PATCH: mas malaking EQ button / gumagalaw na title */
 html body button.eqbtn{display:flex!important;flex-direction:row;align-items:center;justify-content:center;gap:5px;width:66px!important;min-width:66px!important;max-width:none!important;height:40px!important;margin:0!important;padding:0!important;border-radius:12px;line-height:1;flex:none;position:relative;z-index:6}
 html body button.eqbtn svg{display:block;width:24px!important;height:24px!important}
 html body button.eqbtn span{font-size:13px!important;font-weight:800;letter-spacing:.6px}
@@ -4769,6 +4769,26 @@ html body #deck1>#syncOpen .sLogo{width:28px!important;height:28px!important;max
     return !!(b&&d);
   }
   if(!place()){var n=0,t=setInterval(function(){if(place()||++n>20)clearInterval(t);},500);}
+})();
+</script>
+<script>
+/* GM-SINGLE-TOUCH: isang slider lang ang magagalaw sa isang pagkakataon (walang multi-touch sa mga slider). Jog wheel at buttons ay hindi apektado. */
+(function(){
+  var SEL='input[type=range],.vs,.ps,.eqs,[role=slider]', owner=null;
+  function isS(t){return !!(t&&t.closest&&t.closest(SEL));}
+  document.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='mouse'||!isS(e.target))return;
+    if(owner!==null&&owner!==e.pointerId){e.stopPropagation();e.preventDefault();return;}
+    owner=e.pointerId;
+  },true);
+  function rel(e){if(e.pointerId===owner)owner=null;}
+  ['pointerup','pointercancel','lostpointercapture'].forEach(function(n){document.addEventListener(n,rel,true);});
+  document.addEventListener('touchstart',function(e){
+    if(owner!==null&&e.touches.length>1&&isS(e.target)){e.stopPropagation();e.preventDefault();}
+  },{passive:false,capture:true});
+  document.addEventListener('touchend',function(e){if(!e.touches.length)owner=null;},true);
+  document.addEventListener('visibilitychange',function(){owner=null;});
+  window.addEventListener('blur',function(){owner=null;});
 })();
 </script>
 <script>
