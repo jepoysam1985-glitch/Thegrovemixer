@@ -617,11 +617,10 @@ li.cur{background:#0f2a66;color:#fff}
 </div>
 
 <div class="modal" id="eqModal" hidden>
-<div class="card sheet" role="dialog" aria-modal="true" aria-label="EQ Settings">
-  <div class="sheethead"><b id="eqTitle">EQ</b><button id="closeEq" aria-label="Close EQ settings">✕</button></div>
-  <div class="eqcols12"><div class="eqc"><em id="eqv0">0</em><input type="range" min="-100" max="100" value="0" id="eq0" aria-label="EQ 31 Hz"><small>31</small></div><div class="eqc"><em id="eqv1">0</em><input type="range" min="-100" max="100" value="0" id="eq1" aria-label="EQ 62 Hz"><small>62</small></div><div class="eqc"><em id="eqv2">0</em><input type="range" min="-100" max="100" value="0" id="eq2" aria-label="EQ 125 Hz"><small>125</small></div><div class="eqc"><em id="eqv3">0</em><input type="range" min="-100" max="100" value="0" id="eq3" aria-label="EQ 250 Hz"><small>250</small></div><div class="eqc"><em id="eqv4">0</em><input type="range" min="-100" max="100" value="0" id="eq4" aria-label="EQ 500 Hz"><small>500</small></div><div class="eqc"><em id="eqv5">0</em><input type="range" min="-100" max="100" value="0" id="eq5" aria-label="EQ 1k Hz"><small>1k</small></div><div class="eqc"><em id="eqv6">0</em><input type="range" min="-100" max="100" value="0" id="eq6" aria-label="EQ 2k Hz"><small>2k</small></div><div class="eqc"><em id="eqv7">0</em><input type="range" min="-100" max="100" value="0" id="eq7" aria-label="EQ 3k Hz"><small>3k</small></div><div class="eqc"><em id="eqv8">0</em><input type="range" min="-100" max="100" value="0" id="eq8" aria-label="EQ 4k Hz"><small>4k</small></div><div class="eqc"><em id="eqv9">0</em><input type="range" min="-100" max="100" value="0" id="eq9" aria-label="EQ 8k Hz"><small>8k</small></div><div class="eqc"><em id="eqv10">0</em><input type="range" min="-100" max="100" value="0" id="eq10" aria-label="EQ 12k Hz"><small>12k</small></div><div class="eqc"><em id="eqv11">0</em><input type="range" min="-100" max="100" value="0" id="eq11" aria-label="EQ 16k Hz"><small>16k</small></div></div>
-  <button id="eqReset" style="width:100%;height:44px;margin-top:14px;font-size:12.5px">Reset EQ</button>
-  <button id="closeEq2" style="width:100%;height:50px;margin-top:16px;background:var(--acc);border-color:var(--acc);color:#fff;font-size:13.5px">Done</button>
+<div class="card sheet eqx" role="dialog" aria-modal="true" aria-label="12-Band EQ">
+  <div class="eqhead"><b>12-Band EQ</b><div class="eqctl"><button type="button" id="eqA" class="sel">A</button><button type="button" id="eqB">B</button><button type="button" id="eqOn" class="lit">ON</button><button type="button" id="eqReset">RESET</button></div><button id="closeEq" aria-label="Close EQ settings">✕</button></div>
+  <div class="eqsl"><div class="eqc"><em id="eqv0">0.0</em><div class="eqs" id="eq0" data-k="0" role="slider" aria-label="EQ 31 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>31</small></div><div class="eqc"><em id="eqv1">0.0</em><div class="eqs" id="eq1" data-k="1" role="slider" aria-label="EQ 62 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>62</small></div><div class="eqc"><em id="eqv2">0.0</em><div class="eqs" id="eq2" data-k="2" role="slider" aria-label="EQ 125 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>125</small></div><div class="eqc"><em id="eqv3">0.0</em><div class="eqs" id="eq3" data-k="3" role="slider" aria-label="EQ 250 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>250</small></div><div class="eqc"><em id="eqv4">0.0</em><div class="eqs" id="eq4" data-k="4" role="slider" aria-label="EQ 500 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>500</small></div><div class="eqc"><em id="eqv5">0.0</em><div class="eqs" id="eq5" data-k="5" role="slider" aria-label="EQ 1k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>1k</small></div><div class="eqc"><em id="eqv6">0.0</em><div class="eqs" id="eq6" data-k="6" role="slider" aria-label="EQ 2k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>2k</small></div><div class="eqc"><em id="eqv7">0.0</em><div class="eqs" id="eq7" data-k="7" role="slider" aria-label="EQ 4k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>4k</small></div><div class="eqc"><em id="eqv8">0.0</em><div class="eqs" id="eq8" data-k="8" role="slider" aria-label="EQ 6k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>6k</small></div><div class="eqc"><em id="eqv9">0.0</em><div class="eqs" id="eq9" data-k="9" role="slider" aria-label="EQ 8k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>8k</small></div><div class="eqc"><em id="eqv10">0.0</em><div class="eqs" id="eq10" data-k="10" role="slider" aria-label="EQ 12k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>12k</small></div><div class="eqc"><em id="eqv11">0.0</em><div class="eqs" id="eq11" data-k="11" role="slider" aria-label="EQ 16k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqk"></i></div><small>16k</small></div></div>
+  <div class="eqpre" id="eqPre"><button type="button" data-p="0">Flat</button><button type="button" data-p="1">Bass Boost</button><button type="button" data-p="2">Treble Boost</button><button type="button" data-p="3">Vocal</button><button type="button" data-p="4">Rock</button><button type="button" data-p="5">Pop</button><button type="button" data-p="6">Dance</button><button type="button" data-p="7">Club</button><button type="button" data-p="8">Techno</button><button type="button" data-p="9">Hip-Hop</button><button type="button" data-p="10">Jazz</button><button type="button" data-p="11">Acoustic</button></div>
 </div>
 </div>
 
@@ -2184,34 +2183,55 @@ decks.forEach((d) => {
 });
 </script>
 <script>
-// MASTER EQ (12-band): isa lang para sa lahat ng tracks (Deck 1 + Deck 2). Ang "EQ" button ay nasa gitna, sa ilalim ng mic meter.
-// Pantay na ±12 dB bawat band (dB mismo ang halaga ng slider), 0 = flat. Octave-spaced ang Q kaya makinis ang pagsasama ng mga band, at may auto-headroom para hindi mag-clip kapag nag-boost.
+// MASTER EQ (12-band): isa lang para sa lahat ng tracks. Button na "EQ" sa gitna; A/B slots, ON/OFF, Reset at presets.
+// ±12 dB bawat band (dB mismo ang halaga), octave-spaced ang Q, at may auto-headroom para hindi mag-clip kapag nag-boost.
 (function () {
   const BANDS = [
     ['lowshelf', 31, 0.7], ['peaking', 62, 1.4], ['peaking', 125, 1.4], ['peaking', 250, 1.4],
-    ['peaking', 500, 1.4], ['peaking', 1000, 1.4], ['peaking', 2000, 1.4], ['peaking', 3000, 2.2],
-    ['peaking', 4000, 2.2], ['peaking', 8000, 1.4], ['peaking', 12000, 1.4], ['highshelf', 16000, 0.7]
+    ['peaking', 500, 1.4], ['peaking', 1000, 1.4], ['peaking', 2000, 1.4], ['peaking', 4000, 2.2],
+    ['peaking', 6000, 2.2], ['peaking', 8000, 2.2], ['peaking', 12000, 2.2], ['highshelf', 16000, 0.7]
   ];
-  const NB = BANDS.length, IDX = BANDS.map((_, k) => k), KEY = 'tgm_meq2';
-  const RANGE = 12, STEP = 0.5, SNAP = 0.5;
-  const clampDb = (v) => Math.max(-RANGE, Math.min(RANGE, +v || 0));
-  const eqTxt = (v) => (v > 0 ? '+' : '') + (Math.round(v * 2) / 2).toFixed(1).replace(/\.0$/, '');
-  const nodes = BANDS.map(([type, f, q]) => {
+  const NB = BANDS.length, IDX = BANDS.map((_, k) => k), KEY = 'tgm_meq3', RANGE = 12, STEP = 0.5;
+  const Z = () => IDX.map(() => 0);
+  const PRESETS = [
+    ['Flat', [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]],
+    ['Bass Boost', [6, 5, 4, 2, 0, 0, 0, 0, 0, 0, 0, 0]],
+    ['Treble Boost', [0, 0, 0, 0, 0, 0, 1, 2, 4, 5, 6, 6]],
+    ['Vocal', [-3, -2, -1, 0, 2, 4, 5, 4, 2, 0, -1, -2]],
+    ['Rock', [4, 3, 2, -1, -2, -1, 1, 3, 4, 5, 4, 3]],
+    ['Pop', [-1, 0, 1, 2, 3, 3, 2, 0, -1, -1, -2, -2]],
+    ['Dance', [6, 5, 3, 0, -1, -2, 0, 1, 3, 3, 2, 1]],
+    ['Club', [5, 4, 3, 2, 0, 0, -1, 0, 2, 3, 2, 1]],
+    ['Techno', [5, 4, 1, -1, -2, 0, 1, 3, 4, 4, 5, 4]],
+    ['Hip-Hop', [6, 5, 3, 2, -1, -1, 0, 1, 2, 1, 0, 0]],
+    ['Jazz', [3, 2, 1, 2, -2, -2, 0, 1, 2, 3, 3, 3]],
+    ['Acoustic', [3, 3, 2, 1, 1, 0, 1, 2, 2, 3, 2, 1]]
+  ];
+  const q = (v) => (Math.max(-RANGE, Math.min(RANGE, Math.round((+v || 0) / STEP) * STEP))) || 0;
+  const fmt = (v) => (v > 0 ? '+' : '') + v.toFixed(1);
+  const nodes = BANDS.map(([type, f, qq]) => {
     const n = ctx.createBiquadFilter(); n.type = type; n.frequency.value = f;
-    if (type === 'peaking') n.Q.value = q; else n.Q.value = 0.7071;
-    n.gain.value = 0; return n;
+    n.Q.value = type === 'peaking' ? qq : 0.7071; n.gain.value = 0; return n;
   });
   // auto-headroom: binabawasan ang kabuuang level depende sa pinakamalaking boost para walang clipping
   const headroom = ctx.createGain(); headroom.gain.value = 1;
-  let vals = IDX.map(() => 0);
-  try { const s = JSON.parse(localStorage.getItem(KEY) || 'null'); if (Array.isArray(s) && s.length === NB) vals = s.map(clampDb); } catch (e) {}
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(vals)); } catch (e) {} };
-  const applyHeadroom = () => {
-    const peak = Math.max(0, ...vals);
-    headroom.gain.setTargetAtTime(Math.pow(10, -(peak * 0.6) / 20), ctx.currentTime, 0.05);
-  };
-  nodes.forEach((n, k) => { n.gain.value = vals[k]; });
-  applyHeadroom();
+  const st = { slot: 'a', on: true, a: Z(), b: Z() };
+  try {
+    const s = JSON.parse(localStorage.getItem(KEY) || 'null');
+    if (s && Array.isArray(s.a) && s.a.length === NB && Array.isArray(s.b) && s.b.length === NB) {
+      st.a = s.a.map(q); st.b = s.b.map(q); st.slot = s.slot === 'b' ? 'b' : 'a'; st.on = s.on !== false;
+    }
+  } catch (e) {}
+  const cur = () => st[st.slot];
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(st)); } catch (e) {} };
+  function target() { return st.on ? cur() : Z(); }
+  function apply(now) {
+    const v = target(), peak = Math.max(0, ...v), hr = Math.pow(10, -(peak * 0.6) / 20);
+    if (now) { nodes.forEach((n, k) => { n.gain.value = v[k]; }); headroom.gain.value = hr; return; }
+    nodes.forEach((n, k) => n.gain.setTargetAtTime(v[k], ctx.currentTime, 0.02));
+    headroom.gain.setTargetAtTime(hr, ctx.currentTime, 0.05);
+  }
+  apply(true);
   try { tracksGain.disconnect(carve); } catch (e) {}
   tracksGain.connect(nodes[0]); for (let k = 0; k < NB - 1; k++) nodes[k].connect(nodes[k + 1]);
   nodes[NB - 1].connect(headroom); headroom.connect(carve);
@@ -2223,26 +2243,53 @@ decks.forEach((d) => {
   });
   const b = document.createElement('button'); b.className = 'eqbtn'; b.textContent = 'EQ'; b.setAttribute('aria-label', 'Master EQ');
   const mc = document.querySelector('.vmcol'); if (mc) mc.appendChild(b); else document.body.appendChild(b);
-  const paint = () => b.classList.toggle('on', vals.some((x) => x !== 0));
-  paint();
-  IDX.forEach((k) => {
-    const el = $('#eq' + k);
-    el.min = -RANGE; el.max = RANGE; el.step = STEP;
-  });
-  const show = () => IDX.forEach((k) => { $('#eq' + k).value = vals[k]; $('#eqv' + k).textContent = eqTxt(vals[k]); });
-  b.onclick = () => { $('#eqTitle').textContent = 'MASTER EQ (dB)'; show(); showModal('#eqModal', true); };
-  function setBand(k, v) {
-    v = clampDb(v); vals[k] = v;
-    nodes[k].gain.setTargetAtTime(v, ctx.currentTime, 0.02);
-    $('#eqv' + k).textContent = eqTxt(v); applyHeadroom(); paint(); save();
+
+  const modal = $('#eqModal'), onBtn = $('#eqOn'), bA = $('#eqA'), bB = $('#eqB');
+  const knob = IDX.map((k) => $('#eq' + k).querySelector('.eqk'));
+  const txt = IDX.map((k) => $('#eqv' + k));
+  const pb = Array.prototype.slice.call(document.querySelectorAll('#eqPre button'));
+  function render() {
+    const v = cur();
+    IDX.forEach((k) => {
+      knob[k].style.top = ((1 - (v[k] + RANGE) / (2 * RANGE)) * 100) + '%';
+      txt[k].textContent = fmt(v[k]); $('#eq' + k).setAttribute('aria-valuenow', v[k]);
+    });
+    modal.classList.toggle('off', !st.on);
+    onBtn.textContent = st.on ? 'ON' : 'OFF'; onBtn.classList.toggle('lit', st.on);
+    bA.classList.toggle('sel', st.slot === 'a'); bB.classList.toggle('sel', st.slot === 'b');
+    pb.forEach((el, i) => el.classList.toggle('sel', PRESETS[i][1].every((x, k) => x === v[k])));
+    b.classList.toggle('on', st.on && v.some((x) => x !== 0));
+  }
+  function setBand(k, val) {
+    const v = q(val); if (cur()[k] === v) return;
+    cur()[k] = v; apply(); render(); save();
   }
   IDX.forEach((k) => {
-    const el = $('#eq' + k);
-    el.oninput = (e) => { let v = parseFloat(e.target.value); if (Math.abs(v) <= SNAP) { v = 0; e.target.value = 0; } setBand(k, v); };
-    el.ondblclick = () => { el.value = 0; setBand(k, 0); };
+    const sl = $('#eq' + k); let drag = false, lastTap = 0;
+    const move = (e) => {
+      const r = sl.getBoundingClientRect(); if (!r.height) return;
+      const ratio = 1 - Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
+      setBand(k, ratio * 2 * RANGE - RANGE);
+    };
+    sl.addEventListener('pointerdown', (e) => {
+      e.preventDefault();
+      try { sl.setPointerCapture(e.pointerId); } catch (err) {}
+      const t = Date.now();
+      if (t - lastTap < 320) { lastTap = 0; drag = false; setBand(k, 0); return; }  // double-tap = reset ng band
+      lastTap = t; drag = true; move(e);
+    });
+    sl.addEventListener('pointermove', (e) => { if (drag) { e.preventDefault(); move(e); } });
+    const end = () => { drag = false; };
+    sl.addEventListener('pointerup', end); sl.addEventListener('pointercancel', end);
   });
-  $('#eqReset').onclick = () => IDX.forEach((k) => { $('#eq' + k).value = 0; setBand(k, 0); });
-  $('#closeEq').onclick = $('#closeEq2').onclick = () => showModal('#eqModal', false);
+  pb.forEach((el, i) => { el.onclick = () => { st[st.slot] = PRESETS[i][1].slice(); apply(); render(); save(); }; });
+  const pick = (s) => { st.slot = s; apply(); render(); save(); };
+  bA.onclick = () => pick('a'); bB.onclick = () => pick('b');
+  onBtn.onclick = () => { st.on = !st.on; apply(); render(); save(); };
+  $('#eqReset').onclick = () => { st[st.slot] = Z(); apply(); render(); save(); };
+  b.onclick = () => { render(); showModal('#eqModal', true); };
+  $('#closeEq').onclick = () => showModal('#eqModal', false);
+  render();
 })();
 </script>
 <script>
@@ -3854,6 +3901,29 @@ body{max-width:none!important}
 <style>
 /* Volume + EQ + BPM ng bawat deck: nasa Audio Settings na */
 #eqModal{z-index:110}
+#eqModal .sheet.eqx{max-width:min(880px,100%);background:#111a15;border:1px solid #22332a;padding:12px 14px 14px}
+#eqModal .eqhead{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+#eqModal .eqhead>b{flex:1;font-size:18px;color:#eaf5ee;white-space:nowrap;min-width:110px}
+#eqModal .eqctl{display:flex;gap:8px;align-items:center}
+#eqModal .eqctl button,#eqModal .eqpre button{height:38px;min-width:48px;padding:0 14px;border-radius:19px;background:#3a3d3b;color:#e8efe9;border:0;box-shadow:none;text-shadow:none;font-size:13px;font-weight:700;letter-spacing:.4px}
+#eqModal .eqctl button.sel,#eqModal .eqpre button.sel{background:#3dff80;color:#052612}
+#eqModal .eqctl #eqOn{color:#3dff80}
+#eqModal .eqctl #eqOn:not(.lit){color:#9aa39d}
+#eqModal .eqsl{display:flex;margin-top:12px}
+#eqModal .eqc{flex:1;min-width:0;display:flex;flex-direction:column;align-items:center;gap:4px}
+#eqModal .eqc em{font-style:normal;font-size:12px;height:13px;line-height:13px;color:#3dff80;font-variant-numeric:tabular-nums}
+#eqModal.off .eqc em{color:#7d867f}
+#eqModal .eqc small{font-size:12px;line-height:1;color:#c9d3cc}
+#eqModal .eqs{position:relative;width:100%;height:clamp(100px,32vh,200px);margin:10px 0;touch-action:none;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+#eqModal .eqs::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:8px;margin-left:-4px;border-radius:5px;background:#050806;box-shadow:inset 0 0 0 1px #000}
+#eqModal .eqs::after{content:"";position:absolute;left:0;right:0;top:50%;height:1px;background:#8fa196;opacity:.55}
+#eqModal .eqk{position:absolute;z-index:1;left:50%;top:50%;width:min(34px,92%);height:17px;border-radius:9px;transform:translate(-50%,-50%);background:linear-gradient(#f4f4f4,#c9c9c9 55%,#8e8e8e);box-shadow:0 2px 5px #000b,inset 0 -1px 0 #0003}
+#eqModal .eqk::after{content:"";position:absolute;left:24%;right:24%;top:50%;height:3px;margin-top:-1.5px;border-radius:2px;background:#fff;box-shadow:0 0 0 1px #0002}
+#eqModal.off .eqk{opacity:.55}
+#eqModal .eqpre{display:grid;grid-template-columns:repeat(6,1fr);gap:8px;margin-top:4px}
+#eqModal .eqpre button{min-width:0;padding:0 4px;border-radius:12px}
+@media (max-height:520px){#eqModal .sheet.eqx{padding:8px 12px 10px}#eqModal .eqctl button,#eqModal .eqpre button{height:32px;font-size:12px}#eqModal .eqhead>b{font-size:16px}#eqModal .eqpre{gap:6px}}
+@media (max-width:560px){#eqModal .eqpre{grid-template-columns:repeat(4,1fr)}#eqModal .eqc em,#eqModal .eqc small{font-size:10px}}
 #deckAudio .dset{border:1px solid #ffffff22;border-radius:10px;padding:2px 10px 10px;margin-top:12px}
 #deckAudio .dset>b{display:block;margin-top:8px;font-size:12px;letter-spacing:1px}
 #deckAudio .d0{--c:var(--c1)}#deckAudio .d1{--c:var(--c2)}
