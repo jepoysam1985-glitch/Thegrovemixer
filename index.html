@@ -4468,7 +4468,11 @@ html body .lrow>.jbtns2{flex:1 1 100%;width:auto;min-width:0;margin:4px 0 0}
 .vs::after{content:"";position:absolute;left:-4px;right:-4px;top:0;bottom:0;z-index:1;pointer-events:none;background:linear-gradient(#fffb,#fffb) 0 50%/100% 1px no-repeat,repeating-linear-gradient(0deg,#ffffff66 0 1px,transparent 1px 10%)}
 input[type=range]:not(#cross){background:repeating-linear-gradient(90deg,#ffffff55 0 1px,transparent 1px 10%),linear-gradient(90deg,var(--cc) var(--v),#03040c var(--v))}
 input[type=range][min^="-"]:not(#cross){background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 100% no-repeat,repeating-linear-gradient(90deg,#ffffff55 0 1px,transparent 1px 10%),linear-gradient(90deg,var(--cc) var(--v),#03040c var(--v))}
-input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 100% no-repeat,repeating-linear-gradient(90deg,#ffffff55 0 1px,transparent 1px 10%),linear-gradient(90deg,var(--c1) var(--v,50%),var(--c2) var(--v,50%))!important}
+input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 100% no-repeat,linear-gradient(90deg,var(--c1) var(--v,50%),var(--c2) var(--v,50%))!important}
+/* CROSSFADER SCALE: mga line na lumalabas sa taas at baba ng track (bawat 10%, mas mahaba sa gitna at sa dulo) */
+.xscale{position:relative;flex:1 1 0;min-width:0;display:flex;align-items:center;height:30px}
+.xscale::before{content:"";position:absolute;z-index:0;left:11px;right:10px;top:50%;height:26px;transform:translateY(-50%);pointer-events:none;background:linear-gradient(#ffffffd9,#ffffffd9) 50% 50%/2px 100% no-repeat,linear-gradient(var(--c1),var(--c1)) 0 50%/2px 100% no-repeat,linear-gradient(var(--c2),var(--c2)) 100% 50%/2px 100% no-repeat,repeating-linear-gradient(90deg,#ffffff8c 0 1px,transparent 1px 10%) 0 50%/100% 14px no-repeat}
+.xscale #cross{position:relative;z-index:1;flex:1 1 auto;width:100%;margin:0}
 .vs:focus-visible{box-shadow:0 0 0 2px var(--c)}
 @media not all and (orientation:landscape) and (max-height:900px) and (min-width:480px){
   .decks,body>.decks{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)}
@@ -4511,6 +4515,12 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
     var i=t.getAttribute('data-deck'); if(i===null){ var b=t.closest&&t.closest('.deck'); i=b?b.id.replace('deck',''):null; } if(i===null)return;
     var el=document.querySelector('.vs[data-d="'+i+'"]'); if(el&&el._paint)el._paint(+t.value);
   });
+})();
+</script>
+<script>
+(function(){
+  var c=document.getElementById('cross'); if(!c||!c.parentNode||c.parentNode.classList.contains('xscale'))return;
+  var w=document.createElement('div'); w.className='xscale'; c.parentNode.insertBefore(w,c); w.appendChild(c);
 })();
 </script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
