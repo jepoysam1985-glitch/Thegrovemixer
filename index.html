@@ -4887,22 +4887,37 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 </script>
 
 <script>
-/* GM-CROSS: sariling smooth na engine ng CROSSFADER: tuloy-tuloy ang halaga (hindi hakbang-hakbang), may easing, mas malapad na hawakan, sabay-sabay pa rin sa ibang slider */
+/* GM-CROSS v2: smooth na engine ng CROSSFADER. Ayos: (1) ang "center lock" ay tuloy-tuloy na dead zone (walang biglang talon pagdaan sa gitna), (2) mas malapad ang hawakan para hindi lumipat kapag medyo sablay ang daliri, (3) hindi na nag-uulit ang loop habang walang galaw. */
 (function(){
   var cr=document.getElementById('cross');if(!cr)return;
   var host=cr.closest('.xrow')||cr.closest('.xscale')||cr.parentNode;
   host.style.touchAction='none';cr.style.touchAction='none';
   cr.step='any';
-  var pid=null,g=null,off=0,tgt=50,cv=50,raf=0;
+  var W=2;                              /* dead zone sa gitna: ±2 */
+  var pid=null,g=null,off=0,tgt=50,cv=50,raf=0,eng=false,snapped=false;
   function tw(){try{var w=parseFloat(getComputedStyle(cr,'::-webkit-slider-thumb').width);if(w>0)return w;}catch(x){}return 22;}
   function clamp(v){return v<0?0:v>100?100:v;}
+  /* raw (daliri) -> ipinapakita: tuloy-tuloy, may flat na bahagi sa gitna */
+  function map(r){var d=r-50,a=Math.abs(d);if(a<=W)return 50;return 50+(d<0?-1:1)*(a-W)*50/(50-W);}
+  function inv(m){var d=m-50,a=Math.abs(d);if(a===0)return 50;return 50+(d<0?-1:1)*(a*(50-W)/50+W);}
   function frac(e){return (e.clientX-g.r.left-g.tw/2)/Math.max(1,g.r.width-g.tw)*100;}
-  function put(v){cr.value=v;cr.dispatchEvent(new Event('input',{bubbles:true}));}
+  /* ang lumang oninput (center lock na nagla-lock ng ±2 sa mismong value) ay lalampasan kapag galing sa engine na ito */
+  var old=cr.oninput;
+  cr.oninput=function(e){
+    if(eng){if(typeof applyCross==='function')applyCross();return;}
+    return old?old.call(this,e):undefined;
+  };
+  function put(r){
+    var m=map(r);
+    if(m===50){if(!snapped){snapped=true;try{if(navigator.vibrate)navigator.vibrate(10);}catch(x){}}}else snapped=false;
+    eng=true;
+    try{cr.value=m;cr.dispatchEvent(new Event('input',{bubbles:true}));}finally{eng=false;}
+  }
   function loop(){
     raf=0;
     var d=tgt-cv;
-    if(pid===null&&Math.abs(d)<0.05){cv=tgt;put(cv);return;}
-    cv+=d*0.55;if(Math.abs(tgt-cv)<0.05)cv=tgt;
+    if(Math.abs(d)<0.05){cv=tgt;put(cv);return;}   /* tumigil kapag nakarating na */
+    cv+=d*0.55;
     put(cv);
     raf=requestAnimationFrame(loop);
   }
@@ -4910,9 +4925,10 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
     if(e.pointerType==='mouse'||pid!==null)return;
     if(e.target.closest&&e.target.closest('.vtag'))return;
     g={r:cr.getBoundingClientRect(),tw:tw()};
-    cv=parseFloat(cr.value);if(isNaN(cv))cv=50;
+    var m=parseFloat(cr.value);if(isNaN(m))m=50;
+    cv=inv(m);tgt=cv;
     var f=frac(e),span=Math.max(1,g.r.width-g.tw);
-    off=Math.abs(f-cv)/100*span<=g.tw*1.3?(cv-f):0;   /* hawak ang knob = walang talon */
+    off=Math.abs(f-cv)/100*span<=Math.max(g.tw*1.3,36)?(cv-f):0;   /* hawak ang knob (malapad na zone) = walang talon */
     pid=e.pointerId;
     try{host.setPointerCapture(pid);}catch(x){}
     e.preventDefault();
