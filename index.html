@@ -1238,6 +1238,7 @@ decks.forEach((d) => {
 
 let crossSnapped = false;
 $('#cross').oninput = (e) => {          // CENTER LOCK: kapag malapit sa gitna (±4), dumidikit sa 50 na parang hardware detent
+  if (e._eng) { applyCross(); return; }      // galing sa bagong crossfader engine (GM-XF3): siya na ang bahala sa gitna
   const el = e.target, v = parseFloat(el.value);
   if (Math.abs(v - 50) <= 2) {
     el.value = 50;
@@ -4829,7 +4830,7 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
   function pick(e){
     var t=e.target;
     if(isR(t))return t.id==='cross'?null:t;
-    if(t&&t.closest&&t.closest('button,select,textarea,input,a,canvas,.jog,.vs,.ps,.eqs,[role=slider]'))return null;
+    if(t&&t.closest&&t.closest('button,select,textarea,input,a,canvas,.jog,.vs,.ps,.eqs,.xfhit,[role=slider]'))return null;
     var best=null,bd=1e9,rs=document.querySelectorAll('input[type=range]'),m=t&&t.closest?t.closest('.modal'):null;
     for(var i=0;i<rs.length;i++){
       var el=rs[i];if(el.disabled||el.id==='cross')continue;
@@ -4914,73 +4915,62 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 })();
 </script>
 
+
 <script>
-/* GM-CROSS v2: smooth na engine ng CROSSFADER. Ayos: (1) ang "center lock" ay tuloy-tuloy na dead zone (walang biglang talon pagdaan sa gitna), (2) mas malapad ang hawakan para hindi lumipat kapag medyo sablay ang daliri, (3) hindi na nag-uulit ang loop habang walang galaw. */
+/* GM-XF3: BAGONG CROSSFADER ENGINE. Simple at walang easing/dead-zone/loop. Ang native na range ay naka-pointer-events:none (hindi na nakikipag-agawan),
+   at isang transparent na overlay (.xfhit) ang tumatanggap ng daliri. Direktang sumusunod ang halaga sa daliri; hindi lilipat kapag tap lang sa bar
+   (kailangang hilahin); double-tap = ibalik sa gitna; maliit na magnet sa gitna (±1) na may vibrate. */
 (function(){
   var cr=document.getElementById('cross');if(!cr)return;
-  var host=cr.closest('.xrow')||cr.closest('.xscale')||cr.parentNode;
-  host.style.touchAction='none';cr.style.touchAction='none';
-  cr.step='any';
-  var W=2;                              /* dead zone sa gitna: ±2 */
-  var pid=null,g=null,off=0,tgt=50,cv=50,raf=0,eng=false,snapped=false;
-  function tw(){try{var w=parseFloat(getComputedStyle(cr,'::-webkit-slider-thumb').width);if(w>0)return w;}catch(x){}return 22;}
-  function clamp(v){return v<0?0:v>100?100:v;}
-  /* raw (daliri) -> ipinapakita: tuloy-tuloy, may flat na bahagi sa gitna */
-  function map(r){var d=r-50,a=Math.abs(d);if(a<=W)return 50;return 50+(d<0?-1:1)*(a-W)*50/(50-W);}
-  function inv(m){var d=m-50,a=Math.abs(d);if(a===0)return 50;return 50+(d<0?-1:1)*(a*(50-W)/50+W);}
-  function frac(e){return (e.clientX-g.r.left-g.tw/2)/Math.max(1,g.r.width-g.tw)*100;}
-  /* ang lumang oninput (center lock na nagla-lock ng ±2 sa mismong value) ay lalampasan kapag galing sa engine na ito */
-  var old=cr.oninput;
-  cr.oninput=function(e){
-    if(eng){if(typeof applyCross==='function')applyCross();return;}
-    return old?old.call(this,e):undefined;
-  };
-  function put(r){
-    var m=map(r);
-    if(m===50){if(!snapped){snapped=true;try{if(navigator.vibrate)navigator.vibrate(10);}catch(x){}}}else snapped=false;
-    eng=true;
-    try{cr.value=m;cr.dispatchEvent(new Event('input',{bubbles:true}));}finally{eng=false;}
+  var par=cr.parentNode;
+  try{if(getComputedStyle(par).position==='static')par.style.position='relative';}catch(x){}
+  cr.style.pointerEvents='none';cr.step='any';
+  var hit=document.createElement('div');hit.className='xfhit';
+  hit.style.cssText='position:absolute;left:0;right:0;top:-10px;bottom:-10px;z-index:5;touch-action:none;background:transparent;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none';
+  par.appendChild(hit);
+  var pid=null,off=0,r=null,tw=22,armed=false,moved=false,x0=0,t0=0,lastTap=0,snapped=false;
+  function thumbW(){try{var w=parseFloat(getComputedStyle(cr,'::-webkit-slider-thumb').width);if(w>0)return w;}catch(x){}return 22;}
+  function pos(x){return (x-r.left-tw/2)/Math.max(1,r.width-tw)*100;}
+  function put(v){
+    v=v<0?0:v>100?100:v;
+    if(Math.abs(v-50)<=1){v=50;if(!snapped){snapped=true;try{if(navigator.vibrate)navigator.vibrate(10);}catch(x){}}}else snapped=false;
+    if(parseFloat(cr.value)===v)return;
+    cr.value=v;
+    var ev=new Event('input',{bubbles:true});ev._eng=1;cr.dispatchEvent(ev);
   }
-  function loop(){
-    raf=0;
-    var d=tgt-cv;
-    if(Math.abs(d)<0.05){cv=tgt;put(cv);return;}   /* tumigil kapag nakarating na */
-    cv+=d*0.55;
-    put(cv);
-    raf=requestAnimationFrame(loop);
-  }
-  host.addEventListener('pointerdown',function(e){
-    if(e.pointerType==='mouse'||pid!==null)return;
-    if(e.target.closest&&e.target.closest('.vtag'))return;
-    g={r:cr.getBoundingClientRect(),tw:tw()};
-    var m=parseFloat(cr.value);if(isNaN(m))m=50;
-    cv=inv(m);tgt=cv;
-    var f=frac(e),span=Math.max(1,g.r.width-g.tw);
-    off=Math.abs(f-cv)/100*span<=Math.max(g.tw*1.3,36)?(cv-f):0;   /* hawak ang knob (malapad na zone) = walang talon */
-    pid=e.pointerId;
-    try{host.setPointerCapture(pid);}catch(x){}
+  hit.addEventListener('pointerdown',function(e){
+    if(pid!==null)return;
+    if(e.pointerType==='mouse'&&e.button!==0)return;
+    r=cr.getBoundingClientRect();tw=thumbW();
+    var cur=parseFloat(cr.value);if(isNaN(cur))cur=50;
+    var f=pos(e.clientX),span=Math.max(1,r.width-tw);
+    var onKnob=Math.abs(f-cur)/100*span<=Math.max(tw*1.5,40);
+    off=onKnob?(cur-f):0;armed=onKnob;       /* hawak ang knob = gagalaw agad; sa bar lang = hihintayin munang hilahin */
+    pid=e.pointerId;moved=false;x0=e.clientX;t0=Date.now();
+    try{hit.setPointerCapture(pid);}catch(x){}
     e.preventDefault();
-    tgt=clamp(f+off);
-    if(!raf)raf=requestAnimationFrame(loop);
-  },true);
-  host.addEventListener('pointermove',function(e){
+  });
+  hit.addEventListener('pointermove',function(e){
     if(e.pointerId!==pid)return;
     e.preventDefault();
-    tgt=clamp(frac(e)+off);
-    if(!raf)raf=requestAnimationFrame(loop);
-  },true);
+    if(Math.abs(e.clientX-x0)>6){moved=true;armed=true;}
+    if(armed)put(pos(e.clientX)+off);
+  });
   function end(e){
     if(e.pointerId!==pid)return;
     pid=null;
-    try{host.releasePointerCapture(e.pointerId);}catch(x){}
+    try{hit.releasePointerCapture(e.pointerId);}catch(x){}
+    var n=Date.now();
+    if(e.type==='pointerup'&&!moved&&n-t0<250){            /* double-tap = gitna */
+      if(n-lastTap<400){lastTap=0;put(50);}else lastTap=n;
+    }
     cr.dispatchEvent(new Event('change',{bubbles:true}));
   }
-  host.addEventListener('pointerup',end,true);
-  host.addEventListener('pointercancel',end,true);
-  host.addEventListener('touchstart',function(e){
-    if(e.target.closest&&e.target.closest('.vtag'))return;
-    e.preventDefault();
-  },{passive:false,capture:true});
+  hit.addEventListener('pointerup',end);
+  hit.addEventListener('pointercancel',end);
+  hit.addEventListener('lostpointercapture',function(e){if(e.pointerId===pid){pid=null;}});
+  hit.addEventListener('touchstart',function(e){e.preventDefault();},{passive:false});
+  document.addEventListener('visibilitychange',function(){pid=null;});
 })();
 </script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
