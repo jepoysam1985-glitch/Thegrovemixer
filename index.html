@@ -4755,6 +4755,107 @@ html body #eqModal .eqpre button.on{
   window.addEventListener('orientationchange',function(){ setTimeout(paint,300); });
 })();
 </script>
+<style>
+/* GM-MT-PATCH: multi-touch sliders / mas malaking EQ button / gumagalaw na title */
+input[type=range]{touch-action:none}
+html body button.eqbtn{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:46px!important;min-width:46px!important;max-width:none!important;height:clamp(40px,12vh,50px)!important;margin:6px 0 2px!important;padding:0!important;border-radius:12px;line-height:1;flex:none;align-self:center;position:relative;z-index:6}
+html body button.eqbtn svg{display:block;width:24px!important;height:24px!important}
+html body button.eqbtn span{font-size:11px!important;font-weight:800;letter-spacing:.6px}
+html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stretch;text-overflow:clip}
+#waveHead .wNow .mq{display:inline-block;will-change:transform}
+</style>
+<script>
+/* GM-MT-PATCH: MULTI-TOUCH ng lahat ng slider (range input): bawat daliri may sariling slider, sabay-sabay */
+(function(){
+  var act=new Map();
+  function isR(t){return !!t&&t.tagName==='INPUT'&&t.type==='range';}
+  function thumbW(el){try{var w=parseFloat(getComputedStyle(el,'::-webkit-slider-thumb').width);if(w>0)return w;}catch(x){}return 22;}
+  function geom(el){var r=el.getBoundingClientRect();return{r:r,tw:thumbW(el),vert:r.height>r.width*1.5};}
+  function span(g){return g.vert?g.r.height-g.tw:g.r.width-g.tw;}
+  function fracAt(g,e){
+    var s=span(g);if(s<=0)return 0;
+    return g.vert?1-(e.clientY-g.r.top-g.tw/2)/s:(e.clientX-g.r.left-g.tw/2)/s;
+  }
+  function clamp(f){return f<0?0:f>1?1:f;}
+  function lim(el){var mn=parseFloat(el.min);if(isNaN(mn))mn=0;var mx=parseFloat(el.max);if(isNaN(mx))mx=100;return[mn,mx];}
+  function cur(el){var l=lim(el);return l[1]>l[0]?(parseFloat(el.value)-l[0])/(l[1]-l[0]):0;}
+  function setF(el,f){
+    var l=lim(el),mn=l[0],mx=l[1],s=el.step==='any'?0:(parseFloat(el.step)||1);
+    var v=mn+clamp(f)*(mx-mn);
+    if(s>0)v=mn+Math.round((v-mn)/s)*s;
+    v=Math.max(mn,Math.min(mx,v));
+    if(s>0)v=Math.round(v*1000)/1000;
+    var before=el.value;el.value=v;
+    if(el.value!==before)el.dispatchEvent(new Event('input',{bubbles:true}));
+  }
+  document.addEventListener('pointerdown',function(e){
+    if(e.pointerType==='mouse')return;
+    var el=e.target;if(!isR(el)||el.disabled)return;
+    var g=geom(el),f=fracAt(g,e),c=cur(el);
+    var off=Math.abs(f-c)*Math.max(span(g),1)<=g.tw?(c-f):0;   /* hawak ang knob = walang talon */
+    act.set(e.pointerId,{el:el,g:g,off:off});
+    try{el.setPointerCapture(e.pointerId);}catch(x){}
+    e.preventDefault();
+    setF(el,f+off);
+  },true);
+  document.addEventListener('pointermove',function(e){
+    var a=act.get(e.pointerId);if(!a)return;
+    e.preventDefault();setF(a.el,fracAt(a.g,e)+a.off);
+  },true);
+  function end(e){
+    var a=act.get(e.pointerId);if(!a)return;
+    act.delete(e.pointerId);
+    try{a.el.releasePointerCapture(e.pointerId);}catch(x){}
+    a.el.dispatchEvent(new Event('change',{bubbles:true}));
+  }
+  document.addEventListener('pointerup',end,true);
+  document.addEventListener('pointercancel',end,true);
+  document.addEventListener('touchstart',function(e){if(isR(e.target))e.preventDefault();},{passive:false,capture:true});
+})();
+</script>
+<script>
+/* GM-MT-PATCH: EQ button, ilipat sa ilalim ng meter para hindi matakpan ang volume sliders */
+(function(){
+  function place(){
+    var b=document.querySelector('button.eqbtn'),card=document.querySelector('.card.vmeter'),pair=card&&card.querySelector('.vmpair');
+    if(b&&card&&pair&&b.parentNode!==card)pair.after(b);
+    return !!(b&&card&&pair);
+  }
+  if(!place()){var n=0,t=setInterval(function(){if(place()||++n>20)clearInterval(t);},500);}
+})();
+</script>
+<script>
+/* GM-MT-PATCH: GUMAGALAW NA TITLE (marquee) sa header ng waveform (landscape), para kita ang buong pamagat ng kanta */
+(function(){
+  function fit(el){
+    var m=el.firstChild;if(!m||m.nodeType!==1||!m.classList.contains('mq'))return;
+    m.classList.remove('run');m.style.removeProperty('--dist');
+    var over=m.offsetWidth-el.clientWidth;
+    if(over>2){m.style.setProperty('--dist',-(over+12)+'px');m.style.setProperty('--dur',Math.max(4,(over+12)/28+2.4)+'s');m.classList.add('run');}
+  }
+  function wrap(el){
+    var f=el.firstChild;
+    if(el.childNodes.length===1&&f&&f.nodeType===1&&f.classList.contains('mq'))return;
+    var t=el.textContent;if(!t)return;
+    var m=document.createElement('span');m.className='mq';m.textContent=t;
+    el.textContent='';el.appendChild(m);
+    requestAnimationFrame(function(){fit(el);});
+  }
+  function init(i){
+    var el=document.getElementById('wNow'+i);if(!el)return false;
+    wrap(el);
+    try{new MutationObserver(function(){wrap(el);}).observe(el,{childList:true,characterData:true,subtree:true});}catch(x){}
+    try{if(window.ResizeObserver)new ResizeObserver(function(){fit(el);}).observe(el);}catch(x){}
+    window.addEventListener('resize',function(){setTimeout(function(){fit(el);},80);});
+    window.addEventListener('orientationchange',function(){setTimeout(function(){fit(el);},350);});
+    return true;
+  }
+  [0,1].forEach(function(i){
+    if(init(i))return;
+    var n=0,t=setInterval(function(){if(init(i)||++n>20)clearInterval(t);},500);
+  });
+})();
+</script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
