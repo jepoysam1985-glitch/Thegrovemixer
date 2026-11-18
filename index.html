@@ -4596,6 +4596,61 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
 /* Deck 1 volume knob: ang linya sa gitna lang ang cyan (--c1); lahat ng iba kapareho ng knob ng Deck 2 */
 .vscol.d0 .vs b{background:linear-gradient(var(--c),var(--c)) center/100% 2px no-repeat,repeating-linear-gradient(0deg,#00000030 0 2px,transparent 2px 4px),linear-gradient(0deg,#2b2e35,#7b8291 50%,#2b2e35)}
 </style>
+<style>
+/* PADS: kulay-pastel na rainbow, parisukat na may bilog na sulok at glow sa gitna (para sa FX pads, Hot Cue at Loop) */
+html body #fxCard .pad,
+html body #djfx .padsrow .hcue,
+html body #djfx .padsrow .lpbtn{
+  border:0!important;border-radius:12px!important;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.5) 0,rgba(255,255,255,0) 72%),linear-gradient(var(--pc),var(--pc))!important;
+  color:rgba(16,18,40,.72)!important;text-shadow:none!important;font-weight:800!important;letter-spacing:0!important;filter:none!important;
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.25),0 2px 4px rgba(0,0,0,.5)!important}
+html body #fxCard .pad:active,
+html body #djfx .padsrow .hcue:active,
+html body #djfx .padsrow .lpbtn:active{transform:scale(.95)!important;filter:brightness(1.1)!important}
+/* ON / SET: mas maliwanag, may puting ring at glow */
+html body #fxCard .pad.on,
+html body #djfx .padsrow .hcue.set,
+html body #djfx .padsrow .lpbtn.on{
+  background:radial-gradient(circle at 50% 50%,#fff 0,rgba(255,255,255,.35) 75%),linear-gradient(var(--pc),var(--pc))!important;
+  color:rgba(16,18,40,.85)!important;transform:none!important;
+  box-shadow:0 0 0 2px #fff,0 0 14px var(--pc),0 0 26px var(--pc)!important}
+/* EMPTY slot: kulay pa rin pero malabo */
+html body #fxCard .pad.empty{opacity:.42!important;color:rgba(16,18,40,.55)!important;font-size:22px!important;font-weight:400!important}
+/* Hot Cue = unang hilera ng palette, Loop = pangalawang hilera */
+html body #djfx .padsrow .hcue:nth-child(1){--pc:#a66bff!important}
+html body #djfx .padsrow .hcue:nth-child(2){--pc:#d462f2!important}
+html body #djfx .padsrow .hcue:nth-child(3){--pc:#ff64bd!important}
+html body #djfx .padsrow .hcue:nth-child(4){--pc:#ff5e93!important}
+html body #djfx .padsrow .lpbtn:nth-child(1){--pc:#7bdcb0!important}
+html body #djfx .padsrow .lpbtn:nth-child(2){--pc:#46cfe8!important}
+html body #djfx .padsrow .lpbtn:nth-child(3){--pc:#4f9dff!important}
+html body #djfx .padsrow .lpbtn:nth-child(4){--pc:#7490ff!important}
+</style>
+<script>
+/* Kulay ng 50 FX pads: bawat hilera ay may sariling kulay (violet/pink, mint/cyan/blue, yellow/green, coral/orange), umuulit kada 4 na hilera */
+(function(){
+  var P=[['#a66bff','#d462f2','#ff64bd','#ff5e93'],['#7bdcb0','#46cfe8','#4f9dff','#7490ff'],['#ffd94d','#c9d94f','#5fcf3c','#72d066'],['#ff6c7d','#f59478','#ffa545','#ffbb57']];
+  var g=document.getElementById('fxGrid'); if(!g)return;
+  function cols(){
+    var t=''; try{ t=getComputedStyle(g).gridTemplateColumns||''; }catch(e){}
+    var m=/repeat\(\s*(\d+)/.exec(t); if(m)return +m[1];
+    var n=t.split(/\s+/).filter(function(x){return x&&x!=='none';}).length; return n>0?n:5;
+  }
+  function paint(){
+    var c=cols(), cells=g.children;
+    for(var i=0;i<cells.length;i++){
+      var b=cells[i].querySelector('.pad'); if(!b)continue;
+      b.style.setProperty('--pc',P[Math.floor(i/c)%4][(i%c)%4]);
+    }
+  }
+  paint();
+  try{ new MutationObserver(paint).observe(g,{childList:true}); }catch(e){}
+  try{ if(window.ResizeObserver)new ResizeObserver(function(){ paint(); }).observe(g); }catch(e){}
+  window.addEventListener('resize',function(){ setTimeout(paint,60); });
+  window.addEventListener('orientationchange',function(){ setTimeout(paint,300); });
+})();
+</script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
