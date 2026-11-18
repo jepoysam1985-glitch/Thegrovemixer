@@ -3676,16 +3676,40 @@ decks.forEach((d)=>refresh(d.i));
 })();
 </script>
 <script>
-/* CENTER LOCK (detent): dumidikit ang slider sa gitna/neutral, may maikling vibrate */
+/* CENTER LOCK v2 (soft detent): dumidikit ang slider sa gitna/neutral, may maikling vibrate, PERO tuloy-tuloy ang labas (walang biglang talon).
+   Ang touch engine (GM-MT) at ang .vs ay gumagamit ng GMDET.fwd/inv; ang ibang pagbabago (keyboard, MIDI) ay dumadaan pa rin sa lumang snap. */
 (function(){
   const T={tracksGain:[100,4],fxVol:[100,4],micGain:[100,5]};      // 100 = 0.0 dB / 100%
-  document.addEventListener('input',(e)=>{
-    const el=e.target;if(!el||el.type!=='range')return;
+  function cfg(el){
+    if(!el)return null;
     let t=T[el.id];
     if(!t&&el.dataset&&el.dataset.a==='vol')t=[50,3];               // volume ng Deck 1 / Deck 2: gitna = 50
-    if(!t)return;
+    return t||null;
+  }
+  function lim(el){let mn=parseFloat(el.min),mx=parseFloat(el.max);if(isNaN(mn))mn=0;if(isNaN(mx))mx=100;return[mn,mx];}
+  /* hilaw na posisyon (daliri) -> halaga */
+  function fwd(el,v){
+    const t=cfg(el);const l=lim(el);v=Math.max(l[0],Math.min(l[1],v));if(!t)return v;
+    const c=t[0],w=t[1],d=v-c,a=Math.abs(d);
+    if(a<=w){if(!el._sn){el._sn=1;try{navigator.vibrate&&navigator.vibrate(8)}catch(e){}}return c;}
+    el._sn=0;
+    const side=d<0?c-l[0]:l[1]-c;if(side<=w)return v;
+    return c+(d<0?-1:1)*(a-w)*side/(side-w);
+  }
+  /* halaga -> hilaw na posisyon (kabaligtaran ng fwd) */
+  function inv(el,m){
+    const t=cfg(el);if(!t)return m;
+    const l=lim(el),c=t[0],w=t[1],d=m-c,a=Math.abs(d);if(a===0)return c;
+    const side=d<0?c-l[0]:l[1]-c;if(side<=w)return m;
+    return c+(d<0?-1:1)*(a*(side-w)/side+w);
+  }
+  window.GMDET={cfg:cfg,fwd:fwd,inv:inv};
+  document.addEventListener('input',(e)=>{
+    if(e._eng)return;                                              // galing sa soft-detent engine: huwag nang i-snap
+    const el=e.target;if(!el||el.type!=='range')return;
+    const t=cfg(el);if(!t)return;
     const v=parseFloat(el.value);
-    if(Math.abs(v-t[0])<=t[1]){el.value=t[0];if(!el._sn){el._sn=1;try{navigator.vibrate&&navigator.vibrate(8)}catch{}}}
+    if(Math.abs(v-t[0])<=t[1]){el.value=t[0];if(!el._sn){el._sn=1;try{navigator.vibrate&&navigator.vibrate(8)}catch(x){}}}
     else el._sn=0;
   },true);
 })();
@@ -4494,15 +4518,15 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
     function set(v){
       v=Math.max(0,Math.min(100,Math.round(v)));
       var s=src(i);
-      if(s){ s.value=v; s.dispatchEvent(new Event('input',{bubbles:true})); paint(+s.value); }
+      if(s){ s.value=v; var ev=new Event('input',{bubbles:true}); ev._eng=1; s.dispatchEvent(ev); paint(+s.value); }
       else { var d=decks[i]; d.vol=v/100; if(typeof applyFader==='function')applyFader(d); paint(v); }
     }
     var off=0;
-    function fromPt(e){ var r=el.getBoundingClientRect(); if(!r.height)return; set((1-(e.clientY-r.top)/r.height)*100+off); }
+    function fromPt(e){ var r=el.getBoundingClientRect(); if(!r.height)return; var raw=Math.max(0,Math.min(100,(1-(e.clientY-r.top)/r.height)*100+off)), s=src(i); set(window.GMDET&&s?GMDET.fwd(s,raw):raw); }
     el.addEventListener('pointerdown',function(e){
       if(pid!==null||(e.pointerType==='mouse'&&e.button!==0))return;
       pid=e.pointerId; e.preventDefault(); try{el.setPointerCapture(pid)}catch(x){}
-      var r0=el.getBoundingClientRect(), cv=+el.getAttribute('aria-valuenow')||0, ky=r0.top+r0.height*(1-cv/100);
+      var r0=el.getBoundingClientRect(), cv=+el.getAttribute('aria-valuenow')||0; if(window.GMDET&&src(i))cv=GMDET.inv(src(i),cv); var ky=r0.top+r0.height*(1-cv/100);
       off=(r0.height&&Math.abs(e.clientY-ky)<=26)?(cv-(1-(e.clientY-r0.top)/r0.height)*100):0;   // hawak ang knob = walang talon
       fromPt(e);
     });
@@ -4561,8 +4585,11 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
       if(v>=0){ fill.style.left='50%'; fill.style.width=(v/320*100)+'%'; } else { fill.style.left=p+'%'; fill.style.width=(-v/320*100)+'%'; }
       el.setAttribute('aria-valuenow',(v/10).toFixed(1));
     }
+    var PW=6;   /* dead zone ±0.6%: tuloy-tuloy na, walang talon */
+    function pFwd(r){ r=Math.max(-160,Math.min(160,r)); var a=Math.abs(r); if(a<=PW)return 0; return (r<0?-1:1)*(a-PW)*160/(160-PW); }
+    function pInv(m){ var a=Math.abs(m); if(a===0)return 0; return (m<0?-1:1)*(a*(160-PW)/160+PW); }
     function set(v){
-      v=Math.max(-160,Math.min(160,v)); if(Math.abs(v)<6)v=0; v=Math.round(v*10)/10;
+      v=Math.max(-160,Math.min(160,v)); v=Math.round(v*10)/10;
       setTempo(d,v); paint(v);
     }
     el.addEventListener('pointerdown',function(e){
@@ -4570,11 +4597,11 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
       e.preventDefault();
       tapT=Date.now(); moved=false;
       pid=e.pointerId; try{el.setPointerCapture(pid)}catch(x){}
-      x0=e.clientX; v0=d.tempo||0;
+      x0=e.clientX; v0=pInv(d.tempo||0);
     });
     el.addEventListener('pointermove',function(e){
       if(e.pointerId!==pid)return; if(Math.abs(e.clientX-x0)>6)moved=true; var r=el.getBoundingClientRect(); if(!r.width)return;
-      set(v0+(e.clientX-x0)/r.width*320);   // pakanan = bibilis, pakaliwa = babagal
+      set(pFwd(v0+(e.clientX-x0)/r.width*320));   // pakanan = bibilis, pakaliwa = babagal
     });
     function end(e){ if(e.pointerId===pid){ pid=null; try{el.releasePointerCapture(e.pointerId)}catch(x){} } }
     el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('lostpointercapture',end);
@@ -4787,15 +4814,16 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
   function fracAt(g,e){return g.vert?1-(e.clientY-g.r.top-g.tw/2)/span(g):(e.clientX-g.r.left-g.tw/2)/span(g);}
   function clamp(f){return f<0?0:f>1?1:f;}
   function lim(el){var mn=parseFloat(el.min);if(isNaN(mn))mn=0;var mx=parseFloat(el.max);if(isNaN(mx))mx=100;return[mn,mx];}
-  function cur(el){var l=lim(el);return l[1]>l[0]?(parseFloat(el.value)-l[0])/(l[1]-l[0]):0;}
+  function cur(el){var l=lim(el),val=parseFloat(el.value);if(window.GMDET)val=GMDET.inv(el,val);return l[1]>l[0]?(val-l[0])/(l[1]-l[0]):0;}
   function setF(el,f){
     var l=lim(el),mn=l[0],mx=l[1],s=el.step==='any'?0:(parseFloat(el.step)||1);
     var v=mn+clamp(f)*(mx-mn);
+    if(window.GMDET)v=GMDET.fwd(el,v);   /* soft center lock: tuloy-tuloy, walang talon */
     if(s>0)v=mn+Math.round((v-mn)/s)*s;
     v=Math.max(mn,Math.min(mx,v));
     if(s>0)v=Math.round(v*1000)/1000;
     var before=el.value;el.value=v;
-    if(el.value!==before)el.dispatchEvent(new Event('input',{bubbles:true}));
+    if(el.value!==before){var ev=new Event('input',{bubbles:true});ev._eng=1;el.dispatchEvent(ev);}
   }
   /* mas malapad na hawakan: kahit lumampas ng konti sa manipis na bar (±14px taas, ±8px gilid) ay hahawak pa rin */
   function pick(e){
