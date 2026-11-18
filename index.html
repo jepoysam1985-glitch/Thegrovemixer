@@ -589,8 +589,8 @@ li.cur{background:#0f2a66;color:#fff}
   <label for="o_lite">Lite mode (lighter app: no spectrum, no glow/animations, slower refresh)</label>
   <select id="o_lite">
     <option value="auto">Auto - on only while LIVE</option>
-    <option value="1" selected>Always on</option>
-    <option value="0">Off</option>
+    <option value="1">Always on</option>
+    <option value="0" selected>Off</option>
   </select>
   <label for="o_auto">Auto-lower bitrate when the connection is weak</label>
   <select id="o_auto">
@@ -4473,6 +4473,8 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
 .xscale{position:relative;flex:1 1 0;min-width:0;display:flex;align-items:center;height:30px}
 .xscale::before{content:"";position:absolute;z-index:0;left:11px;right:10px;top:50%;height:26px;transform:translateY(-50%);pointer-events:none;background:linear-gradient(#ffffffd9,#ffffffd9) 50% 50%/2px 100% no-repeat,linear-gradient(var(--c1),var(--c1)) 0 50%/2px 100% no-repeat,linear-gradient(var(--c2),var(--c2)) 100% 50%/2px 100% no-repeat,repeating-linear-gradient(90deg,#ffffff8c 0 1px,transparent 1px 10%) 0 50%/100% 14px no-repeat}
 .xscale #cross{position:relative;z-index:1;flex:1 1 auto;width:100%;margin:0}
+/* TIMER ng Deck 1: puti */
+#time0,#wTime0,#waveHead .wh0 .wTime{color:#fff!important;text-shadow:none!important;opacity:1!important}
 .vs:focus-visible{box-shadow:0 0 0 2px var(--c)}
 @media not all and (orientation:landscape) and (max-height:900px) and (min-width:480px){
   .decks,body>.decks{grid-template-columns:minmax(0,1fr) 54px minmax(0,1fr)}
