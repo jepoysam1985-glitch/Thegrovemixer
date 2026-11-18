@@ -1239,7 +1239,7 @@ decks.forEach((d) => {
 let crossSnapped = false;
 $('#cross').oninput = (e) => {          // CENTER LOCK: kapag malapit sa gitna (±4), dumidikit sa 50 na parang hardware detent
   const el = e.target, v = parseFloat(el.value);
-  if (Math.abs(v - 50) <= 4) {
+  if (Math.abs(v - 50) <= 2) {
     el.value = 50;
     if (!crossSnapped) { crossSnapped = true; try { navigator.vibrate && navigator.vibrate(10); } catch {} }
   } else crossSnapped = false;
@@ -2269,7 +2269,7 @@ decks.forEach((d) => {
     cur()[k] = v; apply(); render(); save();
   }
   IDX.forEach((k) => {
-    const sl = $('#eq' + k); let drag = false, lastTap = 0;
+    const sl = $('#eq' + k); let drag = false, lastTap = 0, tapT = 0, sy = 0, mv = false;
     const move = (e) => {
       const r = sl.getBoundingClientRect(); if (!r.height) return;
       const ratio = 1 - Math.max(0, Math.min(1, (e.clientY - r.top) / r.height));
@@ -2278,12 +2278,11 @@ decks.forEach((d) => {
     sl.addEventListener('pointerdown', (e) => {
       e.preventDefault();
       try { sl.setPointerCapture(e.pointerId); } catch (err) {}
-      const t = Date.now();
-      if (t - lastTap < 320) { lastTap = 0; drag = false; setBand(k, 0); return; }  // double-tap = reset ng band
-      lastTap = t; drag = true; move(e);
+      tapT = Date.now(); sy = e.clientY; mv = false; drag = true; move(e);
     });
-    sl.addEventListener('pointermove', (e) => { if (drag) { e.preventDefault(); move(e); } });
+    sl.addEventListener('pointermove', (e) => { if (drag) { if (Math.abs(e.clientY - sy) > 8) mv = true; e.preventDefault(); move(e); } });
     const end = () => { drag = false; };
+    sl.addEventListener('pointerup', () => { const n = Date.now(); if (!mv && n - tapT < 250) { if (n - lastTap < 450) { lastTap = 0; setBand(k, 0); } else lastTap = n; } });  // double-tap = reset ng band
     sl.addEventListener('pointerup', end); sl.addEventListener('pointercancel', end);
   });
   pb.forEach((el, i) => { el.onclick = () => { st[st.slot] = PRESETS[i][1].slice(); apply(); render(); save(); }; });
@@ -4495,10 +4494,13 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
       if(s){ s.value=v; s.dispatchEvent(new Event('input',{bubbles:true})); paint(+s.value); }
       else { var d=decks[i]; d.vol=v/100; if(typeof applyFader==='function')applyFader(d); paint(v); }
     }
-    function fromPt(e){ var r=el.getBoundingClientRect(); if(!r.height)return; set((1-(e.clientY-r.top)/r.height)*100); }
+    var off=0;
+    function fromPt(e){ var r=el.getBoundingClientRect(); if(!r.height)return; set((1-(e.clientY-r.top)/r.height)*100+off); }
     el.addEventListener('pointerdown',function(e){
       if(pid!==null||(e.pointerType==='mouse'&&e.button!==0))return;
       pid=e.pointerId; e.preventDefault(); try{el.setPointerCapture(pid)}catch(x){}
+      var r0=el.getBoundingClientRect(), cv=+el.getAttribute('aria-valuenow')||0, ky=r0.top+r0.height*(1-cv/100);
+      off=(r0.height&&Math.abs(e.clientY-ky)<=26)?(cv-(1-(e.clientY-r0.top)/r0.height)*100):0;   // hawak ang knob = walang talon
       fromPt(e);
     });
     el.addEventListener('pointermove',function(e){ if(e.pointerId===pid)fromPt(e); });
@@ -4548,7 +4550,7 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
     var wrap=document.createElement('div'); wrap.className='dpitch d'+i; wrap.id='dpitch'+i;
     wrap.innerHTML='<span class="dpt">PITCH</span><div class="ps" role="slider" tabindex="0" aria-label="Deck '+(i+1)+' pitch" aria-valuemin="-16" aria-valuemax="16" aria-valuenow="0" title="Deck '+(i+1)+' pitch (double-tap = reset)"><i></i><b></b></div>';
     lr.appendChild(wrap);   // nasa ilalim ng .dlv (Music level)
-    var el=wrap.querySelector('.ps'), fill=el.querySelector('i'), knob=el.querySelector('b'), pid=null, last=null, lastTap=0, x0=0, v0=0;
+    var el=wrap.querySelector('.ps'), fill=el.querySelector('i'), knob=el.querySelector('b'), pid=null, last=null, lastTap=0, x0=0, v0=0, tapT=0, moved=false;
     rows.push(wrap);
     function paint(v){
       v=Math.max(-160,Math.min(160,+v||0)); if(v===last)return; last=v;
@@ -4563,16 +4565,17 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
     el.addEventListener('pointerdown',function(e){
       if(pid!==null||(e.pointerType==='mouse'&&e.button!==0))return;
       e.preventDefault();
-      var n=Date.now(); if(n-lastTap<320){ lastTap=0; set(0); return; } lastTap=n;
+      tapT=Date.now(); moved=false;
       pid=e.pointerId; try{el.setPointerCapture(pid)}catch(x){}
       x0=e.clientX; v0=d.tempo||0;
     });
     el.addEventListener('pointermove',function(e){
-      if(e.pointerId!==pid)return; var r=el.getBoundingClientRect(); if(!r.width)return;
+      if(e.pointerId!==pid)return; if(Math.abs(e.clientX-x0)>6)moved=true; var r=el.getBoundingClientRect(); if(!r.width)return;
       set(v0+(e.clientX-x0)/r.width*320);   // pakanan = bibilis, pakaliwa = babagal
     });
     function end(e){ if(e.pointerId===pid){ pid=null; try{el.releasePointerCapture(e.pointerId)}catch(x){} } }
     el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('lostpointercapture',end);
+    el.addEventListener('pointerup',function(){ var n=Date.now(); if(!moved&&n-tapT<250){ if(n-lastTap<450){ lastTap=0; set(0); } else lastTap=n; } });
     el.addEventListener('touchstart',function(e){ e.preventDefault(); },{passive:false});
     el.addEventListener('keydown',function(e){
       var cur=d.tempo||0, k=e.key;
@@ -4771,17 +4774,14 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 #waveHead .wNow .mq{display:inline-block;will-change:transform}
 </style>
 <script>
-/* GM-MT-PATCH: MULTI-TOUCH ng lahat ng slider (range input): bawat daliri may sariling slider, sabay-sabay */
+/* GM-MT-PATCH v2: MULTI-TOUCH + mas malapad na hawakan ng lahat ng slider (range input). Bawat daliri may sariling slider. */
 (function(){
   var act=new Map();
   function isR(t){return !!t&&t.tagName==='INPUT'&&t.type==='range';}
   function thumbW(el){try{var w=parseFloat(getComputedStyle(el,'::-webkit-slider-thumb').width);if(w>0)return w;}catch(x){}return 22;}
   function geom(el){var r=el.getBoundingClientRect();return{r:r,tw:thumbW(el),vert:r.height>r.width*1.5};}
-  function span(g){return g.vert?g.r.height-g.tw:g.r.width-g.tw;}
-  function fracAt(g,e){
-    var s=span(g);if(s<=0)return 0;
-    return g.vert?1-(e.clientY-g.r.top-g.tw/2)/s:(e.clientX-g.r.left-g.tw/2)/s;
-  }
+  function span(g){return Math.max(1,g.vert?g.r.height-g.tw:g.r.width-g.tw);}
+  function fracAt(g,e){return g.vert?1-(e.clientY-g.r.top-g.tw/2)/span(g):(e.clientX-g.r.left-g.tw/2)/span(g);}
   function clamp(f){return f<0?0:f>1?1:f;}
   function lim(el){var mn=parseFloat(el.min);if(isNaN(mn))mn=0;var mx=parseFloat(el.max);if(isNaN(mx))mx=100;return[mn,mx];}
   function cur(el){var l=lim(el);return l[1]>l[0]?(parseFloat(el.value)-l[0])/(l[1]-l[0]):0;}
@@ -4794,11 +4794,28 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
     var before=el.value;el.value=v;
     if(el.value!==before)el.dispatchEvent(new Event('input',{bubbles:true}));
   }
+  /* mas malapad na hawakan: kahit lumampas ng konti sa manipis na bar (±14px taas, ±8px gilid) ay hahawak pa rin */
+  function pick(e){
+    var t=e.target;
+    if(isR(t))return t;
+    if(t&&t.closest&&t.closest('button,select,textarea,input,a,canvas,.jog,.vs,.ps,.eqs,[role=slider]'))return null;
+    var best=null,bd=1e9,rs=document.querySelectorAll('input[type=range]'),m=t&&t.closest?t.closest('.modal'):null;
+    for(var i=0;i<rs.length;i++){
+      var el=rs[i];if(el.disabled)continue;
+      var r=el.getBoundingClientRect();if(!r.width||!r.height)continue;
+      if(e.clientX<r.left-8||e.clientX>r.right+8||e.clientY<r.top-14||e.clientY>r.bottom+14)continue;
+      if(el.closest('.modal')!==m)continue;
+      try{if(getComputedStyle(el).pointerEvents==='none')continue;}catch(x){}
+      var d=Math.abs(e.clientY-(r.top+r.height/2));if(d<bd){bd=d;best=el;}
+    }
+    return best;
+  }
   document.addEventListener('pointerdown',function(e){
     if(e.pointerType==='mouse')return;
-    var el=e.target;if(!isR(el)||el.disabled)return;
+    var el=pick(e);if(!el)return;
     var g=geom(el),f=fracAt(g,e),c=cur(el);
-    var off=Math.abs(f-c)*Math.max(span(g),1)<=g.tw?(c-f):0;   /* hawak ang knob = walang talon */
+    var onKnob=Math.abs(f-c)*span(g)<=g.tw*1.1;
+    var off=onKnob?(c-f):0;   /* hawak ang knob = walang talon; kapag sa bar = lilipat doon */
     act.set(e.pointerId,{el:el,g:g,off:off});
     try{el.setPointerCapture(e.pointerId);}catch(x){}
     e.preventDefault();
@@ -4816,7 +4833,10 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
   }
   document.addEventListener('pointerup',end,true);
   document.addEventListener('pointercancel',end,true);
-  document.addEventListener('touchstart',function(e){if(isR(e.target))e.preventDefault();},{passive:false,capture:true});
+  document.addEventListener('touchstart',function(e){
+    var t0=e.changedTouches&&e.changedTouches[0];if(!t0)return;
+    if(pick({target:e.target,clientX:t0.clientX,clientY:t0.clientY}))e.preventDefault();
+  },{passive:false,capture:true});
 })();
 </script>
 <script>
