@@ -2351,8 +2351,10 @@ decks.forEach((d) => {
 </script>
 <script>
 (function(){const rr=()=>document.querySelectorAll('input[type=range]');
-function f(){rr().forEach(e=>{const p=((e.value-e.min)/(e.max-e.min)*100).toFixed(1);if(e._pv!==p){e._pv=p;e.style.setProperty('--v',p+'%');}});}
-document.addEventListener('input',f,true);setInterval(f,150);f();})();
+/* GM-SLFIX: ang kulay (fill) ay humihinto sa GITNA ng hawakan, hindi sa hilaw na % ng track (dating lumalampas/kulang ng hanggang kalahating hawakan) */
+function tw(e){const n=Date.now();if(!e._tw||n-(e._twT||0)>1500){let w=22;try{const x=parseFloat(getComputedStyle(e,'::-webkit-slider-thumb').width);if(x>0)w=x;}catch(_){}e._tw=w;e._twT=n;}return e._tw;}
+function f(){rr().forEach(e=>{const mn=parseFloat(e.min),mx=parseFloat(e.max),lo=isNaN(mn)?0:mn,hi=isNaN(mx)?100:mx;let r=hi>lo?(parseFloat(e.value)-lo)/(hi-lo):0;if(!(r>=0))r=0;if(r>1)r=1;const w=tw(e),k=r.toFixed(4)+'|'+w;if(e._pv!==k){e._pv=k;e.style.setProperty('--v','calc('+(w/2)+'px + '+r.toFixed(4)+' * (100% - '+w+'px))');}});}
+document.addEventListener('input',f,true);window.addEventListener('resize',function(){rr().forEach(function(e){e._twT=0;});f();});setInterval(f,150);f();})();
 </script>
 <script>
 document.querySelectorAll('label:not([for])').forEach((l) => { const n = l.nextElementSibling; if (n && /^(INPUT|SELECT)$/.test(n.tagName) && !n.getAttribute('aria-label')) n.setAttribute('aria-label', l.textContent.replace(/\s+/g, ' ').trim()); });
@@ -3260,6 +3262,7 @@ body.spcustom canvas.spec{height:var(--sph)!important}
       if(+el.value!==v){el.value=v;el.dispatchEvent(new Event('input',{bubbles:true}))}
     };
     el.addEventListener('pointerdown',(e)=>{
+      if(e.defaultPrevented)return;   /* GM-SLFIX: kinuha na ng GM-MT engine (touch); huwag magdoble para hindi mag-agawan/tumalon */
       if(pid!==null||(e.pointerType==='mouse'&&e.button!==0))return;
       pid=e.pointerId; e.preventDefault();
       try{el.setPointerCapture(pid)}catch{}
