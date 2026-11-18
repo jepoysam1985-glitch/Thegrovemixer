@@ -1239,7 +1239,7 @@ decks.forEach((d) => {
 let crossSnapped = false;
 $('#cross').oninput = (e) => {          // CENTER LOCK: kapag malapit sa gitna (±4), dumidikit sa 50 na parang hardware detent
   const el = e.target, v = parseFloat(el.value);
-  if (Math.abs(v - 50) <= 2) {
+  if (Math.abs(v - 50) <= 4) {
     el.value = 50;
     if (!crossSnapped) { crossSnapped = true; try { navigator.vibrate && navigator.vibrate(10); } catch {} }
   } else crossSnapped = false;
@@ -2353,7 +2353,7 @@ decks.forEach((d) => {
 (function(){const rr=()=>document.querySelectorAll('input[type=range]');
 /* GM-SLFIX v2: ang fill ay humihinto sa GITNA ng hawakan. Magaan: sinusukat ang hawakan nang isang beses (hindi bawat galaw), at sa bawat galaw ang gumagalaw na slider lang ang ina-update. */
 function tw(e){if(!e._tw){const n=Date.now();if(!e._twR||n>e._twR){let x=0;try{x=parseFloat(getComputedStyle(e,'::-webkit-slider-thumb').width);}catch(_){}if(x>0)e._tw=x;else e._twR=n+3000;}}return e._tw||22;}
-function one(e){const mn=parseFloat(e.min),mx=parseFloat(e.max),lo=isNaN(mn)?0:mn,hi=isNaN(mx)?100:mx;let r=hi>lo?(parseFloat(e.value)-lo)/(hi-lo):0;if(!(r>=0))r=0;if(r>1)r=1;const w=tw(e),k=r.toFixed(4)+'|'+w;if(e._pv!==k){e._pv=k;e.style.setProperty('--v','calc('+(w/2)+'px + '+r.toFixed(4)+' * (100% - '+w+'px))');}}
+function one(e){const mn=parseFloat(e.min),mx=parseFloat(e.max),lo=isNaN(mn)?0:mn,hi=isNaN(mx)?100:mx;let r=hi>lo?(parseFloat(e.value)-lo)/(hi-lo):0;if(!(r>=0))r=0;if(r>1)r=1;const w=tw(e),k=r.toFixed(4)+'|'+w;if(e._pv!==k){e._pv=k;e.style.setProperty('--v',e.id==='cross'?(r*100).toFixed(1)+'%':'calc('+(w/2)+'px + '+r.toFixed(4)+' * (100% - '+w+'px))');}}
 function f(){rr().forEach(one);}
 function remeasure(){rr().forEach(function(e){e._tw=0;e._twR=0;});f();}
 document.addEventListener('input',function(ev){const t=ev.target;if(t&&t.type==='range')one(t);},true);
@@ -4919,60 +4919,9 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 </script>
 
 
-<script>
-/* GM-CROSS: sariling smooth na engine ng CROSSFADER: tuloy-tuloy ang halaga (hindi hakbang-hakbang), may easing, mas malapad na hawakan, sabay-sabay pa rin sa ibang slider */
-(function(){
-  var cr=document.getElementById('cross');if(!cr)return;
-  var host=cr.closest('.xrow')||cr.closest('.xscale')||cr.parentNode;
-  host.style.touchAction='none';cr.style.touchAction='none';
-  cr.step='any';
-  var pid=null,g=null,off=0,tgt=50,cv=50,raf=0;
-  function tw(){try{var w=parseFloat(getComputedStyle(cr,'::-webkit-slider-thumb').width);if(w>0)return w;}catch(x){}return 22;}
-  function clamp(v){return v<0?0:v>100?100:v;}
-  function frac(e){return (e.clientX-g.r.left-g.tw/2)/Math.max(1,g.r.width-g.tw)*100;}
-  function put(v){cr.value=v;cr.dispatchEvent(new Event('input',{bubbles:true}));}
-  function loop(){
-    raf=0;
-    var d=tgt-cv;
-    if(pid===null&&Math.abs(d)<0.05){cv=tgt;put(cv);return;}
-    cv+=d*0.55;if(Math.abs(tgt-cv)<0.05)cv=tgt;
-    put(cv);
-    raf=requestAnimationFrame(loop);
-  }
-  host.addEventListener('pointerdown',function(e){
-    if(e.pointerType==='mouse'||pid!==null)return;
-    if(e.target.closest&&e.target.closest('.vtag'))return;
-    g={r:cr.getBoundingClientRect(),tw:tw()};
-    cv=parseFloat(cr.value);if(isNaN(cv))cv=50;
-    var f=frac(e),span=Math.max(1,g.r.width-g.tw);
-    off=Math.abs(f-cv)/100*span<=g.tw*1.3?(cv-f):0;   /* hawak ang knob = walang talon */
-    pid=e.pointerId;
-    try{host.setPointerCapture(pid);}catch(x){}
-    e.preventDefault();
-    tgt=clamp(f+off);
-    if(!raf)raf=requestAnimationFrame(loop);
-  },true);
-  host.addEventListener('pointermove',function(e){
-    if(e.pointerId!==pid)return;
-    e.preventDefault();
-    tgt=clamp(frac(e)+off);
-    if(!raf)raf=requestAnimationFrame(loop);
-  },true);
-  function end(e){
-    if(e.pointerId!==pid)return;
-    pid=null;
-    try{host.releasePointerCapture(e.pointerId);}catch(x){}
-    cr.dispatchEvent(new Event('change',{bubbles:true}));
-  }
-  host.addEventListener('pointerup',end,true);
-  host.addEventListener('pointercancel',end,true);
-  host.addEventListener('touchstart',function(e){
-    if(e.target.closest&&e.target.closest('.vtag'))return;
-    e.preventDefault();
-  },{passive:false,capture:true});
-})();
-</script>
 
+
+<style>#cross{touch-action:auto}</style>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
