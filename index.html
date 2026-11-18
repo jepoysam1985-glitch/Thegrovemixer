@@ -4850,6 +4850,23 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
   if(!place()){var n=0,t=setInterval(function(){if(place()||++n>20)clearInterval(t);},500);}
 })();
 </script>
+<style>
+/* GM-VINYL-PATCH: vinyl (Scratch/Sync) button lipat sa kaliwang-baba ng Deck 2, kapareho ng laki ng EQ */
+html body #deck1{position:relative}
+html body #deck1>#syncOpen{position:absolute!important;left:6px;right:auto;top:auto;bottom:4px;display:flex!important;align-items:center;justify-content:center;width:44px!important;min-width:44px!important;max-width:none!important;height:44px!important;margin:0!important;padding:0!important;border-radius:50%!important;line-height:1;z-index:8}
+html body #deck1>#syncOpen .sLogo{width:28px!important;height:28px!important;max-height:none!important;flex:none}
+</style>
+<script>
+/* GM-VINYL-PATCH: ilipat ang #syncOpen sa #deck1 (mirror ng EQ sa Deck 1) */
+(function(){
+  function place(){
+    var b=document.getElementById('syncOpen'),d=document.getElementById('deck1');
+    if(b&&d&&b.parentNode!==d)d.appendChild(b);
+    return !!(b&&d);
+  }
+  if(!place()){var n=0,t=setInterval(function(){if(place()||++n>20)clearInterval(t);},500);}
+})();
+</script>
 <script>
 /* GM-MT-PATCH: GUMAGALAW NA TITLE (marquee) sa header ng waveform (landscape), para kita ang buong pamagat ng kanta */
 (function(){
