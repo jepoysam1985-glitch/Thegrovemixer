@@ -4525,6 +4525,67 @@ input#cross[type=range]{background:linear-gradient(#e6f2ff,#e6f2ff) center/2px 1
   var w=document.createElement('div'); w.className='xscale'; c.parentNode.insertBefore(w,c); w.appendChild(c);
 })();
 </script>
+<style>
+/* PITCH SLIDER ng Deck 1 at Deck 2: nasa pinakababa ng level meter (patayo, kulay ng deck; kasabay ng Tempo slider) */
+.pitchwrap{display:flex;flex-direction:column;align-items:center;gap:2px;align-self:center;flex:none;margin-top:2px}
+.pitchwrap .pl{font-size:7px;font-weight:800;line-height:1;letter-spacing:0;color:#d9d9f0;text-transform:uppercase}
+.pspair{display:flex;gap:3px;justify-content:center;align-items:stretch}
+.psgap{width:8px;flex:none}
+.pscol{--c:var(--c1,#00e5ff);display:flex;flex-direction:column;align-items:center}
+.pscol.d1{--c:var(--c2,#ff3da6)}
+.ps{position:relative;width:14px;height:clamp(44px,16vh,76px);margin:10px 0;border-radius:99px;background:#05050a;border:1px solid #ffffff2a;touch-action:none;cursor:pointer;-webkit-tap-highlight-color:transparent;outline:none}
+.ps::before{content:"";position:absolute;top:-6px;bottom:-6px;left:-6px;right:-6px}
+.ps i{position:absolute;left:0;right:0;bottom:50%;height:0;background:var(--c);opacity:.8;box-shadow:0 0 8px var(--c);pointer-events:none;z-index:0}
+.ps::after{content:"";position:absolute;left:-4px;right:-4px;top:0;bottom:0;z-index:1;pointer-events:none;background:linear-gradient(#fffb,#fffb) 0 50%/100% 1px no-repeat,repeating-linear-gradient(0deg,#ffffff66 0 1px,transparent 1px 12.5%)}
+.ps b{position:absolute;left:-4px;right:-4px;bottom:50%;height:20px;margin-bottom:-10px;box-sizing:border-box;border-radius:3px;border:1px solid #000;pointer-events:none;z-index:2;
+  background:linear-gradient(var(--c),var(--c)) center/100% 2px no-repeat,repeating-linear-gradient(0deg,#00000030 0 2px,transparent 2px 4px),linear-gradient(0deg,#2b2e35,#7b8291 50%,#2b2e35);
+  box-shadow:0 4px 7px #000c,inset 0 1px 0 #ffffff55}
+.ps:focus-visible{box-shadow:0 0 0 2px var(--c)}
+</style>
+<script>
+(function(){
+  if(typeof decks==='undefined'||typeof setTempo!=='function')return;
+  var card=document.querySelector('.card.vmeter'); if(!card||document.getElementById('pitchWrap'))return;
+  var wrap=document.createElement('div'); wrap.className='pitchwrap'; wrap.id='pitchWrap';
+  function col(i){ return '<div class="pscol d'+i+'"><div class="ps" data-d="'+i+'" role="slider" tabindex="0" aria-orientation="vertical" aria-label="Deck '+(i+1)+' pitch" aria-valuemin="-16" aria-valuemax="16" aria-valuenow="0" title="Deck '+(i+1)+' pitch (double-tap = reset)"><i></i><b></b></div></div>'; }
+  wrap.innerHTML='<span class="pl">Pitch</span><div class="pspair">'+col(0)+'<div class="psgap"></div>'+col(1)+'</div>';
+  card.appendChild(wrap);   // laging huling item ng level meter = pinakababa
+  [].forEach.call(wrap.querySelectorAll('.ps'),function(el){
+    var i=+el.getAttribute('data-d'), fill=el.querySelector('i'), knob=el.querySelector('b'), pid=null, last=null, lastTap=0, y0=0, v0=0;
+    function paint(v){
+      v=Math.max(-160,Math.min(160,+v||0)); if(v===last)return; last=v;
+      var p=(v+160)/320*100; knob.style.bottom=p+'%';
+      if(v>=0){ fill.style.bottom='50%'; fill.style.height=(v/320*100)+'%'; } else { fill.style.bottom=p+'%'; fill.style.height=(-v/320*100)+'%'; }
+      el.setAttribute('aria-valuenow',(v/10).toFixed(1));
+    }
+    function set(v){
+      v=Math.max(-160,Math.min(160,v)); if(Math.abs(v)<6)v=0; v=Math.round(v*10)/10;
+      setTempo(decks[i],v); paint(v);
+    }
+    el.addEventListener('pointerdown',function(e){
+      if(pid!==null||(e.pointerType==='mouse'&&e.button!==0))return;
+      e.preventDefault();
+      var n=Date.now(); if(n-lastTap<320){ lastTap=0; set(0); return; } lastTap=n;
+      pid=e.pointerId; try{el.setPointerCapture(pid)}catch(x){}
+      y0=e.clientY; v0=(decks[i]&&decks[i].tempo)||0;
+    });
+    el.addEventListener('pointermove',function(e){
+      if(e.pointerId!==pid)return; var r=el.getBoundingClientRect(); if(!r.height)return;
+      set(v0-(e.clientY-y0)/r.height*320);
+    });
+    function end(e){ if(e.pointerId===pid){ pid=null; try{el.releasePointerCapture(e.pointerId)}catch(x){} } }
+    el.addEventListener('pointerup',end); el.addEventListener('pointercancel',end); el.addEventListener('lostpointercapture',end);
+    el.addEventListener('touchstart',function(e){ e.preventDefault(); },{passive:false});
+    el.addEventListener('keydown',function(e){
+      var cur=(decks[i]&&decks[i].tempo)||0, k=e.key;
+      if(k==='ArrowUp'||k==='ArrowRight')set(cur+5); else if(k==='ArrowDown'||k==='ArrowLeft')set(cur-5); else if(k==='0'||k==='Delete'||k==='Home')set(0); else return;
+      e.preventDefault();
+    });
+    paint(0);
+    setInterval(function(){ if(pid!==null)return; var d=decks[i]; paint(d&&d.tempo||0); },150);   // sumusunod sa Tempo slider, SYNC, auto-mix, at pag nag-load ng bagong kanta
+  });
+})();
+</script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
