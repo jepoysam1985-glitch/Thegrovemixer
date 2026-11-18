@@ -4758,9 +4758,10 @@ html body #eqModal .eqpre button.on{
 <style>
 /* GM-MT-PATCH: multi-touch sliders / mas malaking EQ button / gumagalaw na title */
 input[type=range]{touch-action:none}
-html body button.eqbtn{display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:3px;width:46px!important;min-width:46px!important;max-width:none!important;height:clamp(40px,12vh,50px)!important;margin:6px 0 2px!important;padding:0!important;border-radius:12px;line-height:1;flex:none;align-self:center;position:relative;z-index:6}
+html body button.eqbtn{display:flex!important;flex-direction:row;align-items:center;justify-content:center;gap:5px;width:66px!important;min-width:66px!important;max-width:none!important;height:40px!important;margin:0!important;padding:0!important;border-radius:12px;line-height:1;flex:none;position:relative;z-index:6}
 html body button.eqbtn svg{display:block;width:24px!important;height:24px!important}
-html body button.eqbtn span{font-size:11px!important;font-weight:800;letter-spacing:.6px}
+html body button.eqbtn span{font-size:13px!important;font-weight:800;letter-spacing:.6px}
+html body #lrow0 .lbtn{flex:1 1 0!important}
 html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stretch;text-overflow:clip}
 #waveHead .wNow .mq{display:inline-block;will-change:transform}
 </style>
@@ -4814,12 +4815,12 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 })();
 </script>
 <script>
-/* GM-MT-PATCH: EQ button, ilipat sa ilalim ng meter para hindi matakpan ang volume sliders */
+/* GM-MT-PATCH: EQ button sa gilid ng Deck 1 (katabi ng 📂 LIST) */
 (function(){
   function place(){
-    var b=document.querySelector('button.eqbtn'),card=document.querySelector('.card.vmeter'),pair=card&&card.querySelector('.vmpair');
-    if(b&&card&&pair&&b.parentNode!==card)pair.after(b);
-    return !!(b&&card&&pair);
+    var b=document.querySelector('button.eqbtn'),lr=document.getElementById('lrow0'),l=lr&&lr.querySelector('.lbtn');
+    if(b&&l&&b.previousElementSibling!==l)l.after(b);
+    return !!(b&&l);
   }
   if(!place()){var n=0,t=setInterval(function(){if(place()||++n>20)clearInterval(t);},500);}
 })();
