@@ -4675,6 +4675,46 @@ html body #syncModal .sbox>button:nth-of-type(6){--pc:#4f9dff!important}
 html body #syncModal .sbox>button:nth-of-type(7){--pc:#ffd94d!important}
 html body #syncModal .sbox>button:nth-of-type(8){--pc:#c9d94f!important}
 </style>
+<style>
+/* DJ FX: lahat ng buttons sa mga hilera (Echo/Reverb, Color, Roll, Sweep, Fade, Voice FX) ay kapareho ng style ng pads */
+html body #djfx .fxr button{
+  --pc:#46cfe8;
+  border:0!important;border-radius:12px!important;
+  background:radial-gradient(circle at 50% 50%,rgba(255,255,255,.5) 0,rgba(255,255,255,0) 72%),linear-gradient(var(--pc),var(--pc))!important;
+  color:rgba(16,18,40,.78)!important;text-shadow:none!important;font-weight:800!important;letter-spacing:0!important;filter:none!important;
+  box-shadow:inset 0 -3px 6px rgba(0,0,0,.18),inset 0 1px 0 rgba(255,255,255,.25),0 2px 4px rgba(0,0,0,.5)!important}
+html body #djfx .fxr button:active{transform:scale(.95)!important;filter:brightness(1.1)!important}
+html body #djfx .fxr button.on{
+  background:radial-gradient(circle at 50% 50%,#fff 0,rgba(255,255,255,.35) 75%),linear-gradient(var(--pc),var(--pc))!important;
+  color:rgba(16,18,40,.88)!important;transform:none!important;
+  box-shadow:0 0 0 2px #fff,0 0 14px var(--pc),0 0 26px var(--pc)!important}
+</style>
+<script>
+/* Kulay ng DJ FX buttons: kada hilera ay may sariling kulay (violet/pink, mint/cyan/blue, yellow/green, coral/orange); pareho ang Deck 1 at Deck 2 */
+(function(){
+  var P=[['#a66bff','#d462f2','#ff64bd','#ff5e93','#ff6c7d'],['#7bdcb0','#46cfe8','#4f9dff','#7490ff','#a66bff'],['#ffd94d','#c9d94f','#5fcf3c','#72d066','#7bdcb0'],['#ff6c7d','#f59478','#ffa545','#ffbb57','#ffd94d']];
+  var root=document.getElementById('djfx'); if(!root)return;
+  var busy=false;
+  function paint(){
+    if(busy)return; busy=true;
+    try{
+      var cnt=new Map();
+      [].forEach.call(root.querySelectorAll('.fxr'),function(row){
+        var sc=row.closest('.fxpane')||root, base=cnt.get(sc)||0;
+        var m=/\bc(\d)\b/.exec(row.className), cols=m?+m[1]:4, kids=[].slice.call(row.children);
+        kids.forEach(function(b,i){
+          if(b.tagName!=='BUTTON')return;
+          b.style.setProperty('--pc',P[(base+Math.floor(i/cols))%4][i%cols]);
+        });
+        cnt.set(sc,base+Math.ceil(kids.length/cols));
+      });
+    }catch(e){}
+    busy=false;
+  }
+  paint();
+  try{ new MutationObserver(paint).observe(root,{childList:true,subtree:true}); }catch(e){}
+})();
+</script>
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
 </body>
 </html>
