@@ -4266,7 +4266,7 @@ body.lite canvas.spec{visibility:hidden}
         '#waveHead{display:flex;gap:8px;align-items:center;min-width:0}' +
         '#waveHead .wh{flex:1 1 0;min-width:0;display:flex;align-items:center;gap:5px}' +
         '#whMid{flex:none}' +
-        '.wAdd{display:flex;align-items:center;justify-content:center;flex:none;align-self:stretch;width:40px;min-height:38px;padding:0;border-radius:10px;background:#d8d8d8;border:0}.wAdd svg{width:22px;height:22px;fill:#111}' +
+        '.wAdd{display:flex;align-items:center;justify-content:center;flex:none;align-self:stretch;width:40px;min-height:38px;padding:0;border-radius:10px;background:#0d0f1c;border:1.5px solid var(--ac,#d8d8d8)}.wAdd0{--ac:var(--c1)}.wAdd1{--ac:var(--c2)}.wAdd svg{width:22px;height:22px;fill:var(--ac,#111);filter:drop-shadow(0 0 3px var(--ac,transparent))}' +
         '#waveHead .wNow{flex:none;min-width:0;height:14px;line-height:14px;padding:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:8px;font-weight:600;background:none;border:0;color:#e6e6e6;cursor:pointer}' +
         '#waveHead .wh1 .wcol{align-items:flex-end;text-align:right}' +
         '#waveHead .wcol{flex:1 1 0;min-width:0;display:flex;flex-direction:column;gap:1px}' +
@@ -4349,7 +4349,7 @@ body.lite canvas.spec{visibility:hidden}
       var abs = [];
       var halves = [0, 1].map(function (i) {
         var h = document.createElement('div'); h.className = 'wh wh' + i;
-        var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'wAdd'; ab.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="9,4 21,2 21,6.2 9,8.2"/><rect x="9" y="4" width="2" height="13"/><rect x="19" y="2" width="2" height="13"/><ellipse cx="7.6" cy="17.6" rx="3.6" ry="2.7" transform="rotate(-20 7.6 17.6)"/><ellipse cx="17.6" cy="15.6" rx="3.6" ry="2.7" transform="rotate(-20 17.6 15.6)"/></svg>';
+        var ab = document.createElement('button'); ab.type = 'button'; ab.className = 'wAdd wAdd' + i; ab.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true"><polygon points="9,4 21,2 21,6.2 9,8.2"/><rect x="9" y="4" width="2" height="13"/><rect x="19" y="2" width="2" height="13"/><ellipse cx="7.6" cy="17.6" rx="3.6" ry="2.7" transform="rotate(-20 7.6 17.6)"/><ellipse cx="17.6" cy="15.6" rx="3.6" ry="2.7" transform="rotate(-20 17.6 15.6)"/></svg>';
         ab.setAttribute('aria-label', 'Add tracks to deck ' + (i + 1));
         ab.onclick = function () { var f = document.getElementById('file' + i); if (f) f.click(); };
         var nt = document.createElement('div'); nt.className = 'wNow'; nt.id = 'wNow' + i;
