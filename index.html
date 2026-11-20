@@ -576,8 +576,8 @@ li.cur{background:#0f2a66;color:#fff}
   </select>
   <label for="o_lat">Audio buffer (kapag pumuputol ang tunog: piliin ang Stable; kapag may delay: Low delay) - i-restart ang app</label>
   <select id="o_lat">
-    <option value="interactive">Low delay (pinakamabilis, pwedeng pumutol)</option>
-    <option value="balanced" selected>Balanced (recommended)</option>
+    <option value="interactive" selected>Low delay (pinakamabilis, pwedeng pumutol)</option>
+    <option value="balanced">Balanced</option>
     <option value="playback">Stable (pinakamatatag, may konting delay)</option>
   </select>
   <label for="o_sr">Audio quality / sample rate (mas mababa = mas magaan sa phone) - i-restart ang app</label>
@@ -898,7 +898,7 @@ const $ = (s) => document.querySelector(s);
 let toastT;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), Math.min(9000, 3000 + msg.length * 45)); }
 // AUDIO SETTINGS: 'balanced' buffer = hindi pumuputol; puwedeng palitan sa Settings (kailangan i-restart ang app)
-const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'balanced'; })();
+const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'interactive'; })();
 const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 44100; })();
 const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _lat });
 const master = ctx.createGain();
@@ -1314,7 +1314,7 @@ $('#mixSec').onchange = () => { mixSec = parseInt($('#mixSec').value, 10) || 5; 
 // MIC
 let micStream = null, micSrc = null;
 // Ang echo-cancel ng phone ang pumapatay sa boses habang tumutugtog ang music, kaya naka-OFF ito bilang default (may sarili nang noise gate)
-const micConstraints = () => ({ audio: { echoCancellation: $('#micAec').value === '1', noiseSuppression: false, autoGainControl: false } });
+const micConstraints = () => ({ audio: { echoCancellation: $('#micAec').value === '1', noiseSuppression: false, autoGainControl: false, latency: 0 } });
 $('#micAec').onchange = () => { if (micStream) reopenMic(); };
 async function toggleMic() {
   ctx.resume();
@@ -4229,7 +4229,7 @@ body.lite canvas.spec{visibility:hidden}
 </style>
 <script>
 (function () {
-  [['o_lat', 'tgm_lat', 'balanced'], ['o_sr', 'tgm_sr', '44100']].forEach(function (a) {
+  [['o_lat', 'tgm_lat', 'interactive'], ['o_sr', 'tgm_sr', '44100']].forEach(function (a) {
     const el = document.getElementById(a[0]); if (!el) return;
     try { const v = localStorage.getItem(a[1]); if (v && Array.prototype.some.call(el.options, function (o) { return o.value === v; })) el.value = v; } catch (e) {}
     el.addEventListener('change', function () { try { localStorage.setItem(a[1], el.value); } catch (e) {} try { toast('Naka-save. Isara at buksan ulit ang app para umepekto.'); } catch (e) {} });
