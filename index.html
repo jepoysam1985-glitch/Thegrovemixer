@@ -922,8 +922,7 @@ glueMk.connect(autoLvl); autoLvl.connect(limiter);
 limiter.connect(analyser);
 limiter.connect(dest);
 const musicMon = ctx.createGain();   // monitor-only na level ng kanta (hihina nang konti kapag nagsasalita ka; hindi apektado ang stream)
-const musicSolo = ctx.createGain();   // PFL: kapag may CUE na bukas, ito ang nagpapatahimik sa main mix sa headphone (stream hindi apektado)
-duckGain.connect(musicMon); musicMon.connect(musicSolo); musicSolo.connect(monitor);
+duckGain.connect(musicMon); musicMon.connect(monitor);
 monitor.connect(ctx.destination);
 
 // ECHO ng mic: delay na may feedback at lowpass para natural ang tunog
@@ -936,8 +935,8 @@ echoTone.connect(echoFb); echoFb.connect(echoDelay);
 echoTone.connect(echoWet); echoWet.connect(master);
 // PAKINGGAN ANG MIC (boses + echo) sa headphone/Bluetooth; hindi ito kasama sa stream, pang-monitor lang
 // MIC MONITOR (para sa speaker ng phone): hiwalay na daan na may filter, limiter at sariling gate para hindi tumili ang feedback; hindi ito kasama sa stream
-const mmHP = ctx.createBiquadFilter(); mmHP.type = 'highpass'; mmHP.frequency.value = 110; mmHP.Q.value = 0.7;
-const mmLP = ctx.createBiquadFilter(); mmLP.type = 'lowpass'; mmLP.frequency.value = 7000; mmLP.Q.value = 0.7;
+const mmHP = ctx.createBiquadFilter(); mmHP.type = 'highpass'; mmHP.frequency.value = 180; mmHP.Q.value = 0.7;
+const mmLP = ctx.createBiquadFilter(); mmLP.type = 'lowpass'; mmLP.frequency.value = 4200; mmLP.Q.value = 0.7;
 const mmLim = ctx.createDynamicsCompressor(); mmLim.threshold.value = -14; mmLim.knee.value = 6; mmLim.ratio.value = 12; mmLim.attack.value = 0.003; mmLim.release.value = 0.15;
 const mmGate = ctx.createGain(); mmGate.gain.value = 0;
 const mmLevel = ctx.createGain(); mmLevel.gain.value = 0.35;
@@ -1767,7 +1766,7 @@ setInterval(() => {
   if (open !== mmOpen) {
     mmOpen = open;
     mmGate.gain.setTargetAtTime(open ? 1 : 0, ctx.currentTime, open ? 0.01 : 0.15);
-    musicMon.gain.setTargetAtTime(open ? 0.8 : 1, ctx.currentTime, open ? 0.08 : 0.5);
+    musicMon.gain.setTargetAtTime(open ? 0.5 : 1, ctx.currentTime, open ? 0.08 : 0.5);
   }
 }, 20);
 
@@ -2871,7 +2870,7 @@ decks.forEach((d)=>{
   fb.gain.value=0.45;wet.gain.value=0;dly.delayTime.value=0.375;cue.gain.value=0;
   try{d.src.disconnect()}catch{}
   d.src.connect(hpf);hpf.connect(lpf);lpf.connect(out);lpf.connect(dly);dly.connect(wet);wet.connect(out);dly.connect(fb);fb.connect(dly);out.connect(d.fader);
-  lpf.connect(cue);cue.connect(monitor);      // PFL: pre-fader (kasama ang filter at scratch), papunta sa monitor LANG (hindi sa stream)
+  d.src.connect(cue);cue.connect(monitor);      // PFL: pre-fader, papunta sa monitor LANG (hindi sa stream)
   d.xfx={hpf,lpf,dly,wet,cue,echo:false,pfl:false};
   const box=q('#deck'+d.i), row=document.createElement('div'); row.className='xdj'; row.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
   row.innerHTML='<button data-x="pfl">🎧 CUE</button><button data-x="echo">ECHO</button><button data-x="tap">TAP</button>';
@@ -2884,10 +2883,7 @@ decks.forEach((d)=>{
     d.xfx.hpf.frequency.setTargetAtTime(v>0?20*Math.pow(250,v/100):20,ctx.currentTime,0.02);};
   fs.ondblclick=()=>setR(fs,0);
   const BX={};row.querySelectorAll('[data-x]').forEach((e)=>{BX[e.dataset.x]=e});const btn=(n)=>BX[n];
-  d.togglePfl=()=>{const x=d.xfx;x.pfl=!x.pfl;x.cue.gain.setTargetAtTime(x.pfl?1:0,ctx.currentTime,0.01);btn('pfl').classList.toggle('on',x.pfl);if(x.pfl)ctx.resume();
-    const any=decks.some((k)=>k.xfx&&k.xfx.pfl);musicSolo.gain.setTargetAtTime(any?0:1,ctx.currentTime,0.02);
-    if(x.pfl&&typeof mon!=='undefined'&&!mon)T('CUE: Monitor OFF, walang maririnig sa headphone. I-ON ang 🎧 Monitor.');
-    else if(x.pfl&&d.audio.paused)T('CUE Deck '+(d.i+1)+': i-play ang deck para marinig sa headphone.')};
+  d.togglePfl=()=>{const x=d.xfx;x.pfl=!x.pfl;x.cue.gain.setTargetAtTime(x.pfl?1:0,ctx.currentTime,0.01);btn('pfl').classList.toggle('on',x.pfl);if(x.pfl)ctx.resume()};
   d.toggleEcho=()=>{const x=d.xfx;x.echo=!x.echo;if(d.bpm)x.dly.delayTime.value=Math.min(1,60/(d.bpm*(1+(d.tempo||0)/1000))*(d.echoDiv||0.75));x.wet.gain.setTargetAtTime(x.echo?0.55*(d.fxAmt==null?1:d.fxAmt):0,ctx.currentTime,0.02);btn('echo').classList.toggle('on',x.echo)};
   let taps=[];
   d.tap=()=>{const n=performance.now();if(taps.length&&n-taps[taps.length-1]>2000)taps=[];taps.push(n);if(taps.length>8)taps.shift();if(taps.length<3){T('TAP '+taps.length+'/3…');return}
@@ -2896,45 +2892,6 @@ decks.forEach((d)=>{
     const t=Math.max(-160,Math.min(160,(bpm/d.bpm-1)*1000));setR(d.tSl,t);T('Deck '+(d.i+1)+' → '+bpm.toFixed(1)+' BPM')};
   btn('pfl').onclick=d.togglePfl;btn('echo').onclick=d.toggleEcho;btn('tap').onclick=d.tap;
 });
-// ---- ANTI-FEEDBACK: auto-notch (parang feedback eliminator). Naririnig mo ang music at boses mo sa headphone; kapag may tili, hinahanap ang frequency at pinapatay lang iyon ----
-try{
-  const NN=6,notch=[];let nIdx=0;
-  for(let i=0;i<NN;i++){const f=ctx.createBiquadFilter();f.type='peaking';f.frequency.value=20000;f.Q.value=18;f.gain.value=0;notch.push(f)}
-  const mmGuard=ctx.createGain();
-  mmLevel.disconnect(monitor);mmLevel.connect(notch[0]);for(let i=0;i<NN-1;i++)notch[i].connect(notch[i+1]);notch[NN-1].connect(mmGuard);mmGuard.connect(monitor);
-  let mmOn=true;try{mmOn=localStorage.getItem('tgm_mmon2')!=='0'}catch{}
-  const mb2=document.createElement('button');mb2.id='mmBtn';mb2.type='button';
-  mb2.style.cssText='display:block;width:100%;height:40px;margin-top:6px;border-radius:10px;font-size:13px';
-  const setMm=(v,save)=>{mmOn=v;mmGuard.gain.cancelScheduledValues(ctx.currentTime);mmGuard.gain.setTargetAtTime(v?1:0,ctx.currentTime,0.03);mb2.textContent='🎧 Mic in headphone: '+(v?'ON':'OFF');mb2.classList.toggle('on',v);
-    if(save){try{localStorage.setItem('tgm_mmon2',v?'1':'0')}catch{}}};
-  mb2.onclick=()=>{ctx.resume();setMm(!mmOn,true)};
-  const sl=q('#micMon');
-  if(sl&&sl.parentNode)sl.parentNode.insertBefore(mb2,sl.nextSibling);
-  try{if(sl&&localStorage.getItem('tgm_mm')===null)setR(sl,60)}catch{}
-  setMm(mmOn,false);
-  const fa=new Float32Array(micAn.frequencyBinCount);let lastBin=-9,run=0,hits=[],warned=false;
-  const binHz=ctx.sampleRate/micAn.fftSize;
-  setInterval(()=>{
-    if(!mmOn||typeof micStream==='undefined'||!micStream){run=0;return}
-    micAn.getFloatFrequencyData(fa);
-    let mx=-200,mi=0;for(let i=3;i<fa.length-12;i++){if(fa[i]>mx){mx=fa[i];mi=i}}
-    let s=0,n=0;for(let i=Math.max(1,mi-10);i<=Math.min(fa.length-1,mi+10);i++){if(Math.abs(i-mi)>2){s+=fa[i];n++}}
-    if(mx>-40&&mx-s/n>26&&Math.abs(mi-lastBin)<=1)run++;else run=0;
-    lastBin=mi;
-    if(run<3)return;
-    run=0;const now=performance.now(),f=mi*binHz;
-    // 1) saglit na hinaan para mawala ang tili, 2) i-notch ang eksaktong frequency
-    mmGuard.gain.cancelScheduledValues(ctx.currentTime);mmGuard.gain.setTargetAtTime(0.08,ctx.currentTime,0.005);
-    setTimeout(()=>{if(mmOn)mmGuard.gain.setTargetAtTime(1,ctx.currentTime,0.15)},300);
-    let k=notch.findIndex((x)=>Math.abs(x.frequency.value-f)<binHz*1.5);
-    if(k>=0){notch[k].gain.value=Math.max(-60,notch[k].gain.value-10)}
-    else{k=nIdx++%NN;notch[k].frequency.value=f;notch[k].gain.value=-30}
-    hits=hits.filter((h)=>now-h<20000);hits.push(now);
-    const r8=hits.filter((h)=>now-h<8000).length;
-    if(r8>=3){const g=mmLevel.gain;g.setTargetAtTime(Math.max(0.08,g.value*0.75),ctx.currentTime,0.05);if(!warned){warned=true;T('Feedback: ibinaba ang Mic monitor. Ilayo ang mic sa headphone.')}}
-    if(hits.length>=9){setMm(false,true);T('Paulit-ulit ang feedback: pinatay ang Mic in headphone. Ilayo ang mic o gumamit ng ibang headphone/mic.')}
-  },35);
-}catch(e){console.error(e)}
 const play=(i)=>{ctx.resume();q('#deck'+i+' [data-a=play]').click()};
 const stop=(i)=>q('#deck'+i+' [data-a=stop]').click();
 const cueBtn=(i,k)=>{const b=document.querySelectorAll('#fxp'+i+' .hcue')[k];if(b)b.click()};
