@@ -764,6 +764,7 @@ li.cur{background:#0f2a66;color:#fff}
       <button data-a="play">▶</button><button data-a="stop">■</button>
       <button data-a="mute">MUTE</button><button data-a="lock" class="lockbtn">LOCK</button>
     </div>
+    <div class="btns akrow"><button type="button" data-ak="auto" class="akbtn" aria-pressed="false">AUTO KILL</button><button type="button" data-ak="kill" class="akbtn" aria-pressed="false">KILL</button></div>
     <label>Volume</label><input type="range" min="0" max="100" value="100" data-a="vol">
     <div class="addrow"><button data-a="add">+ Add Tracks</button></div>
     <ul id="list0"></ul>
@@ -784,6 +785,7 @@ li.cur{background:#0f2a66;color:#fff}
       <button data-a="play">▶</button><button data-a="stop">■</button>
       <button data-a="mute">MUTE</button><button data-a="lock" class="lockbtn">LOCK</button>
     </div>
+    <div class="btns akrow"><button type="button" data-ak="auto" class="akbtn" aria-pressed="false">AUTO KILL</button><button type="button" data-ak="kill" class="akbtn" aria-pressed="false">KILL</button></div>
     <label>Volume</label><input type="range" min="0" max="100" value="100" data-a="vol">
     <div class="addrow"><button data-a="add">+ Add Tracks</button></div>
     <ul id="list1"></ul>
@@ -993,14 +995,60 @@ const decks = [0, 1].map((i) => {
   const src = ctx.createMediaElementSource(audio);
   const fader = ctx.createGain();
   const cross = ctx.createGain();
-  src.connect(fader); fader.connect(cross); cross.connect(tracksGain);
-  const d = { i, audio, src, fader, cross, list: [], idx: -1, muted: false, locked: false, vol: 1, loads: 0, orphan: false };
+  // AUTO EQ KILL: 3-band kill (low / mid / high) sa bawat deck, nasa pagitan ng fader at crossfader
+  const kLo = ctx.createBiquadFilter(), kMid = ctx.createBiquadFilter(), kHi = ctx.createBiquadFilter();
+  kLo.type = 'lowshelf'; kLo.frequency.value = 300;
+  kMid.type = 'peaking'; kMid.frequency.value = 1000; kMid.Q.value = 0.6;
+  kHi.type = 'highshelf'; kHi.frequency.value = 3000;
+  kLo.gain.value = 0; kMid.gain.value = 0; kHi.gain.value = 0;
+  src.connect(fader); fader.connect(kLo); kLo.connect(kMid); kMid.connect(kHi); kHi.connect(cross); cross.connect(tracksGain);
+  const d = { i, audio, src, fader, cross, list: [], idx: -1, muted: false, locked: false, vol: 1, loads: 0, orphan: false,
+    eqNodes: [kLo, kMid, kHi], kill: { lo: kLo, mid: kMid, hi: kHi } };
   audio.addEventListener('ended', () => onEnded(d));
   audio.addEventListener('timeupdate', () => {
     $('#time' + i).textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration || 0);
   });
   return d;
 });
+
+// AUTO EQ KILL (Deck 1 & Deck 2): AUTO KILL = kusa nang pinapatay ang music sa dulo ng track (bass -> mid -> high);
+// KILL = manual na patay/buhay ng lahat ng band. Awtomatikong bumabalik ang EQ kapag bagong track na.
+(function () {
+  const KDB = -40, AT = { lo: 8, mid: 5, hi: 2.5 }, BANDS = ['lo', 'mid', 'hi'];
+  decks.forEach((d) => {
+    const st = d.ak = { armed: false, man: false, auto: { lo: false, mid: false, hi: false } };
+    const root = document.getElementById('deck' + d.i);
+    const bA = root && root.querySelector('[data-ak=auto]'), bK = root && root.querySelector('[data-ak=kill]');
+    function render() {
+      if (bA) { bA.classList.toggle('on', st.armed); bA.setAttribute('aria-pressed', st.armed ? 'true' : 'false'); }
+      if (bK) { bK.classList.toggle('on', st.man); bK.setAttribute('aria-pressed', st.man ? 'true' : 'false'); }
+    }
+    function apply() {
+      const now = ctx.currentTime;
+      BANDS.forEach((b) => {
+        const want = st.man || (st.armed && st.auto[b]), g = d.kill[b].gain;
+        g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.setTargetAtTime(want ? KDB : 0, now, 0.07);
+      });
+    }
+    function tick() {
+      const a = d.audio, dur = a.duration, rem = dur - a.currentTime;
+      let ch = false;
+      BANDS.forEach((b) => {
+        const w = st.armed && isFinite(dur) && dur > 16 && rem > 0 && rem <= AT[b];
+        if (w !== st.auto[b]) { st.auto[b] = w; ch = true; }
+      });
+      if (ch) apply();
+    }
+    function reset() { BANDS.forEach((b) => { st.auto[b] = false; }); apply(); }
+    if (bA) bA.addEventListener('click', () => { st.armed = !st.armed; if (!st.armed) BANDS.forEach((b) => { st.auto[b] = false; }); render(); apply(); tick(); });
+    if (bK) bK.addEventListener('click', () => { st.man = !st.man; render(); apply(); });
+    d.audio.addEventListener('timeupdate', tick);
+    d.audio.addEventListener('seeked', tick);
+    d.audio.addEventListener('loadstart', reset);
+    d.audio.addEventListener('emptied', reset);
+    render();
+  });
+})();
 
 function fmt(s) {
   if (!isFinite(s)) return '0:00';
@@ -4937,6 +4985,11 @@ html body .dpitch{margin-top:8px;gap:8px}
 html body .dpitch .ps{height:28px!important;margin:0 9px!important}
 html body .dpitch .ps::before{top:-8px;bottom:-8px;left:-10px;right:-10px}
 html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border-radius:4px}
+
+/* AUTO EQ KILL buttons */
+.akrow{margin-top:6px}
+.akbtn{font-weight:700;letter-spacing:.04em}
+.akbtn.on{background:#e53935!important;border-color:#ff8a80!important;color:#fff!important;box-shadow:0 0 10px rgba(229,57,53,.55)}
 </style>
 <script>
 /* GM-MT-PATCH: GUMAGALAW NA TITLE (marquee) sa header ng waveform (landscape), para kita ang buong pamagat ng kanta */
