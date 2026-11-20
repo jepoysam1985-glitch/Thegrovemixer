@@ -1007,7 +1007,7 @@ const decks = [0, 1].map((i) => {
   return d;
 });
 
-// AUTO EQ (12-band): ON/OFF nasa EQ icon panel. Kapag ON, sa dulo ng bawat track (Deck 1 at Deck 2) kusang pinapatay ng
+// AUTO EQ (12-band): ON/OFF nasa EQ icon panel (kusa ring gumagalaw ang mga slider para ipantay ang music, tingnan sa Master EQ). Kapag ON, sa dulo ng bawat track (Deck 1 at Deck 2) kusang pinapatay ng
 // 12-band EQ ang music, band por band mula bass (31 Hz) hanggang high (16 kHz). Bumabalik ang EQ pagpasok ng bagong track.
 (function () {
   const KDB = -40, T0 = 8, T1 = 1.2, KEY = 'tgm_autoeq';
@@ -2328,6 +2328,42 @@ decks.forEach((d) => {
   b.onclick = () => { render(); showModal('#eqModal', true); };
   $('#closeEq').onclick = () => showModal('#eqModal', false);
   render();
+
+  // AUTO EQ (pantay): kapag ON ang AUTO EQ button, sinusukat ang tunog ng music (Deck 1 + Deck 2) at kusang gumagalaw
+  // ang 12 slider para ipantay ang balanse ng bass / mid / high. Dahan-dahan ang galaw (smooth), max ±6 dB.
+  (function () {
+    const MAXG = 6, STRENGTH = 0.5, TILT = -2.5, SMOOTH = 0.15, GAP = 3000;
+    const an = ctx.createAnalyser(); an.fftSize = 8192; an.smoothingTimeConstant = 0.85; an.minDecibels = -120; an.maxDecibels = 0;
+    try { tracksGain.connect(an); } catch (e) { return; }   // kinukuha bago ang EQ, kaya hindi nag-uumpugan ang sukat at ang correction
+    const data = new Float32Array(an.frequencyBinCount), sm = IDX.map(() => 0);
+    let lastUser = 0, lastSave = 0;
+    modal.addEventListener('pointerdown', () => { lastUser = Date.now(); }, true);   // kapag hinawakan mo ang slider, humihinto muna ang auto
+    const edges = BANDS.map(([, f], k) => [k === 0 ? 20 : f / Math.SQRT2, k === NB - 1 ? 20000 : f * Math.SQRT2]);
+    setInterval(() => {
+      const btnA = document.getElementById('eqAuto');
+      if (!btnA || !btnA.classList.contains('on')) return;
+      if (ctx.state !== 'running' || !decks.some((d) => !d.audio.paused)) return;
+      if (Date.now() - lastUser < GAP) return;
+      an.getFloatFrequencyData(data);
+      const hz = ctx.sampleRate / an.fftSize, db = [];
+      for (let k = 0; k < NB; k++) {
+        const a = Math.max(1, Math.floor(edges[k][0] / hz)), b = Math.min(data.length - 1, Math.ceil(edges[k][1] / hz));
+        let p = 0; for (let i = a; i <= b; i++) p += Math.pow(10, data[i] / 10);
+        db.push(10 * Math.log10(p + 1e-12));
+      }
+      const mean = db.reduce((x, y) => x + y, 0) / NB;
+      if (mean < -85) return;   // halos tahimik: huwag galawin
+      if (!st.on) st.on = true;
+      let changed = false; const v = cur();
+      for (let k = 0; k < NB; k++) {
+        const want = Math.max(-MAXG, Math.min(MAXG, STRENGTH * (mean + TILT * (k - (NB - 1) / 2) - db[k])));
+        sm[k] += SMOOTH * (want - sm[k]);
+        const nv = q(sm[k]);
+        if (nv !== v[k]) { v[k] = nv; changed = true; }
+      }
+      if (changed) { apply(); render(); if (Date.now() - lastSave > 2000) { lastSave = Date.now(); save(); } }
+    }, 250);
+  })();
 })();
 </script>
 <style>
