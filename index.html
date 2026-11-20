@@ -675,6 +675,8 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="2">Medium</option>
     <option value="3">Strong</option>
   </select>
+  <label>Music in headphone: <b id="mhv">100%</b></label>
+  <input type="range" min="0" max="150" value="100" id="musicMonLvl" aria-label="Music level in headphone">
   <label>Mic monitor in phone: <b id="mmv">35%</b></label>
   <input type="range" min="0" max="100" value="35" id="micMon">
   <div class="hint">Hear your voice and the music on the phone speaker. If you hear feedback (whistling), lower this. 0 = you will not hear your own voice. The stream is never affected.</div>
@@ -922,7 +924,8 @@ glueMk.connect(autoLvl); autoLvl.connect(limiter);
 limiter.connect(analyser);
 limiter.connect(dest);
 const musicMon = ctx.createGain();   // monitor-only na level ng kanta (hihina nang konti kapag nagsasalita ka; hindi apektado ang stream)
-duckGain.connect(musicMon); musicMon.connect(monitor);
+const musicHp = ctx.createGain();   // sariling level ng music sa headphone (hiwalay sa mic)
+carve.connect(musicMon); musicMon.connect(musicHp); musicHp.connect(monitor);   // music sa headphone: kinukuha bago ang auto-duck, kaya hindi humihina kapag nagsasalita ka (ang stream lang ang nagdu-duck)
 monitor.connect(ctx.destination);
 
 // ECHO ng mic: delay na may feedback at lowpass para natural ang tunog
@@ -1766,7 +1769,7 @@ setInterval(() => {
   if (open !== mmOpen) {
     mmOpen = open;
     mmGate.gain.setTargetAtTime(open ? 1 : 0, ctx.currentTime, open ? 0.01 : 0.15);
-    musicMon.gain.setTargetAtTime(open ? 0.5 : 1, ctx.currentTime, open ? 0.08 : 0.5);
+    musicMon.gain.setTargetAtTime(1, ctx.currentTime, 0.1);   // hindi na hinihina ang music sa headphone kapag nagsasalita
   }
 }, 20);
 
@@ -2946,6 +2949,12 @@ decks.forEach((d)=>{
     if(hits.length>=9){setMm(false,true);T('Paulit-ulit ang feedback: pinatay ang Mic in headphone. Ilayo ang mic o ibaba ang Mic monitor, tapos i-ON ulit.')}
   },35);
 }catch(e){console.error(e)}})();
+// ---- MUSIC sa headphone: sariling slider, hiwalay sa mic; sabay silang naririnig ----
+(function(){try{const s=q('#musicMonLvl'),v=q('#mhv');if(!s||!v)return;
+  let sv=null;try{sv=localStorage.getItem('tgm_mh')}catch{}
+  if(sv!==null&&!isNaN(sv))s.value=sv;
+  const ap=()=>{musicHp.gain.setTargetAtTime(+s.value/100,ctx.currentTime,0.03);v.textContent=s.value+'%'};
+  s.oninput=()=>{ap();try{localStorage.setItem('tgm_mh',s.value)}catch{}};ap()}catch(e){console.error(e)}})();
 const play=(i)=>{ctx.resume();q('#deck'+i+' [data-a=play]').click()};
 const stop=(i)=>q('#deck'+i+' [data-a=stop]').click();
 const cueBtn=(i,k)=>{const b=document.querySelectorAll('#fxp'+i+' .hcue')[k];if(b)b.click()};
