@@ -626,6 +626,7 @@ li.cur{background:#0f2a66;color:#fff}
   </div>
   <div id="eqMic">
   <div class="eqsl"><div class="eqc"><em id="mqe0">0.0</em><div class="eqs" id="mqs0" data-k="0" role="slider" aria-label="Mic EQ 31 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>31</small></div><div class="eqc"><em id="mqe1">0.0</em><div class="eqs" id="mqs1" data-k="1" role="slider" aria-label="Mic EQ 62 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>62</small></div><div class="eqc"><em id="mqe2">0.0</em><div class="eqs" id="mqs2" data-k="2" role="slider" aria-label="Mic EQ 125 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>125</small></div><div class="eqc"><em id="mqe3">0.0</em><div class="eqs" id="mqs3" data-k="3" role="slider" aria-label="Mic EQ 250 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>250</small></div><div class="eqc"><em id="mqe4">0.0</em><div class="eqs" id="mqs4" data-k="4" role="slider" aria-label="Mic EQ 500 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>500</small></div><div class="eqc"><em id="mqe5">0.0</em><div class="eqs" id="mqs5" data-k="5" role="slider" aria-label="Mic EQ 1k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>1k</small></div><div class="eqc"><em id="mqe6">0.0</em><div class="eqs" id="mqs6" data-k="6" role="slider" aria-label="Mic EQ 2k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>2k</small></div><div class="eqc"><em id="mqe7">0.0</em><div class="eqs" id="mqs7" data-k="7" role="slider" aria-label="Mic EQ 4k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>4k</small></div><div class="eqc"><em id="mqe8">0.0</em><div class="eqs" id="mqs8" data-k="8" role="slider" aria-label="Mic EQ 6k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>6k</small></div><div class="eqc"><em id="mqe9">0.0</em><div class="eqs" id="mqs9" data-k="9" role="slider" aria-label="Mic EQ 8k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>8k</small></div><div class="eqc"><em id="mqe10">0.0</em><div class="eqs" id="mqs10" data-k="10" role="slider" aria-label="Mic EQ 12k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>12k</small></div><div class="eqc"><em id="mqe11">0.0</em><div class="eqs" id="mqs11" data-k="11" role="slider" aria-label="Mic EQ 16k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>16k</small></div></div>
+  <div class="mqlbl">VOICE PRESET</div>
   <div class="eqpre mqpre" id="mqPre"><button type="button" data-p="0">Flat</button><button type="button" data-p="1">Radio Warm</button><button type="button" data-p="2">Clear</button><button type="button" data-p="3">Deep</button><button type="button" data-p="4">Podcast</button><button type="button" data-p="5">Cut Mud</button><button type="button" data-p="6">De-Boom</button><button type="button" data-p="7">Presence</button></div>
   </div>
 </div>
@@ -646,13 +647,6 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="1">Low (light)</option>
     <option value="2" selected>Medium</option>
     <option value="3">High (strong)</option>
-  </select>
-  <label for="voicePreset">Voice Preset</label>
-  <select id="voicePreset">
-    <option value="">Custom (my own settings)</option>
-    <option value="warm">Radio Warm</option>
-    <option value="bright">Clear / Bright</option>
-    <option value="deep">Deep</option>
   </select>
   <label for="micEnh">Mic Enhancer (voice clarity)</label>
   <select id="micEnh">
@@ -1742,13 +1736,10 @@ setInterval(() => {
   const target = on ? carveV : 0;
   if (on !== vOn || target !== lastCv) { vOn = on; lastCv = target; carve.gain.setTargetAtTime(target, ctx.currentTime, on ? 0.05 : 0.4); }
 }, 40);
-// VOICE PRESETS: isang tap lang para sa Mic EQ (12-band) + Enhancer + De-esser
-const PRESETS = { warm: { mq: [2, 3, 3, 2, 0, -1, -1, -1, -1, -1, -1, -1], enh: 2, de: 1 }, bright: { mq: [-2, -2, -2, -1, 0, 1, 1.5, 2, 3, 3, 3, 3], enh: 2, de: 2 }, deep: { mq: [5, 5, 4, 2, 0, -1, -1, -1, -2, -2, -2, -2], enh: 1, de: 1 } };
-$('#voicePreset').onchange = (e) => {
-  const pr = PRESETS[e.target.value]; if (!pr) return;
-  mqSt.v = pr.mq.map(mqQ); mqSt.on = true; window.micEQ.apply();
-  $('#micEnh').value = pr.enh; setEnh(pr.enh); try { localStorage.setItem('tgm_enh', pr.enh); } catch {}
-  $('#deEss').value = pr.de; setDe(pr.de);
+// VOICE PRESET (nasa Mic EQ tab sa loob ng EQ icon): ina-apply nito ang Enhancer + De-esser kasabay ng 12-band Mic EQ
+window.micEQ.voice = (enh, de) => {
+  if (enh !== undefined) { $('#micEnh').value = enh; setEnh(enh); try { localStorage.setItem('tgm_enh', enh); } catch {} }
+  if (de !== undefined) { $('#deEss').value = de; setDe(de); }
 };
 // MIC MONITOR LOGIC: bukas lang ang boses sa speaker kapag may nagsasalita; sa monitor lang humihina ang kanta nang konti habang nagsasalita
 let mmLevelV = 0.35, mmHold = 0, mmOpen = false, mmFloor = 0.01;
@@ -2309,6 +2300,7 @@ decks.forEach((d) => {
 #eqModal.mic #eqMusic{display:none}
 #eqModal:not(.mic) #eqMic{display:none}
 #eqModal .eqpre.mqpre{grid-template-columns:repeat(8,1fr)}
+#eqModal .mqlbl{margin-top:6px;font-size:11px;font-weight:800;letter-spacing:2px;color:var(--dim)}
 @media (max-width:560px){#eqModal .eqpre.mqpre{grid-template-columns:repeat(4,1fr)}}
 @media (max-height:520px){#eqModal .eqtabs{margin-top:6px}#eqModal .eqtabs button{height:30px}}
 #eqMic.moff .eqc em{color:var(--dim);text-shadow:none}
@@ -2323,15 +2315,15 @@ decks.forEach((d) => {
   const N = me.bands, RANGE = 12, st = me.st, panel = document.getElementById('eqMic');
   const $i = (id) => document.getElementById(id);
   const fmt = (v) => (v > 0 ? '+' : '') + v.toFixed(1);
-  const PRE = [
-    [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],            // Flat
-    [2, 3, 3, 2, 0, -1, -1, -1, -1, -1, -1, -1],     // Radio Warm
-    [-2, -2, -2, -1, 0, 1, 1.5, 2, 3, 3, 3, 3],      // Clear
-    [5, 5, 4, 2, 0, -1, -1, -1, -2, -2, -2, -2],     // Deep
-    [-6, -5, -2, 0, 0, 1, 2, 3, 2, 1, 0, -1],        // Podcast
-    [-2, -2, -1, -4, -3, 0, 0, 0, 0, 0, 0, 0],       // Cut Mud
-    [-8, -6, -3, -1, 0, 0, 0, 0, 0, 0, 0, 0],        // De-Boom
-    [0, 0, 0, 0, 0, 1, 3, 4, 3, 1, 0, 0]             // Presence
+  const PRE = [   // Voice Preset: v = 12-band Mic EQ; enh = Mic Enhancer (0-3); de = De-esser
+    { v: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] },                                          // Flat (EQ lang ang binabalik)
+    { v: [2, 3, 3, 2, 0, -1, -1, -1, -1, -1, -1, -1], enh: 2, de: 1 },                    // Radio Warm
+    { v: [-2, -2, -2, -1, 0, 1, 1.5, 2, 3, 3, 3, 3], enh: 2, de: 2 },                     // Clear
+    { v: [5, 5, 4, 2, 0, -1, -1, -1, -2, -2, -2, -2], enh: 1, de: 1 },                    // Deep
+    { v: [-6, -5, -2, 0, 0, 1, 2, 3, 2, 1, 0, -1], enh: 2, de: 1 },                       // Podcast
+    { v: [-2, -2, -1, -4, -3, 0, 0, 0, 0, 0, 0, 0], enh: 1 },                             // Cut Mud
+    { v: [-8, -6, -3, -1, 0, 0, 0, 0, 0, 0, 0, 0], enh: 1 },                              // De-Boom
+    { v: [0, 0, 0, 0, 0, 1, 3, 4, 3, 1, 0, 0], enh: 2, de: 2 }                            // Presence
   ];
   const idx = Array.from({ length: N }, (_, k) => k);
   const sl = idx.map((k) => $i('mqs' + k)), knob = sl.map((s) => s.querySelector('.eqk')), fill = sl.map((s) => s.querySelector('.eqf')), txt = idx.map((k) => $i('mqe' + k));
@@ -2346,7 +2338,7 @@ decks.forEach((d) => {
     });
     panel.classList.toggle('moff', !st.on);
     onBtn.textContent = st.on ? 'ON' : 'OFF'; onBtn.classList.toggle('on', st.on);
-    pb.forEach((el, i) => el.classList.toggle('on', PRE[i].every((x, k) => x === st.v[k])));
+    pb.forEach((el, i) => el.classList.toggle('on', PRE[i].v.every((x, k) => x === st.v[k])));
   }
   me.render = render;
   function setBand(k, val) { const v = me.q(val); if (st.v[k] === v) return; st.v[k] = v; me.apply(); }
@@ -2362,7 +2354,7 @@ decks.forEach((d) => {
     s.addEventListener('pointerup', () => { const n = Date.now(); if (!mv && n - tapT < 250) { if (n - lastTap < 450) { lastTap = 0; setBand(k, 0); } else lastTap = n; } });  // double-tap = reset ng band
     s.addEventListener('pointerup', end); s.addEventListener('pointercancel', end);
   });
-  pb.forEach((el, i) => { el.onclick = () => { st.v = PRE[i].map(me.q); st.on = true; me.apply(); }; });
+  pb.forEach((el, i) => { el.onclick = () => { const p = PRE[i]; st.v = p.v.map(me.q); st.on = true; me.apply(); if (me.voice) me.voice(p.enh, p.de); }; });
   onBtn.onclick = () => { st.on = !st.on; me.apply(); };
   $i('mqReset').onclick = () => { st.v = idx.map(() => 0); me.apply(); };
   function setTab(t) {
@@ -3773,13 +3765,13 @@ decks.forEach((d)=>refresh(d.i));
 <script>
 /* AUDIO SETTINGS: naka-save lahat ng setting; pagbalik sa app, naandoon pa rin ang na-set mo */
 (function(){
-  const KEY='tgm_as_',IDS=['tracksGain','fxVol','micGain','micAec','echoAmt','echoTime','duckLvl','mixSec','voicePreset'];
+  const KEY='tgm_as_',IDS=['tracksGain','fxVol','micGain','micAec','echoAmt','echoTime','duckLvl','mixSec'];
   IDS.forEach((id)=>{
     const el=document.getElementById(id);if(!el)return;
     let sv=null;try{sv=localStorage.getItem(KEY+id)}catch{}
     if(sv!==null){
       el.value=sv;
-      if(el.value===sv&&id!=='voicePreset'){       // ang preset ay hindi na ia-apply ulit para hindi mabura ang sarili mong Mic EQ
+      if(el.value===sv){
         el.dispatchEvent(new Event(el.tagName==='SELECT'?'change':'input',{bubbles:true}));
       }
     }
