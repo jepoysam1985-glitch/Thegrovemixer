@@ -2892,6 +2892,60 @@ decks.forEach((d)=>{
     const t=Math.max(-160,Math.min(160,(bpm/d.bpm-1)*1000));setR(d.tSl,t);T('Deck '+(d.i+1)+' → '+bpm.toFixed(1)+' BPM')};
   btn('pfl').onclick=d.togglePfl;btn('echo').onclick=d.toggleEcho;btn('tap').onclick=d.tap;
 });
+// ---- ANTI-FEEDBACK (mic monitor sa headphone): walang binabago sa normal na tunog; kapag may tili, hinahanap ang frequency at doon lang nag-notch ----
+(function(){try{
+  function makeDetector(n){
+    let lastBin=-9,run=0,hist=[];
+    return function step(fa){
+      let mx=-200,mi=0;
+      for(let i=6;i<n-8;i++){if(fa[i]>mx){mx=fa[i];mi=i}}
+      let sec=-200;
+      for(let i=6;i<n-8;i++){if(Math.abs(i-mi)>3&&fa[i]>sec)sec=fa[i]}
+      hist.push(mx);if(hist.length>6)hist.shift();
+      const dom=mx-sec;
+      const growing=hist.length>=5&&mx-hist[0]>=3;
+      if(mx>-58&&dom>12&&Math.abs(mi-lastBin)<=1&&(growing||mx>-20))run++;else run=0;
+      lastBin=mi;
+      if(run>=3){run=0;hist=[];return mi}
+      return -1;
+    };
+  }
+  
+  const NN=6,REL=45000,notch=[],rel=[];
+  for(let i=0;i<NN;i++){const f=ctx.createBiquadFilter();f.type='peaking';f.frequency.value=1000;f.Q.value=18;f.gain.value=0;notch.push(f);rel.push(0)}
+  const mmGuard=ctx.createGain();
+  mmLevel.disconnect(monitor);mmLevel.connect(notch[0]);for(let i=0;i<NN-1;i++)notch[i].connect(notch[i+1]);notch[NN-1].connect(mmGuard);mmGuard.connect(monitor);
+  const fAn=ctx.createAnalyser();fAn.fftSize=2048;fAn.smoothingTimeConstant=0.3;mmLP.connect(fAn);   // tap: ang mismong papunta sa monitor
+  let mmOn=true;try{mmOn=localStorage.getItem('tgm_mmon2')!=='0'}catch{}
+  const mb2=document.createElement('button');mb2.id='mmBtn';mb2.type='button';mb2.style.cssText='display:block;width:100%;height:40px;margin-top:6px;border-radius:10px;font-size:13px';
+  const setMm=(v,save)=>{mmOn=v;mmGuard.gain.cancelScheduledValues(ctx.currentTime);mmGuard.gain.setTargetAtTime(v?1:0,ctx.currentTime,0.03);
+    mb2.textContent='\uD83C\uDFA7 Mic in headphone: '+(v?'ON':'OFF');mb2.style.boxShadow=v?'0 0 0 1px #2bd46b,0 0 10px #2bd46b':'none';mb2.style.color=v?'#2bd46b':'';
+    if(save){try{localStorage.setItem('tgm_mmon2',v?'1':'0')}catch{}}};
+  mb2.onclick=()=>{ctx.resume();setMm(!mmOn,true)};
+  const sl=q('#micMon');if(sl&&sl.parentNode)sl.parentNode.insertBefore(mb2,sl.nextSibling);
+  setMm(mmOn,false);
+  const fa=new Float32Array(fAn.frequencyBinCount),binHz=ctx.sampleRate/fAn.fftSize,det=makeDetector(fa.length);
+  let hits=[],warnedAt=0,cool=0;
+  setInterval(()=>{
+    const now=performance.now();
+    for(let i=0;i<NN;i++){if(rel[i]&&now>rel[i]){notch[i].gain.setTargetAtTime(0,ctx.currentTime,0.5);rel[i]=0}}   // kusang bumabalik sa normal ang notch pagkalipas ng 45s
+    if(!mmOn||typeof micStream==='undefined'||!micStream)return;
+    fAn.getFloatFrequencyData(fa);
+    const bin=det(fa);if(bin<0)return;
+    if(now<cool)return;cool=now+400;
+    const f=bin*binHz;
+    mmGuard.gain.cancelScheduledValues(ctx.currentTime);mmGuard.gain.setTargetAtTime(0.08,ctx.currentTime,0.005);   // saglit na hina para mawala ang tili
+    setTimeout(()=>{if(mmOn)mmGuard.gain.setTargetAtTime(1,ctx.currentTime,0.15)},300);
+    let k=notch.findIndex((x,i)=>rel[i]&&Math.abs(x.frequency.value-f)<binHz*2);
+    if(k>=0){notch[k].gain.cancelScheduledValues(ctx.currentTime);notch[k].gain.setValueAtTime(Math.max(-60,notch[k].gain.value-10),ctx.currentTime)}
+    else{k=rel.findIndex((r)=>!r);if(k<0)k=0;notch[k].frequency.value=f;notch[k].gain.cancelScheduledValues(ctx.currentTime);notch[k].gain.setValueAtTime(-30,ctx.currentTime)}
+    rel[k]=now+REL;
+    hits=hits.filter((h)=>now-h<20000);hits.push(now);
+    if(hits.filter((h)=>now-h<8000).length>=3){const g=mmLevel.gain;g.setTargetAtTime(Math.max(0.08,g.value*0.75),ctx.currentTime,0.05);
+      if(now-warnedAt>60000){warnedAt=now;T('Feedback: ibinaba ang Mic monitor. Ilayo ang mic sa headphone.')}}
+    if(hits.length>=9){setMm(false,true);T('Paulit-ulit ang feedback: pinatay ang Mic in headphone. Ilayo ang mic o ibaba ang Mic monitor, tapos i-ON ulit.')}
+  },35);
+}catch(e){console.error(e)}})();
 const play=(i)=>{ctx.resume();q('#deck'+i+' [data-a=play]').click()};
 const stop=(i)=>q('#deck'+i+' [data-a=stop]').click();
 const cueBtn=(i,k)=>{const b=document.querySelectorAll('#fxp'+i+' .hcue')[k];if(b)b.click()};
