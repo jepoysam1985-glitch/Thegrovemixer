@@ -4972,6 +4972,8 @@ html body #waveHead .wNow{width:100%;max-width:100%;min-width:0;align-self:stret
 html body #deck1{position:relative}
 html body #deck1>#syncOpen{grid-column:auto!important;grid-row:auto!important;position:absolute!important;left:6px;right:auto;top:auto;bottom:4px;display:flex!important;align-items:center;justify-content:center;width:44px!important;min-width:44px!important;max-width:none!important;height:44px!important;margin:0!important;padding:0!important;border-radius:50%!important;line-height:1;z-index:8}
 html body #deck1>#syncOpen .sLogo{width:28px!important;height:28px!important;max-height:none!important;flex:none}
+/* FIX: kapag may naka-set na Scratch/Sync, puti ang background ng button (var(--c) ng Deck 2) kaya nawawala ang puting vinyl icon -> gawing itim ang icon kapag ON */
+html body #syncOpen.on .sLogo,html body #deck1>#syncOpen.on .sLogo{filter:brightness(0)!important;opacity:1!important}
 </style>
 <script>
 /* GM-VINYL-PATCH: ilipat ang #syncOpen sa #deck1 (mirror ng EQ sa Deck 1) */
