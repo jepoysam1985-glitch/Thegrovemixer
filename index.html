@@ -922,7 +922,8 @@ glueMk.connect(autoLvl); autoLvl.connect(limiter);
 limiter.connect(analyser);
 limiter.connect(dest);
 const musicMon = ctx.createGain();   // monitor-only na level ng kanta (hihina nang konti kapag nagsasalita ka; hindi apektado ang stream)
-duckGain.connect(musicMon); musicMon.connect(monitor);
+const musicSolo = ctx.createGain();   // PFL: kapag may CUE na bukas, ito ang nagpapatahimik sa main mix sa headphone (stream hindi apektado)
+duckGain.connect(musicMon); musicMon.connect(musicSolo); musicSolo.connect(monitor);
 monitor.connect(ctx.destination);
 
 // ECHO ng mic: delay na may feedback at lowpass para natural ang tunog
@@ -2870,7 +2871,7 @@ decks.forEach((d)=>{
   fb.gain.value=0.45;wet.gain.value=0;dly.delayTime.value=0.375;cue.gain.value=0;
   try{d.src.disconnect()}catch{}
   d.src.connect(hpf);hpf.connect(lpf);lpf.connect(out);lpf.connect(dly);dly.connect(wet);wet.connect(out);dly.connect(fb);fb.connect(dly);out.connect(d.fader);
-  d.src.connect(cue);cue.connect(monitor);      // PFL: pre-fader, papunta sa monitor LANG (hindi sa stream)
+  lpf.connect(cue);cue.connect(monitor);      // PFL: pre-fader (kasama ang filter at scratch), papunta sa monitor LANG (hindi sa stream)
   d.xfx={hpf,lpf,dly,wet,cue,echo:false,pfl:false};
   const box=q('#deck'+d.i), row=document.createElement('div'); row.className='xdj'; row.style.gridTemplateColumns='repeat(3,minmax(0,1fr))';
   row.innerHTML='<button data-x="pfl">🎧 CUE</button><button data-x="echo">ECHO</button><button data-x="tap">TAP</button>';
@@ -2883,7 +2884,10 @@ decks.forEach((d)=>{
     d.xfx.hpf.frequency.setTargetAtTime(v>0?20*Math.pow(250,v/100):20,ctx.currentTime,0.02);};
   fs.ondblclick=()=>setR(fs,0);
   const BX={};row.querySelectorAll('[data-x]').forEach((e)=>{BX[e.dataset.x]=e});const btn=(n)=>BX[n];
-  d.togglePfl=()=>{const x=d.xfx;x.pfl=!x.pfl;x.cue.gain.setTargetAtTime(x.pfl?1:0,ctx.currentTime,0.01);btn('pfl').classList.toggle('on',x.pfl);if(x.pfl)ctx.resume()};
+  d.togglePfl=()=>{const x=d.xfx;x.pfl=!x.pfl;x.cue.gain.setTargetAtTime(x.pfl?1:0,ctx.currentTime,0.01);btn('pfl').classList.toggle('on',x.pfl);if(x.pfl)ctx.resume();
+    const any=decks.some((k)=>k.xfx&&k.xfx.pfl);musicSolo.gain.setTargetAtTime(any?0:1,ctx.currentTime,0.02);
+    if(x.pfl&&typeof mon!=='undefined'&&!mon)T('CUE: Monitor OFF, walang maririnig sa headphone. I-ON ang 🎧 Monitor.');
+    else if(x.pfl&&d.audio.paused)T('CUE Deck '+(d.i+1)+': i-play ang deck para marinig sa headphone.')};
   d.toggleEcho=()=>{const x=d.xfx;x.echo=!x.echo;if(d.bpm)x.dly.delayTime.value=Math.min(1,60/(d.bpm*(1+(d.tempo||0)/1000))*(d.echoDiv||0.75));x.wet.gain.setTargetAtTime(x.echo?0.55*(d.fxAmt==null?1:d.fxAmt):0,ctx.currentTime,0.02);btn('echo').classList.toggle('on',x.echo)};
   let taps=[];
   d.tap=()=>{const n=performance.now();if(taps.length&&n-taps[taps.length-1]>2000)taps=[];taps.push(n);if(taps.length>8)taps.shift();if(taps.length<3){T('TAP '+taps.length+'/3…');return}
