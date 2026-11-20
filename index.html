@@ -618,7 +618,7 @@ li.cur{background:#0f2a66;color:#fff}
 
 <div class="modal" id="eqModal" hidden>
 <div class="card sheet eqx" role="dialog" aria-modal="true" aria-label="12-Band EQ">
-  <div class="eqhead"><b id="eqTitle">12-Band EQ</b><div class="eqctl" id="musCtl"><button type="button" id="eqA" class="on">A</button><button type="button" id="eqB">B</button><button type="button" id="eqOn" class="on">ON</button><button type="button" id="eqReset">RESET</button></div><div class="eqctl" id="mqCtl"><button type="button" id="mqOn" class="on">ON</button><button type="button" id="mqReset">RESET</button></div><button id="closeEq" aria-label="Close EQ settings">✕</button></div>
+  <div class="eqhead"><b id="eqTitle">12-Band EQ</b><div class="eqctl" id="musCtl"><button type="button" id="eqA" class="on">A</button><button type="button" id="eqB">B</button><button type="button" id="eqOn" class="on">ON</button><button type="button" id="eqReset">RESET</button><button type="button" id="eqAuto" aria-pressed="false">AUTO EQ OFF</button></div><div class="eqctl" id="mqCtl"><button type="button" id="mqOn" class="on">ON</button><button type="button" id="mqReset">RESET</button></div><button id="closeEq" aria-label="Close EQ settings">✕</button></div>
   <div class="eqctl eqtabs" id="eqTabs"><button type="button" id="eqTabMusic" class="on">MUSIC</button><button type="button" id="eqTabMic">MIC</button></div>
   <div id="eqMusic">
   <div class="eqsl"><div class="eqc"><em id="eqv0">0.0</em><div class="eqs" id="eq0" data-k="0" role="slider" aria-label="EQ 31 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>31</small></div><div class="eqc"><em id="eqv1">0.0</em><div class="eqs" id="eq1" data-k="1" role="slider" aria-label="EQ 62 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>62</small></div><div class="eqc"><em id="eqv2">0.0</em><div class="eqs" id="eq2" data-k="2" role="slider" aria-label="EQ 125 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>125</small></div><div class="eqc"><em id="eqv3">0.0</em><div class="eqs" id="eq3" data-k="3" role="slider" aria-label="EQ 250 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>250</small></div><div class="eqc"><em id="eqv4">0.0</em><div class="eqs" id="eq4" data-k="4" role="slider" aria-label="EQ 500 Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>500</small></div><div class="eqc"><em id="eqv5">0.0</em><div class="eqs" id="eq5" data-k="5" role="slider" aria-label="EQ 1k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>1k</small></div><div class="eqc"><em id="eqv6">0.0</em><div class="eqs" id="eq6" data-k="6" role="slider" aria-label="EQ 2k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>2k</small></div><div class="eqc"><em id="eqv7">0.0</em><div class="eqs" id="eq7" data-k="7" role="slider" aria-label="EQ 4k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>4k</small></div><div class="eqc"><em id="eqv8">0.0</em><div class="eqs" id="eq8" data-k="8" role="slider" aria-label="EQ 6k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>6k</small></div><div class="eqc"><em id="eqv9">0.0</em><div class="eqs" id="eq9" data-k="9" role="slider" aria-label="EQ 8k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>8k</small></div><div class="eqc"><em id="eqv10">0.0</em><div class="eqs" id="eq10" data-k="10" role="slider" aria-label="EQ 12k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>12k</small></div><div class="eqc"><em id="eqv11">0.0</em><div class="eqs" id="eq11" data-k="11" role="slider" aria-label="EQ 16k Hz" aria-valuemin="-12" aria-valuemax="12" aria-valuenow="0"><i class="eqf"></i><i class="eqk"></i></div><small>16k</small></div></div>
@@ -764,7 +764,6 @@ li.cur{background:#0f2a66;color:#fff}
       <button data-a="play">▶</button><button data-a="stop">■</button>
       <button data-a="mute">MUTE</button><button data-a="lock" class="lockbtn">LOCK</button>
     </div>
-    <div class="btns akrow"><button type="button" data-ak="auto" class="akbtn" aria-pressed="false">AUTO KILL</button><button type="button" data-ak="kill" class="akbtn" aria-pressed="false">KILL</button></div>
     <label>Volume</label><input type="range" min="0" max="100" value="100" data-a="vol">
     <div class="addrow"><button data-a="add">+ Add Tracks</button></div>
     <ul id="list0"></ul>
@@ -785,7 +784,6 @@ li.cur{background:#0f2a66;color:#fff}
       <button data-a="play">▶</button><button data-a="stop">■</button>
       <button data-a="mute">MUTE</button><button data-a="lock" class="lockbtn">LOCK</button>
     </div>
-    <div class="btns akrow"><button type="button" data-ak="auto" class="akbtn" aria-pressed="false">AUTO KILL</button><button type="button" data-ak="kill" class="akbtn" aria-pressed="false">KILL</button></div>
     <label>Volume</label><input type="range" min="0" max="100" value="100" data-a="vol">
     <div class="addrow"><button data-a="add">+ Add Tracks</button></div>
     <ul id="list1"></ul>
@@ -995,15 +993,13 @@ const decks = [0, 1].map((i) => {
   const src = ctx.createMediaElementSource(audio);
   const fader = ctx.createGain();
   const cross = ctx.createGain();
-  // AUTO EQ KILL: 3-band kill (low / mid / high) sa bawat deck, nasa pagitan ng fader at crossfader
-  const kLo = ctx.createBiquadFilter(), kMid = ctx.createBiquadFilter(), kHi = ctx.createBiquadFilter();
-  kLo.type = 'lowshelf'; kLo.frequency.value = 300;
-  kMid.type = 'peaking'; kMid.frequency.value = 1000; kMid.Q.value = 0.6;
-  kHi.type = 'highshelf'; kHi.frequency.value = 3000;
-  kLo.gain.value = 0; kMid.gain.value = 0; kHi.gain.value = 0;
-  src.connect(fader); fader.connect(kLo); kLo.connect(kMid); kMid.connect(kHi); kHi.connect(cross); cross.connect(tracksGain);
-  const d = { i, audio, src, fader, cross, list: [], idx: -1, muted: false, locked: false, vol: 1, loads: 0, orphan: false,
-    eqNodes: [kLo, kMid, kHi], kill: { lo: kLo, mid: kMid, hi: kHi } };
+  // AUTO EQ: 12-band EQ sa bawat deck (parehong bands ng Master EQ), nasa pagitan ng fader at crossfader.
+  // Ginagamit ito ng AUTO EQ (ON/OFF nasa EQ icon panel) para awtomatikong patayin ang music.
+  const AEQ = [['lowshelf', 31, 0.7], ['peaking', 62, 1.4], ['peaking', 125, 1.4], ['peaking', 250, 1.4], ['peaking', 500, 1.4], ['peaking', 1000, 1.4],
+    ['peaking', 2000, 1.4], ['peaking', 4000, 2.2], ['peaking', 6000, 2.2], ['peaking', 8000, 2.2], ['peaking', 12000, 2.2], ['highshelf', 16000, 0.7]];
+  const kn = AEQ.map(([ty, f, qq]) => { const n = ctx.createBiquadFilter(); n.type = ty; n.frequency.value = f; n.Q.value = ty === 'peaking' ? qq : 0.7071; n.gain.value = 0; return n; });
+  src.connect(fader); fader.connect(kn[0]); for (let k = 0; k < kn.length - 1; k++) kn[k].connect(kn[k + 1]); kn[kn.length - 1].connect(cross); cross.connect(tracksGain);
+  const d = { i, audio, src, fader, cross, list: [], idx: -1, muted: false, locked: false, vol: 1, loads: 0, orphan: false, eqNodes: kn, kill: kn };
   audio.addEventListener('ended', () => onEnded(d));
   audio.addEventListener('timeupdate', () => {
     $('#time' + i).textContent = fmt(audio.currentTime) + ' / ' + fmt(audio.duration || 0);
@@ -1011,43 +1007,39 @@ const decks = [0, 1].map((i) => {
   return d;
 });
 
-// AUTO EQ KILL (Deck 1 & Deck 2): AUTO KILL = kusa nang pinapatay ang music sa dulo ng track (bass -> mid -> high);
-// KILL = manual na patay/buhay ng lahat ng band. Awtomatikong bumabalik ang EQ kapag bagong track na.
+// AUTO EQ (12-band): ON/OFF nasa EQ icon panel. Kapag ON, sa dulo ng bawat track (Deck 1 at Deck 2) kusang pinapatay ng
+// 12-band EQ ang music, band por band mula bass (31 Hz) hanggang high (16 kHz). Bumabalik ang EQ pagpasok ng bagong track.
 (function () {
-  const KDB = -40, AT = { lo: 8, mid: 5, hi: 2.5 }, BANDS = ['lo', 'mid', 'hi'];
+  const KDB = -40, T0 = 8, T1 = 1.2, KEY = 'tgm_autoeq';
+  let on = false;
+  try { on = localStorage.getItem(KEY) === '1'; } catch (e) {}
+  const btn = document.getElementById('eqAuto');
+  function render() { if (!btn) return; btn.textContent = 'AUTO EQ ' + (on ? 'ON' : 'OFF'); btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', on ? 'true' : 'false'); }
+  function setBand(d, k, cut) {
+    const g = d.kill[k].gain, now = ctx.currentTime;
+    g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.setTargetAtTime(cut ? KDB : 0, now, 0.12);
+  }
+  function tick(d) {
+    const a = d.audio, dur = a.duration, rem = dur - a.currentTime, n = d.kill.length;
+    for (let k = 0; k < n; k++) {
+      const thr = T0 - (T0 - T1) * k / (n - 1);
+      const w = on && isFinite(dur) && dur > 20 && rem > 0 && rem <= thr;
+      if (w !== d.cut[k]) { d.cut[k] = w; setBand(d, k, w); }
+    }
+  }
+  function reset(d) { d.cut.forEach((c, k) => { if (c) { d.cut[k] = false; setBand(d, k, false); } }); }
   decks.forEach((d) => {
-    const st = d.ak = { armed: false, man: false, auto: { lo: false, mid: false, hi: false } };
-    const root = document.getElementById('deck' + d.i);
-    const bA = root && root.querySelector('[data-ak=auto]'), bK = root && root.querySelector('[data-ak=kill]');
-    function render() {
-      if (bA) { bA.classList.toggle('on', st.armed); bA.setAttribute('aria-pressed', st.armed ? 'true' : 'false'); }
-      if (bK) { bK.classList.toggle('on', st.man); bK.setAttribute('aria-pressed', st.man ? 'true' : 'false'); }
-    }
-    function apply() {
-      const now = ctx.currentTime;
-      BANDS.forEach((b) => {
-        const want = st.man || (st.armed && st.auto[b]), g = d.kill[b].gain;
-        g.cancelScheduledValues(now); g.setValueAtTime(g.value, now); g.setTargetAtTime(want ? KDB : 0, now, 0.07);
-      });
-    }
-    function tick() {
-      const a = d.audio, dur = a.duration, rem = dur - a.currentTime;
-      let ch = false;
-      BANDS.forEach((b) => {
-        const w = st.armed && isFinite(dur) && dur > 16 && rem > 0 && rem <= AT[b];
-        if (w !== st.auto[b]) { st.auto[b] = w; ch = true; }
-      });
-      if (ch) apply();
-    }
-    function reset() { BANDS.forEach((b) => { st.auto[b] = false; }); apply(); }
-    if (bA) bA.addEventListener('click', () => { st.armed = !st.armed; if (!st.armed) BANDS.forEach((b) => { st.auto[b] = false; }); render(); apply(); tick(); });
-    if (bK) bK.addEventListener('click', () => { st.man = !st.man; render(); apply(); });
-    d.audio.addEventListener('timeupdate', tick);
-    d.audio.addEventListener('seeked', tick);
-    d.audio.addEventListener('loadstart', reset);
-    d.audio.addEventListener('emptied', reset);
-    render();
+    d.cut = d.kill.map(() => false);
+    d.audio.addEventListener('timeupdate', () => tick(d));
+    d.audio.addEventListener('seeked', () => tick(d));
+    d.audio.addEventListener('loadstart', () => reset(d));
+    d.audio.addEventListener('emptied', () => reset(d));
   });
+  if (btn) btn.addEventListener('click', () => {
+    on = !on; try { localStorage.setItem(KEY, on ? '1' : '0'); } catch (e) {}
+    decks.forEach((d) => { if (on) tick(d); else reset(d); }); render();
+  });
+  render();
 })();
 
 function fmt(s) {
@@ -4985,11 +4977,6 @@ html body .dpitch{margin-top:8px;gap:8px}
 html body .dpitch .ps{height:28px!important;margin:0 9px!important}
 html body .dpitch .ps::before{top:-8px;bottom:-8px;left:-10px;right:-10px}
 html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border-radius:4px}
-
-/* AUTO EQ KILL buttons */
-.akrow{margin-top:6px}
-.akbtn{font-weight:700;letter-spacing:.04em}
-.akbtn.on{background:#e53935!important;border-color:#ff8a80!important;color:#fff!important;box-shadow:0 0 10px rgba(229,57,53,.55)}
 </style>
 <script>
 /* GM-MT-PATCH: GUMAGALAW NA TITLE (marquee) sa header ng waveform (landscape), para kita ang buong pamagat ng kanta */
