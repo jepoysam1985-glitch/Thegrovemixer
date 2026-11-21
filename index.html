@@ -541,6 +541,12 @@ li.cur{background:#0f2a66;color:#fff}
 #gmFooter{display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 0 26px;text-align:center;font-size:12px;line-height:1.6;color:#9db4e0}
 .gmCred{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;margin-top:16px;font-size:12px;line-height:1.6;color:#9db4e0}
 </style>
+<style>
+.seg{display:flex;border:1px solid #00c6fe88;border-radius:12px;overflow:hidden}
+.seg button{flex:1;border-radius:0!important;height:44px}
+.seg button.on:not(.pad){background:#00e5ff;color:#02101e}
+.seg1{width:100%;height:44px}
+</style>
 </head>
 <body>
 
@@ -750,7 +756,20 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="8">Crossfade 8s</option>
     <option value="12">Crossfade 12s</option>
   </select>
-  <button id="closeMix2" style="width:100%;height:50px;margin-top:16px;background:var(--acc);border-color:var(--acc);color:#fff;font-size:13.5px">Done</button>
+  <label>Latency</label>
+<div class="seg" id="latSeg"><button type="button" data-lat="playback">STABLE</button><button type="button" data-lat="interactive">LOW</button></div>
+<div class="hint">LOW = mas mabilis ang pads, drums at mic (kusang lalaki ang buffer kung nahihirapan ang phone). STABLE = para sa mabagal na phone.</div>
+<div class="hint" id="latInfo">Ngayon: …</div>
+
+<label>Quantize</label>
+<button type="button" id="quantBtn" class="seg1">OFF</button>
+<div class="hint">Hot cues snap to the beat.</div>
+
+<label>Audio buffer</label>
+<div class="seg" id="bufSeg"><button type="button" data-buf="auto">AUTO</button><button type="button" data-buf="128">128</button><button type="button" data-buf="256">256</button><button type="button" data-buf="512">512</button><button type="button" data-buf="1024">1024</button><button type="button" data-buf="2048">2048</button></div>
+<div class="hint" id="bufInfo">Buffer: AUTO (sumusunod sa Latency)</div>
+
+<button id="closeMix2" style="width:100%;height:50px;margin-top:16px;background:var(--acc);border-color:var(--acc);color:#fff;font-size:13.5px">Done</button>
   <div class="gmCred"><div class="gmLogo sm"></div>@The Groove Mixer<br>Created by DJBERMAS</div>
 </div>
 </div>
@@ -894,7 +913,9 @@ function toast(msg) { const t = document.getElementById('toast'); t.textContent 
 // AUDIO SETTINGS: 'balanced' buffer = hindi pumuputol; puwedeng palitan sa Settings (kailangan i-restart ang app)
 const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'interactive'; })();
 const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 44100; })();
-const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _lat });
+const _buf = (function(){ try { return localStorage.getItem('tgm_buf') || 'auto'; } catch(e){ return 'auto'; } })();
+const _hint = _buf === 'auto' ? _lat : (+_buf) / _sr;
+const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _hint });
 const master = ctx.createGain();
 const tracksGain = ctx.createGain();
 const duckGain = ctx.createGain();
@@ -5050,5 +5071,32 @@ html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border
 </script>
 
 <!-- OFF AIR (marker para sa scripts/patch_web.py; huwag burahin) -->
+<script>
+(function(){
+  const g=(k,d)=>{try{const v=localStorage.getItem(k);return v===null?d:v;}catch(e){return d;}};
+  const s=(k,v)=>{try{localStorage.setItem(k,v);}catch(e){}};
+  const mark=(sel,attr,val)=>document.querySelectorAll(sel+' button').forEach(b=>b.classList.toggle('on',b.dataset[attr]===val));
+  const bufTxt=(v)=>'Buffer: '+(v==='auto'?'AUTO (sumusunod sa Latency)':v);
+  mark('#latSeg','lat',_lat); mark('#bufSeg','buf',_buf);
+  document.getElementById('bufInfo').textContent=bufTxt(_buf);
+  document.querySelectorAll('#latSeg button').forEach(b=>b.onclick=()=>{
+    s('tgm_lat',b.dataset.lat); const sel=document.getElementById('o_lat'); if(sel) sel.value=b.dataset.lat;
+    mark('#latSeg','lat',b.dataset.lat); toast('I-restart ang app para umepekto.');
+  });
+  document.querySelectorAll('#bufSeg button').forEach(b=>b.onclick=()=>{
+    s('tgm_buf',b.dataset.buf); mark('#bufSeg','buf',b.dataset.buf);
+    document.getElementById('bufInfo').textContent=bufTxt(b.dataset.buf); toast('I-restart ang app para umepekto.');
+  });
+  window.quantOn=g('tgm_quant','1')==='1';
+  const q=document.getElementById('quantBtn');
+  const paint=()=>{q.textContent=window.quantOn?'ON':'OFF';q.classList.toggle('on',window.quantOn);};
+  q.onclick=()=>{window.quantOn=!window.quantOn;s('tgm_quant',window.quantOn?'1':'0');paint();}; paint();
+  setInterval(()=>{
+    const ms=Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000);
+    const ur=(ctx.playbackStats&&ctx.playbackStats.underrunEvents)||0;
+    document.getElementById('latInfo').textContent='Ngayon: ≈'+ms+' ms · '+ctx.sampleRate+' Hz · underruns '+ur;
+  },1000);
+})();
+</script>
 </body>
 </html>
