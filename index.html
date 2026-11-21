@@ -580,12 +580,6 @@ li.cur{background:#0f2a66;color:#fff}
     <option value="128k" selected>128 kbps</option>
     <option value="192k">192 kbps</option>
   </select>
-  <label for="o_lat">Audio buffer (kapag pumuputol ang tunog: piliin ang Stable; kapag may delay: Low delay) - i-restart ang app</label>
-  <select id="o_lat">
-    <option value="interactive" selected>Low delay (pinakamabilis, pwedeng pumutol)</option>
-    <option value="balanced">Balanced</option>
-    <option value="playback">Stable (pinakamatatag, may konting delay)</option>
-  </select>
   <label for="o_sr">Audio quality / sample rate (mas mababa = mas magaan sa phone) - i-restart ang app</label>
   <select id="o_sr">
     <option value="48000" selected>48 kHz (native, lowest latency)</option><option value="44100">44.1 kHz (best sound)</option>
@@ -911,10 +905,11 @@ const $ = (s) => document.querySelector(s);
 let toastT;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), Math.min(9000, 3000 + msg.length * 45)); }
 // AUDIO SETTINGS: 'balanced' buffer = hindi pumuputol; puwedeng palitan sa Settings (kailangan i-restart ang app)
-const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'interactive'; })();
+const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'balanced') return 'playback'; if (v === 'interactive' || v === 'playback') return v; } catch (e) {} return 'interactive'; })();
 const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 48000 || v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 48000; })();
 const _buf = (function(){ try { return localStorage.getItem('tgm_buf') || 'auto'; } catch(e){ return 'auto'; } })();
-const _hint = _buf === 'auto' ? (_lat === 'playback' ? 0.02 : _lat) : (+_buf) / _sr; // LOW = interactive (~13 ms), STABLE = ~30 ms
+const _boost = (function () { try { const v = parseFloat(localStorage.getItem('tgm_boost')); if (v > 0 && v <= 0.2) return v; } catch (e) {} return 0; })(); // AUTO-GROW: tumataas kapag nahihirapan ang phone
+const _hint = _buf === 'auto' ? (_lat === 'playback' ? 0.02 : (_boost || _lat)) : (+_buf) / _sr; // LOW = interactive (~13 ms), STABLE = ~30 ms
 const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _hint });
 const master = ctx.createGain();
 const tracksGain = ctx.createGain();
@@ -5080,7 +5075,7 @@ html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border
   mark('#latSeg','lat',_lat); mark('#bufSeg','buf',_buf);
   document.getElementById('bufInfo').textContent=bufTxt(_buf);
   document.querySelectorAll('#latSeg button').forEach(b=>b.onclick=()=>{
-    s('tgm_lat',b.dataset.lat); const sel=document.getElementById('o_lat'); if(sel) sel.value=b.dataset.lat;
+    s('tgm_lat',b.dataset.lat); try{localStorage.removeItem('tgm_boost');}catch(e){} const sel=document.getElementById('o_lat'); if(sel) sel.value=b.dataset.lat;
     mark('#latSeg','lat',b.dataset.lat); toast('I-restart ang app para umepekto.');
   });
   document.querySelectorAll('#bufSeg button').forEach(b=>b.onclick=()=>{
@@ -5091,10 +5086,21 @@ html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border
   const q=document.getElementById('quantBtn');
   const paint=()=>{q.textContent=window.quantOn?'ON':'OFF';q.classList.toggle('on',window.quantOn);};
   q.onclick=()=>{window.quantOn=!window.quantOn;s('tgm_quant',window.quantOn?'1':'0');paint();}; paint();
+  let lastU=0,bad=0;
   setInterval(()=>{
-    const bl=Math.round((ctx.baseLatency||0)*1000),ol=Math.round((ctx.outputLatency||0)*1000),ms=bl+ol;
-    const ur=(ctx.playbackStats&&ctx.playbackStats.underrunEvents)||0;
-    document.getElementById('latInfo').textContent='Now: ≈'+ms+' ms (buffer '+bl+' + output '+ol+') · '+ctx.sampleRate+' Hz · underruns '+ur;
+    const ps=ctx.playoutStats; // Chrome/Android WebView
+    let ms=Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000), ur=0;
+    if(ps){ ur=(ps.fallbackFramesEvents!=null?ps.fallbackFramesEvents:ps.underrunEvents)||0; if(ps.averageLatency>0) ms=Math.round(ps.averageLatency*1000); }
+    document.getElementById('latInfo').textContent='Now: ≈'+ms+' ms · '+ctx.sampleRate+' Hz · underruns '+ur;
+    // AUTO-GROW: LOW + paulit-ulit na underrun -> mas malaking buffer sa susunod na start
+    if(_lat==='interactive'&&_buf==='auto'){
+      bad=(ur-lastU>=2)?bad+1:0; lastU=ur;
+      if(bad>=3){
+        bad=0; const cur=_boost||ctx.baseLatency||0.01, nxt=Math.min(0.12,cur*1.5+0.005);
+        s('tgm_boost',String(nxt));
+        toast('Nahihirapan ang phone: lalaki ang buffer (≈'+Math.round(nxt*1000)+' ms) sa susunod na start.');
+      }
+    }
   },1000);
 })();
 </script>
