@@ -588,7 +588,7 @@ li.cur{background:#0f2a66;color:#fff}
   </select>
   <label for="o_sr">Audio quality / sample rate (mas mababa = mas magaan sa phone) - i-restart ang app</label>
   <select id="o_sr">
-    <option value="44100" selected>44.1 kHz (best sound)</option>
+    <option value="48000" selected>48 kHz (native, lowest latency)</option><option value="44100">44.1 kHz (best sound)</option>
     <option value="32000">32 kHz (magaan, ok pa ang tunog)</option>
     <option value="22050">22 kHz (pinakamagaan, mas muffled)</option>
   </select>
@@ -758,8 +758,8 @@ li.cur{background:#0f2a66;color:#fff}
   </select>
   <label>Latency</label>
 <div class="seg" id="latSeg"><button type="button" data-lat="playback">STABLE</button><button type="button" data-lat="interactive">LOW</button></div>
-<div class="hint">LOW = mas mabilis ang pads, drums at mic (kusang lalaki ang buffer kung nahihirapan ang phone). STABLE = para sa mabagal na phone.</div>
-<div class="hint" id="latInfo">Ngayon: …</div>
+<div class="hint">LOW = pads, drums and mic respond faster (the buffer grows by itself if the phone struggles). STABLE = for slow phones.</div>
+<div class="hint" id="latInfo">Now: …</div>
 
 <label>Quantize</label>
 <button type="button" id="quantBtn" class="seg1">OFF</button>
@@ -912,9 +912,9 @@ let toastT;
 function toast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), Math.min(9000, 3000 + msg.length * 45)); }
 // AUDIO SETTINGS: 'balanced' buffer = hindi pumuputol; puwedeng palitan sa Settings (kailangan i-restart ang app)
 const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'interactive'; })();
-const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 44100; })();
+const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 48000 || v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 48000; })();
 const _buf = (function(){ try { return localStorage.getItem('tgm_buf') || 'auto'; } catch(e){ return 'auto'; } })();
-const _hint = _buf === 'auto' ? _lat : (+_buf) / _sr;
+const _hint = _buf === 'auto' ? (_lat === 'playback' ? 0.03 : _lat) : (+_buf) / _sr; // LOW = interactive (~13 ms), STABLE = ~30 ms
 const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _hint });
 const master = ctx.createGain();
 const tracksGain = ctx.createGain();
@@ -5094,7 +5094,7 @@ html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border
   setInterval(()=>{
     const ms=Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000);
     const ur=(ctx.playbackStats&&ctx.playbackStats.underrunEvents)||0;
-    document.getElementById('latInfo').textContent='Ngayon: ≈'+ms+' ms · '+ctx.sampleRate+' Hz · underruns '+ur;
+    document.getElementById('latInfo').textContent='Now: ≈'+ms+' ms · '+ctx.sampleRate+' Hz · underruns '+ur;
   },1000);
 })();
 </script>
