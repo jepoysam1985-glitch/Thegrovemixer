@@ -914,7 +914,7 @@ function toast(msg) { const t = document.getElementById('toast'); t.textContent 
 const _lat = (function () { try { const v = localStorage.getItem('tgm_lat'); if (v === 'interactive' || v === 'balanced' || v === 'playback') return v; } catch (e) {} return 'interactive'; })();
 const _sr = (function () { try { const v = parseInt(localStorage.getItem('tgm_sr'), 10); if (v === 48000 || v === 44100 || v === 32000 || v === 22050) return v; } catch (e) {} return 48000; })();
 const _buf = (function(){ try { return localStorage.getItem('tgm_buf') || 'auto'; } catch(e){ return 'auto'; } })();
-const _hint = _buf === 'auto' ? (_lat === 'playback' ? 0.03 : _lat) : (+_buf) / _sr; // LOW = interactive (~13 ms), STABLE = ~30 ms
+const _hint = _buf === 'auto' ? (_lat === 'playback' ? 0.02 : _lat) : (+_buf) / _sr; // LOW = interactive (~13 ms), STABLE = ~30 ms
 const ctx = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: _sr, latencyHint: _hint });
 const master = ctx.createGain();
 const tracksGain = ctx.createGain();
@@ -5092,9 +5092,9 @@ html body .dpitch .ps b{top:-5px;bottom:-5px;width:20px;margin-left:-10px;border
   const paint=()=>{q.textContent=window.quantOn?'ON':'OFF';q.classList.toggle('on',window.quantOn);};
   q.onclick=()=>{window.quantOn=!window.quantOn;s('tgm_quant',window.quantOn?'1':'0');paint();}; paint();
   setInterval(()=>{
-    const ms=Math.round(((ctx.baseLatency||0)+(ctx.outputLatency||0))*1000);
+    const bl=Math.round((ctx.baseLatency||0)*1000),ol=Math.round((ctx.outputLatency||0)*1000),ms=bl+ol;
     const ur=(ctx.playbackStats&&ctx.playbackStats.underrunEvents)||0;
-    document.getElementById('latInfo').textContent='Now: ≈'+ms+' ms · '+ctx.sampleRate+' Hz · underruns '+ur;
+    document.getElementById('latInfo').textContent='Now: ≈'+ms+' ms (buffer '+bl+' + output '+ol+') · '+ctx.sampleRate+' Hz · underruns '+ur;
   },1000);
 })();
 </script>
