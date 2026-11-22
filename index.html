@@ -547,15 +547,6 @@ li.cur{background:#0f2a66;color:#fff}
 .seg button.on:not(.pad){background:#00e5ff;color:#02101e}
 .seg1{width:100%;height:44px}
 </style>
-<style>
-/* GO LIVE sa taas ng BEAT-MATCH (landscape); REC kapareho ng sukat/laki ng BEAT-MATCH */
-.lbcol{display:contents}
-@media (orientation:landscape) and (max-height:900px) and (min-width:480px){
-  html body #micCard .row>.lbcol{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;flex:none}
-  html body #specTop #recBtn{flex:none!important;width:var(--bw,60px)!important;min-width:0!important;height:42px!important;font-size:9px!important;padding:0 1px!important;line-height:1.15!important;letter-spacing:0!important;border-radius:4px!important;align-self:center!important}
-  html body #recBtn .rd{font-size:9px!important}
-}
-</style>
 </head>
 <body>
 
@@ -2923,15 +2914,12 @@ if (mq.matches) { if (cvs[1] && cvs[1].parentNode === slot) slot.insertBefore(re
   }
   if (mq.addEventListener) mq.addEventListener('change', placeMid); else mq.addListener(placeMid);
   placeMid();
-  // GO LIVE sa ibabaw ng BEAT-MATCH (landscape, isang column sa ilalim na hilera); balik sa tabi ng AUTO-MIX ang BEAT-MATCH kapag portrait
+  // BEAT-MATCH sa tabi ng Effects (landscape); balik sa tabi ng AUTO-MIX kapag portrait
   function placeBm() {
-    const bm = document.getElementById('bmBtn'), fx = document.getElementById('fxToggle'), auto = document.getElementById('autoBtn'), live = document.getElementById('liveBtn');
+    const bm = document.getElementById('bmBtn'), fx = document.getElementById('fxToggle'), auto = document.getElementById('autoBtn');
     const row = document.querySelector('#micCard .row'), xrow = document.querySelector('#xfCard .row');
-    if (!bm || !fx || !row || !xrow || !live) return;
-    let col = document.getElementById('lbCol');
-    if (!col) { col = document.createElement('div'); col.id = 'lbCol'; col.className = 'lbcol'; live.before(col); }
-    if (live.parentNode !== col) col.prepend(live);
-    if (mq.matches) { if (bm.parentNode !== col) col.append(bm); }
+    if (!bm || !fx || !row || !xrow) return;
+    if (mq.matches) { if (bm.parentNode !== row) (document.getElementById('djfxBtn') || fx).after(bm); }
     else if (bm.parentNode !== xrow) { if (auto && auto.parentNode === xrow) auto.after(bm); else xrow.append(bm); }
   }
   if (mq.addEventListener) mq.addEventListener('change', placeBm); else mq.addListener(placeBm);
@@ -2945,8 +2933,7 @@ if (mq.matches) { if (cvs[1] && cvs[1].parentNode === slot) slot.insertBefore(re
     const cr = document.getElementById('cross'), xr = cr && cr.closest('.xrow'), card = document.getElementById('mixCtl');
     const row = document.querySelector('#micCard .row'), live = document.getElementById('liveBtn');
     if (!xr || !card || !row || !live) return;
-    const anc = live.closest('.lbcol') || live;
-    if (mq.matches) { if (anc.nextElementSibling !== xr) anc.after(xr); document.body.classList.add('xfmid'); }
+    if (mq.matches) { if (live.nextElementSibling !== xr) live.after(xr); document.body.classList.add('xfmid'); }
     else { if (xr.parentNode !== card) card.append(xr); document.body.classList.remove('xfmid'); }
   }
   if (mq.addEventListener) mq.addEventListener('change', placeXf); else mq.addListener(placeXf);
@@ -4021,8 +4008,8 @@ body{max-width:none!important}
     row.querySelectorAll('.xspacer').forEach(function(e){e.remove();});
     if(!document.body.classList.contains('xfmid'))return;
     var kids=[].slice.call(row.children), i=kids.indexOf(xr);
-    var l=kids.slice(0,i).filter(function(e){return e.tagName==='BUTTON'||e.classList.contains('lbcol');}).length;
-    var r=kids.slice(i+1).filter(function(e){return e.tagName==='BUTTON'||e.classList.contains('lbcol');}).length;
+    var l=kids.slice(0,i).filter(function(e){return e.tagName==='BUTTON';}).length;
+    var r=kids.slice(i+1).filter(function(e){return e.tagName==='BUTTON';}).length;
     for(var k=l;k<r;k++){var s=document.createElement('div');s.className='xspacer';row.insertBefore(s,row.firstChild);}
     for(var k2=r;k2<l;k2++){var s2=document.createElement('div');s2.className='xspacer';row.appendChild(s2);}
   }
