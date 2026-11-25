@@ -1994,7 +1994,8 @@ function sendBytes(u) {
   if (!ws) return;
   if (pending > Math.max(24000, curBr * 750)) { dropped++; return; }   // ~6s na backlog: itapon ang bago imbes na lumaki ang delay/memory
   pending += u.length;
-  q = q.then(() => Tcp.write({ data: b64(u) })).then(() => { pending -= u.length; }).catch((e) => stopLive('Connection lost: ' + (e.message || e)));
+  const sess = ws;   // sesyon ng koneksyong ito: ang lumang pila ay hindi dapat sumulat sa bagong koneksyon, gumulo sa 'pending', o pumatay sa bagong live
+  q = q.then(() => (ws === sess ? Tcp.write({ data: b64(u) }) : null)).then(() => { if (ws === sess) pending -= u.length; }).catch((e) => { if (ws === sess) stopLive('Connection lost: ' + (e.message || e)); });
 }
 function stopLive(msg) {
   const was = ws; ws = null;
