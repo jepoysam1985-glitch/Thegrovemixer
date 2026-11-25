@@ -113,11 +113,6 @@ if os.path.exists(_www):
         print('perf: naka-patch na')
     else:
         _perf = [
-            # LED ring ng jog: 15fps imbes na 30fps
-            ("if(now-last<33)return;                                   // ~30fps lang para gumaan sa phone", "if(now-last<66)return;/*gm-perf*/"),
-            # mas kaunting pagbabago ng opacity at kulay bawat frame (hindi halata sa mata)
-            ("var t=val.toFixed(2); if(el._o!==t)", "var t=(Math.round(val*8)/8).toFixed(2); if(el._o!==t)"),
-            ("var hh=Math.round(hueAt(((m%N)+N)%N));", "var hh=Math.round(hueAt(((m%N)+N)%N)/15)*15;"),
             # spectrum / waveform canvas: ~15fps at mas maliit na resolution (1x)
             ("if (!window.__scr && (now || 0) - (draw._t || 0) < 38) return;", "if (!window.__scr && (now || 0) - (draw._t || 0) < 66) return;"),
             ("const dpr = Math.min(window.devicePixelRatio || 1, 1.5);", "const dpr = 1;"),
